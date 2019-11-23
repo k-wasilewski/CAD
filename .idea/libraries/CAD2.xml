@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="CAD2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/production/CAD/production/CAD/dist/CAD.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
