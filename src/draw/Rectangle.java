@@ -2,8 +2,9 @@ package draw;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
-public class Rectangle {
+public class Rectangle implements Serializable {
     private int x1r;
     private int x2r;
     private int y1r;

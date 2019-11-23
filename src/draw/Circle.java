@@ -2,8 +2,9 @@ package draw;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
-public class Circle {
+public class Circle implements Serializable {
     private int x;
     private int y;
     private int r;

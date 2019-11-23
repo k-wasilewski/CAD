@@ -12,13 +12,14 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.awt.Graphics;
+import java.io.Serializable;
 
 
 /**
  *
  * @author lenovo
  */
-public class ImageClass {
+public class ImageClass implements Serializable {
     private java.awt.Image image;
     private java.awt.image.BufferedImage img;
     private int ximg=0;

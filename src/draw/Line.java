@@ -3,8 +3,9 @@ package draw;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.awt.Graphics;
+import java.io.Serializable;
 
-public class Line {
+public class Line implements Serializable {
     private int x1;
     private int x2;
     private int y1;

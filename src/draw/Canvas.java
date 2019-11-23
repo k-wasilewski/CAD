@@ -219,10 +219,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 if (MouseInfo.getPointerInfo().getLocation().x!=0&&MouseInfo.getPointerInfo().getLocation().y!=0) 
                     p = new Point2D.Double(Math.round((MouseInfo.getPointerInfo().getLocation().x-8-screenx)),     
                         Math.round((MouseInfo.getPointerInfo().getLocation().y-54-screeny)));
-                p3 = new Point2D.Double();  //save file and save as and new file to code
-                if (at!=atinverted) {
+                p3 = new Point2D.Double();  //serializing ImageClass !!! selecting ImageClass !!!
+                if (at!=atinverted) {   //deleting by more-than-one DEL !!!
                     try {atinverted=at.createInverse();} catch (NoninvertibleTransformException hugf) {;}
-                    at=atinverted;
+                    at=atinverted;  //dCol within objs changing dynamically !!!
                 }    
                 at.transform(p, p3);    
                 xdyn=(int)p3.getX()+dx;    
@@ -1334,19 +1334,27 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         if (dir!=null&&filename!=null) {
             bufferedImage = new Robot().createScreenCapture(this.bounds());  
             g2d = bufferedImage.createGraphics();    
-            this.print(g2d);    
-            ImageIO.write(bufferedImage,"jpeg", new File(dir+"\\"+filename+".jpeg"));
+            this.print(g2d);
+            if (System.getProperty("os.name").toLowerCase().contains("win")) ImageIO.write(bufferedImage,"jpeg", new File(dir+"\\"+filename+".jpeg"));
+            else if (System.getProperty("os.name").toLowerCase().contains("linux")) ImageIO.write(bufferedImage,"jpeg", new File(dir+"/"+filename+".jpeg"));
         } else Draw.setText("Error");
     } 
     
-    //OPEN FILE
-    public void open() throws IOException {
+    //IMPORT FILE
+    public void importt() throws IOException {   //doesn't work !!!
         image = Toolkit.getDefaultToolkit().getImage(dir+"\\"+filename);  
-        img = ImageIO.read(new File(dir+"\\"+filename));
+        if (System.getProperty("os.name").toLowerCase().contains("linux")) img = ImageIO.read(new File(dir+"/"+filename));
+        else if (System.getProperty("os.name").toLowerCase().contains("win")) img = ImageIO.read(new File(dir+"\\"+filename));
         contour = new Rectangle(ximg-2, ximg+img.getWidth(this)+1, yimg-2, yimg+img.getHeight(this)+1, dCol);
         imageClass = new ImageClass(image, img, ximg, yimg, contour, bCol);
         contour.setImageClass(imageClass);  //drawing contour
         imageClasses.add(imageClass);   
+        safelyRepaint();
+        repaint();
+    }
+
+    //OPEN FILE
+    public void open() throws IOException {
         safelyRepaint();
         repaint();
     }
@@ -1535,29 +1543,48 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void setFilename(String s) {
         this.filename=s;
     }
+    public String getFilename() {
+        return this.filename;
+    }
     public void setDir(String s) {
         this.dir=s;
     }
-    public ArrayList getLines() {
+    public String getDir() {
+        if (this.dir==null) return "";
+        else return this.dir;
+    }
+    public ArrayList<Line> getLines() {
         return this.lines;
+    }
+    public void setLines(ArrayList<Line> al) {
+        this.lines=al;
     }
     public void removeLine(int i) {
         this.lines.remove(i);
     }
-    public ArrayList getRectangles() {
+    public ArrayList<Rectangle> getRectangles() {
         return this.rectangles;
+    }
+    public void setRectangles(ArrayList<Rectangle> r) {
+        this.rectangles=r;
     }
     public void removeRec(int i) {
         this.rectangles.remove(i);
     }
-    public ArrayList getCircles() {
+    public ArrayList<Circle> getCircles() {
         return this.circles;
+    }
+    public void setCircles(ArrayList<Circle>  c) {
+        this.circles=c;
     }
     public void removeCircle(int i) {
         this.circles.remove(i);
     }
-    public ArrayList getImageClasses() {
+    public ArrayList<ImageClass> getImageClasses() {
         return this.imageClasses;
+    }
+    public void setImageClasses(ArrayList<ImageClass> ic) {
+        this.imageClasses=ic;
     }
     public void setImage(Image i) {
         this.image=i;
