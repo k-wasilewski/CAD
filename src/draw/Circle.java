@@ -9,17 +9,20 @@ public class Circle implements Serializable {
     private int y;
     private int r;
     private Color c;
+    private Color ch;
     private boolean marked;
     private boolean selected=false;
     private Rectangle2D snapRec;
     private boolean contains;
     private boolean copied;
+    private boolean coloured;
     
     public Circle(int x, int y, int r, Color c) {
         this.x=x;
         this.y=y;
         this.r=r;
         this.c=c;
+        this.ch=c;
     }
     public int getX() {
         return x;
@@ -78,6 +81,9 @@ public class Circle implements Serializable {
     public Color getCol() {
         return this.c;
     }
+    public Color getColH() {
+        return this.ch;
+    }
     public void copiedOn() {
         this.copied=true;
     }
@@ -87,4 +93,6 @@ public class Circle implements Serializable {
     public boolean isCopied() {
         return this.copied;
     }
+    public void setColoured() {this.coloured=true;}
+    public boolean getColoured() {return this.coloured;}
 }

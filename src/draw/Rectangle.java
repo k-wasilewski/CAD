@@ -10,6 +10,7 @@ public class Rectangle implements Serializable {
     private int y1r;
     private int y2r;
     private Color c;
+    private Color ch;
     private boolean marked;
     private boolean selected=false;
     private ImageClass imageClass=null;
@@ -22,6 +23,7 @@ public class Rectangle implements Serializable {
     private boolean contains3;
     private boolean contains4;
     private boolean copied;
+    private boolean coloured;
     
     public Rectangle(int x1, int x2, int y1, int y2, Color c) {
         this.x1r=x1;
@@ -29,6 +31,7 @@ public class Rectangle implements Serializable {
         this.y1r=y1;
         this.y2r=y2;
         this.c=c;
+        this.ch=c;
     }
     public int getx1() {
         return this.x1r;
@@ -144,6 +147,7 @@ public class Rectangle implements Serializable {
     public Color getCol() {
         return this.c;
     }
+    public Color getColH() { return this.ch; }
     public void copiedOn() {
         this.copied=true;
     }
@@ -153,4 +157,6 @@ public class Rectangle implements Serializable {
     public boolean isCopied() {
         return this.copied;
     }
+    public void setColoured() {this.coloured=true;}
+    public boolean getColoured() {return this.coloured;}
 }

@@ -14,6 +14,9 @@ public class Draw extends JFrame {
   private static javax.swing.JTextArea jTextArea3;
   private boolean export;
   private javax.swing.JMenuItem menuItem4;
+  private ArrayList<Line> linesToDelete;
+  private ArrayList<Circle> circlesToDelete;
+  private ArrayList<Rectangle> rectanglesToDelete;
   private ArrayList<ImageClass> toDelete;
   private ArrayList<ImageClass> imageClasses;
   private static Index index;
@@ -197,23 +200,27 @@ public class Draw extends JFrame {
                     if (canvas.getTextInput()!=null&&canvas.getTextInput().isVisible()) canvas.getTextInput().dispose();
                     canvas.commandLineInput("esc");
                     jTextArea3.setText("");
-                } else if(e.getKeyCode() == KeyEvent.VK_DELETE){    //gets all lines but iterates on just a few !!!
-                        for (int i=0; i<canvas.getLines().size(); i++) {
-                            Line l = (Line) canvas.getLines().get(i);
-                            if (l.isSelected()) canvas.removeLine(i);
-                        }
-                        for (int i=0; i<canvas.getRectangles().size();i++) {
-                            Rectangle r = (Rectangle)canvas.getRectangles().get(i);
-                            if (r.isSelected()) {
-                                if (r.getImageClass()!=null) canvas.removeImageClass(r.getImageClass());
-                                canvas.removeRec(i);
-                            }
-                        }
-                        for (int i=0; i<canvas.getCircles().size();i++) {
-                            Circle c = (Circle) canvas.getCircles().get(i);
-                            if (c.isSelected()) canvas.removeCircle(i);
-                        }
-                        toDelete = new ArrayList();
+                } else if(e.getKeyCode() == KeyEvent.VK_DELETE){
+                    linesToDelete=new ArrayList();
+                    circlesToDelete=new ArrayList();
+                    rectanglesToDelete=new ArrayList();
+                    toDelete = new ArrayList();
+
+                    for (Line l : canvas.getLines()) {
+                        if (l.isSelected()) linesToDelete.add(l);
+                    }
+                    for (Line l : linesToDelete) canvas.removeLine(l);
+
+                    for (Rectangle r : canvas.getRectangles()) {
+                        if (r.isSelected()) rectanglesToDelete.add(r);
+                    }
+                    for (Rectangle r : rectanglesToDelete) canvas.removeRec(r);
+
+                    for (Circle c : canvas.getCircles()) {
+                        if (c.isSelected()) circlesToDelete.add(c);
+                    }
+                    for (Circle c : circlesToDelete) canvas.removeCircle(c);
+
                         imageClasses = canvas.getImageClasses();
                         if (!imageClasses.isEmpty()) for (ImageClass imageClass : imageClasses)
                             if (imageClass.isSelected()) toDelete.add(imageClass);

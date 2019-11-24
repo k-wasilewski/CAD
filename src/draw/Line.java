@@ -11,6 +11,7 @@ public class Line implements Serializable {
     private int y1;
     private int y2;
     private Color c;
+    private Color ch;
     private boolean marked;
     private boolean selected=false;
     private boolean polyline;
@@ -19,6 +20,7 @@ public class Line implements Serializable {
     private boolean contains1;
     private boolean contains2;
     private boolean copied;
+    private boolean coloured;
     
     public Line(int x1, int x2, int y1, int y2, Color c, boolean p) {
         this.x1=x1;
@@ -26,6 +28,7 @@ public class Line implements Serializable {
         this.y1=y1;
         this.y2=y2;
         this.c=c;
+        this.ch=c;
         this.polyline=p;
     }
     public int getx1() {
@@ -109,9 +112,8 @@ public class Line implements Serializable {
     public boolean getContains2() {
         return this.contains2;
     }
-    public Color getCol() {
-        return this.c;
-    }
+    public Color getCol() { return this.c; }
+    public Color getColH() { return this.ch; }
     public boolean isPoly() {
         return this.polyline;
     }
@@ -124,4 +126,6 @@ public class Line implements Serializable {
     public boolean isCopied() {
         return this.copied;
     }
+    public void setColoured() {this.coloured=true;}
+    public boolean getColoured() {return this.coloured;}
 }

@@ -220,12 +220,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     p = new Point2D.Double(Math.round((MouseInfo.getPointerInfo().getLocation().x-8-screenx)),     
                         Math.round((MouseInfo.getPointerInfo().getLocation().y-54-screeny)));
                 p3 = new Point2D.Double();  //serializing ImageClass !!! selecting ImageClass !!!
-                if (at!=atinverted) {   //deleting by more-than-one DEL !!!
+                if (at!=atinverted) {
                     try {atinverted=at.createInverse();} catch (NoninvertibleTransformException hugf) {;}
                     at=atinverted;  //dCol within objs changing dynamically !!!
                 }    
-                at.transform(p, p3);    //moving text
-                xdyn=(int)p3.getX()+dx;    
+                at.transform(p, p3);    //moving not working
+                xdyn=(int)p3.getX()+dx;    //add ctrl+z
                 ydyn=(int)p3.getY()+dy;   
       
         if ((command("l")||command("pl"))&&x1!=0&&y1!=0) {
@@ -382,7 +382,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 l.markedOn();
             } else {
                 l.markedOff();
-                l.setCol(dCol);}
+                if (!l.getColoured()) {
+                    l.setCol(dCol);
+                    l.setColoured();
+                }
+                if (l.getCol()==Color.GRAY) l.setCol(l.getColH());
+            }
         
             //drawing a line statically
             g.setColor(l.getCol());
@@ -435,8 +440,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 r.setCol(Color.GRAY);
                     r.markedOn();
                 } else {
-                    r.markedOff();
-                    r.setCol(dCol); 
+                r.markedOff();
+                if (!r.getColoured()) {
+                    r.setCol(dCol);
+                    r.setColoured();
+                }
+                if (r.getCol()==Color.GRAY) r.setCol(r.getColH());
             }
             if (!imageClasses.isEmpty()) for (ImageClass imageClass : imageClasses) {
                 if (r.getImageClass()!=null) if (imageSelection(r.getImageClass())) {   
@@ -485,7 +494,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 c.markedOn();
             } else {
                 c.markedOff();
-                c.setCol(dCol);}
+                if (!c.getColoured()) {
+                    c.setCol(dCol);
+                    c.setColoured();
+                }
+                if (c.getCol()==Color.GRAY) c.setCol(c.getColH());
+            }
         
             //drawing a circle statically
             g.setColor(c.getCol());
@@ -1073,7 +1087,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     }
     
     //COPYING SELECTED DRAWN OBJECTS
-    public void copy() {  
+    public void copy() {
         pac = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x-8-screenx, 
                 MouseInfo.getPointerInfo().getLocation().y-54-screeny); 
         pbc = new Point2D.Double();
@@ -1363,16 +1377,16 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void esc() {     
         for (Line l : lines) {
             l.markedOff();
-            l.setCol(dCol);
+            l.setCol(l.getCol());
             l.selectedOff();
         }
         for (Circle c : circles) {
-            c.setCol(dCol);
+            c.setCol(c.getCol());
             c.markedOff();
             c.selectedOff();
         }
         for (Rectangle r : rectangles) {
-            r.setCol(dCol);
+            r.setCol(r.getCol());
             r.markedOff();
             r.selectedOff();
         }
@@ -1562,6 +1576,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void removeLine(int i) {
         this.lines.remove(i);
     }
+    public void removeLine(Line l) {
+        this.lines.remove(l);
+    }
     public ArrayList<Rectangle> getRectangles() {
         return this.rectangles;
     }
@@ -1571,6 +1588,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void removeRec(int i) {
         this.rectangles.remove(i);
     }
+    public void removeRec(Rectangle r) {
+        this.rectangles.remove(r);
+    }
     public ArrayList<Circle> getCircles() {
         return this.circles;
     }
@@ -1579,6 +1599,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     }
     public void removeCircle(int i) {
         this.circles.remove(i);
+    }
+    public void removeCircle(Circle c) {
+        this.circles.remove(c);
     }
     public ArrayList<ImageClass> getImageClasses() {
         return this.imageClasses;
