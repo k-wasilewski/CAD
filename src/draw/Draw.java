@@ -197,10 +197,9 @@ public class Draw extends JFrame {
                     if (canvas.getTextInput()!=null&&canvas.getTextInput().isVisible()) canvas.getTextInput().dispose();
                     canvas.commandLineInput("esc");
                     jTextArea3.setText("");
-                } else if(e.getKeyCode() == KeyEvent.VK_DELETE){
+                } else if(e.getKeyCode() == KeyEvent.VK_DELETE){    //gets all lines but iterates on just a few !!!
                         for (int i=0; i<canvas.getLines().size(); i++) {
                             Line l = (Line) canvas.getLines().get(i);
-                            System.out.println(l);
                             if (l.isSelected()) canvas.removeLine(i);
                         }
                         for (int i=0; i<canvas.getRectangles().size();i++) {

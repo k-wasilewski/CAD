@@ -224,7 +224,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     try {atinverted=at.createInverse();} catch (NoninvertibleTransformException hugf) {;}
                     at=atinverted;  //dCol within objs changing dynamically !!!
                 }    
-                at.transform(p, p3);    
+                at.transform(p, p3);    //moving text
                 xdyn=(int)p3.getX()+dx;    
                 ydyn=(int)p3.getY()+dy;   
       
