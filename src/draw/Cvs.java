@@ -5,27 +5,33 @@ import java.io.Serializable;
 
 public class Cvs implements Serializable {
     private ArrayList<Line> lines;
-    private ArrayList<Circle> circles;
+    private ArrayList<draw.Circle> circles;
     private ArrayList<Rectangle> rectangles;
-    private ArrayList<ImageClass> imageClasses;
+    private ArrayList<draw.ImageClass> imageClasses;
+    private ArrayList<Text> texts;
+    private int n;
 
-    public Cvs(ArrayList<Line> lines, ArrayList<Circle> circles, ArrayList<Rectangle> rectangles,
-               ArrayList<ImageClass> imageClasses) {
-        this.lines=lines;
-        this.circles=circles;
-        this.rectangles=rectangles;
-        this.imageClasses=imageClasses;
+    public Cvs(ArrayList<Line> lines, ArrayList<draw.Circle> circles, ArrayList<Rectangle> rectangles,
+               ArrayList<draw.ImageClass> imageClasses, ArrayList<Text> texts) {
+        this.lines = lines;
+        this.circles = circles;
+        this.rectangles = rectangles;
+        this.imageClasses = imageClasses;
+        this.texts = texts;
     }
     public ArrayList<Line> getLines() {
         return this.lines;
     }
-    public ArrayList<Circle> getCircles() {
+    public ArrayList<draw.Circle> getCircles() {
         return this.circles;
     }
     public ArrayList<Rectangle> getRectangles() {
         return this.rectangles;
     }
-    public ArrayList<ImageClass> getImageClasses() {
+    public ArrayList<draw.ImageClass> getImageClasses() {
         return this.imageClasses;
+    }
+    public ArrayList<Text> getTexts() {
+        return this.texts;
     }
 }

@@ -15,11 +15,12 @@ public class Draw extends JFrame {
   private boolean export;
   private javax.swing.JMenuItem menuItem4;
   private ArrayList<Line> linesToDelete;
-  private ArrayList<Circle> circlesToDelete;
+  private ArrayList<draw.Circle> circlesToDelete;
   private ArrayList<Rectangle> rectanglesToDelete;
-  private ArrayList<ImageClass> toDelete;
-  private ArrayList<ImageClass> imageClasses;
-  private static Index index;
+  private ArrayList<Text> textsToDelete;
+  private ArrayList<draw.ImageClass> toDelete;
+  private ArrayList<draw.ImageClass> imageClasses;
+  private static draw.Index index;
 
   public void run(JFrame f) {
       SwingUtilities.invokeLater(new Runnable() {
@@ -100,15 +101,15 @@ public class Draw extends JFrame {
                     menuItem3ActionPerformed(evt);
                 } catch (Exception exc) {jTextArea3.setText(exc.toString());}
             }
-            //SAVE FILE (ONLY LINES)
+            //SAVE FILE
             private void menuItem3ActionPerformed(ActionEvent evt) throws Exception {
                 String dirc="";
                 if (System.getProperty("os.name").toLowerCase().contains("win")) dirc="\\";
                 else if (System.getProperty("os.name").toLowerCase().contains("linux")) dirc="/";
                 FileOutputStream myFileOutputStream = new FileOutputStream(canvas.getDir()+dirc+canvas.getFilename()+".cvs");
                 ObjectOutputStream myObjectOutputStream = new ObjectOutputStream(myFileOutputStream);
-                myObjectOutputStream.writeObject(new Cvs(canvas.getLines(), canvas.getCircles(), canvas.getRectangles(),
-                    canvas.getImageClasses()));
+                myObjectOutputStream.writeObject(new draw.Cvs(canvas.getLines(), canvas.getCircles(), canvas.getRectangles(),
+                    canvas.getImageClasses(), canvas.getTexts()));
                 myObjectOutputStream.close();
             }
         });
@@ -135,7 +136,7 @@ public class Draw extends JFrame {
             }
         });
 
-         //OPEN FILE *&YHJ)(GF ???
+         //OPEN FILE
       menuItem6.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
               try {
@@ -150,17 +151,18 @@ public class Draw extends JFrame {
               canvas.setFilename(jFileChooser3.getSelectedFile().getName());
               canvas.setDir(jFileChooser3.getCurrentDirectory().toString());
               FileInputStream myFileInputStream = new FileInputStream(canvas.getDir() +"/"+ canvas.getFilename());
-              ObjectInputStream myObjectInputStream = new ObjectInputStream(myFileInputStream);
+              ObjectInputStream myObjectInputStream = new ObjectInputStream(myFileInputStream); //add 2vars win/linux
               Cvs cvs=null;
-              try {cvs = (Cvs) myObjectInputStream.readObject();} catch (ClassNotFoundException cne) {};
-              canvas.setLines(cvs.getLines());
-              canvas.setRectangles(cvs.getRectangles());
-              canvas.setCircles(cvs.getCircles());
-              canvas.setImageClasses(cvs.getImageClasses());
+              try {cvs = (Cvs) myObjectInputStream.readObject();} catch (Exception cne) {jTextArea3.setText(cne.toString());}   //NulPointerException here !!!
+              if (cvs!=null&&cvs.getLines()!=null) canvas.setLines(cvs.getLines());
+              if (cvs!=null&&cvs.getRectangles()!=null) canvas.setRectangles(cvs.getRectangles());
+              if (cvs!=null&&cvs.getCircles()!=null) canvas.setCircles(cvs.getCircles());
+              if (cvs!=null&&cvs.getImageClasses()!=null) canvas.setImageClasses(cvs.getImageClasses());
+              if (cvs!=null&&cvs.getTexts()!=null) canvas.setTexts(cvs.getTexts());
               myObjectInputStream.close();
               try {
                   canvas.open();
-              } catch (Exception exc) {jTextArea3.setText("Error");}
+              } catch (Exception exc) {jTextArea3.setText(exc.toString());}
           }
           if (button == jFileChooser1.CANCEL_OPTION) {
               jFileChooser1.setVisible(false);
@@ -205,6 +207,7 @@ public class Draw extends JFrame {
                     circlesToDelete=new ArrayList();
                     rectanglesToDelete=new ArrayList();
                     toDelete = new ArrayList();
+                    textsToDelete = new ArrayList();
 
                     for (Line l : canvas.getLines()) {
                         if (l.isSelected()) linesToDelete.add(l);
@@ -220,6 +223,11 @@ public class Draw extends JFrame {
                         if (c.isSelected()) circlesToDelete.add(c);
                     }
                     for (Circle c : circlesToDelete) canvas.removeCircle(c);
+
+                    for (Text t : canvas.getTexts()) {
+                        if (t.isSelected()) textsToDelete.add(t);
+                    }
+                    for (Text t : textsToDelete) canvas.removeText(t);
 
                         imageClasses = canvas.getImageClasses();
                         if (!imageClasses.isEmpty()) for (ImageClass imageClass : imageClasses)

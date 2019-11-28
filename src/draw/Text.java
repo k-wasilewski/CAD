@@ -11,8 +11,9 @@ package draw;
  */
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
-public class Text {
+public class Text implements Serializable {
     private String txt;
     private int x;
     private int y;

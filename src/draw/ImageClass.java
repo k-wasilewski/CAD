@@ -5,13 +5,15 @@
  */
 package draw;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.awt.Graphics;
 import java.io.Serializable;
 
 
@@ -19,9 +21,9 @@ import java.io.Serializable;
  *
  * @author lenovo
  */
-public class ImageClass implements Serializable {
-    private java.awt.Image image;
-    private java.awt.image.BufferedImage img;
+public class ImageClass extends JPanel implements Serializable, ImageObserver {
+    private transient java.awt.Image image; //Image is not serializable !!!
+    private transient java.awt.image.BufferedImage img; //BufferedImage is not serializable !!!
     private int ximg=0;
     private int yimg=0;
     private Rectangle contour;
@@ -29,42 +31,49 @@ public class ImageClass implements Serializable {
     private boolean marked;
     private int width;
     private int height;
-    private BufferedImage imgcont;
-    private Graphics2D graphics;
+    private transient BufferedImage imgcont;  //BufferedImage is not serializable !!!
+    private transient Graphics graphics;  //Graphics is not serializable !!!
     private int xr;
     private int yr;
     private int wr;
     private int hr;
     private Color col;
     private boolean back;
-    private ArrayList<Rectangle2D> snapRecs;
+    private ArrayList<Rectangle> snapRecs;
     private boolean contains1;
     private boolean contains2;
     private boolean contains3;
     private boolean contains4;
-    private Rectangle2D snapRec1;
-    private Rectangle2D snapRec2;
-    private Rectangle2D snapRec3;
-    private Rectangle2D snapRec4;
+    private Rectangle snapRec1;
+    private Rectangle snapRec2;
+    private Rectangle snapRec3;
+    private Rectangle snapRec4;
     private boolean overImage;
     private boolean copied;
+    private ImageIcon ii;
+
+    public boolean imageUpdate(Image i, int a, int b, int c, int d, int e) {return true;}
     
     public ImageClass(java.awt.Image image, BufferedImage img, int ximg, int yimg, Rectangle contour, Color col) {
+        System.out.println("ImageClass constructed");//reter
         this.image=image;
         this.img=img;
         this.ximg=ximg;
         this.yimg=yimg;
         this.contour=contour;
         this.col=col;
-        width=img.getWidth();
-        height=img.getHeight();
+        if (ii!=null) width=ii.getIconWidth(); else width=img.getWidth();
+        if (ii!=null) height=ii.getIconHeight(); else height=img.getHeight();
+        System.out.println("dimensions:"+width+", "+height);
+        System.out.println("location:"+this.ximg+", "+this.yimg);
         snapRecs=new ArrayList();
         
         //snap
-        snapRec1 = new Rectangle2D.Double(this.ximg-8, this.yimg-8, 16, 16); 
-        snapRec2 = new Rectangle2D.Double(this.ximg+width-8, this.yimg-8, 16, 16); 
-        snapRec3 = new Rectangle2D.Double(this.ximg-8, this.yimg+height-8, 16, 16); 
-        snapRec4 = new Rectangle2D.Double(this.ximg+width-8, this.yimg+height-8, 16, 16);
+        //snapRec1 = new Rectangle2D.Double(this.ximg-8, this.yimg-8, 16, 16);
+        snapRec1 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK);
+        snapRec2 = new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK);
+        snapRec3 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK);
+        snapRec4 = new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK);
         snapRecs.add(snapRec1);     
         snapRecs.add(snapRec2);
         snapRecs.add(snapRec3);
@@ -94,14 +103,15 @@ public class ImageClass implements Serializable {
         paint();
     }
     public void updatesnapRecs() {//update ximg and yimg in snapRecs
-        snapRecs.get(0).setRect(new Rectangle2D.Double(this.ximg-8, this.yimg-8, 16, 16)); 
-        snapRecs.get(1).setRect(new Rectangle2D.Double(this.ximg+width-8, this.yimg-8, 16, 16)); 
-        snapRecs.get(2).setRect(new Rectangle2D.Double(this.ximg-8, this.yimg+height-8, 16, 16)); 
-        snapRecs.get(3).setRect(new Rectangle2D.Double(this.ximg+width-8, this.yimg+height-8, 16, 16));
+        snapRecs.set(0, new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK));
+        snapRecs.set(1, new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK));
+        snapRecs.set(2, new Rectangle(this.ximg-8, this.ximg+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK));
+        snapRecs.set(3, new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK));
     }
     public void paint() {
         graphics=imgcont.createGraphics();
-        graphics.setBackground(col);
+        if (ii!=null) ii.paintIcon(null, graphics, 0, 0);   //HERE causes not-drawing-altogether
+        //graphics.setBackground(col);
         graphics.drawImage(img, 0, 0, null);
         if (marked) {
             graphics.setColor(Color.GRAY);
@@ -111,10 +121,16 @@ public class ImageClass implements Serializable {
         }
         if (selected) {
             graphics.setColor(Color.BLACK);
-            graphics.setStroke(new BasicStroke(3));
+            //graphics.setStroke(new BasicStroke(3));
             graphics.drawRect(0, 0, width-1, height-1);
-            graphics.setStroke(new BasicStroke(1));
+            graphics.drawRect(+1, +1, width-3, height-3);
+            graphics.drawRect(+2, +2, width-5, height-5);
+            //graphics.setStroke(new BasicStroke(1));
         }
+    }
+    public void iiToBuffImg(ImageIcon ii) {
+        imgcont=new BufferedImage(ii.getIconWidth(), ii.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        paint();
     }
     public java.awt.Image getImage() {
         return this.image;
@@ -167,16 +183,14 @@ public class ImageClass implements Serializable {
     public int getYimg() {
         return this.yimg;
     }
-    public Rectangle2D getSr1() {
+    public Rectangle getSr1() {
         return this.snapRecs.get(0);
     }
-    public Rectangle2D getSr2() {
-        return this.snapRecs.get(1);
-    }
-    public Rectangle2D getSr3() {
+    public Rectangle getSr2() { return this.snapRecs.get(1); }
+    public Rectangle getSr3() {
         return this.snapRecs.get(2);
     }
-    public Rectangle2D getSr4() {
+    public Rectangle getSr4() {
         return this.snapRecs.get(3);
     }
     public void contains1on() {
@@ -236,13 +250,22 @@ public class ImageClass implements Serializable {
     public Color getCol() {
         return this.col;
     }
-    public void copiedOn() {
-        this.copied=true;
-    }
+    public void copiedOn() {this.copied=true;}
     public void copiedOff() {
         this.copied=false;
     }
-    public boolean isCopied() {
-        return this.copied;
+    public boolean isCopied() {return this.copied;}
+
+    //SERIALIZATION
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();   //all non-transient fields
+        out.writeObject(new ImageIcon(imgcont));    //custom ser
     }
-}
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        ii = (ImageIcon) in.readObject();
+        iiToBuffImg(ii);
+        }
+    }
+

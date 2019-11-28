@@ -40,7 +40,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private int y1;
     private int y2;
     private ArrayList<Line> lines = new ArrayList();
-    private ArrayList<Circle> circles = new ArrayList();
+    private ArrayList<draw.Circle> circles = new ArrayList();
     private ArrayList<Rectangle> rectangles = new ArrayList();
     private String input="null";
     private String inputH="null";
@@ -121,7 +121,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private double xcont;
     private double ycont;
     private Rectangle contour=null; 
-    private ArrayList<ImageClass> imageClasses = new ArrayList();
+    private ArrayList<draw.ImageClass> imageClasses = new ArrayList();
     private double xRel;
     private double yRel;
     private double zoomDiv;
@@ -147,7 +147,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private boolean snapExecuted=false;
     private Rectangle2D contour2;
     private Shape contour666;
-    private ImgPopup menu;
+    private draw.ImgPopup menu;
     private Popup menu1;
     private Line2D.Double l2d;
     private Rectangle2D.Double r2d;
@@ -160,7 +160,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private Rectangle2D.Double contourSel;
     private BufferedImage bufferedImage;
     private Graphics2D g2d;
-    private ImageClass imageClass;
+    private draw.ImageClass imageClass;
     private boolean overImage = false;
     private int noOfOvers;
     private boolean copying;
@@ -176,17 +176,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private int dxc;
     private int dyc;
     private ArrayList<Line> linesToCopy;
-    private ArrayList<Circle> circlesToCopy;
-    private ArrayList<ImageClass> imagesToCopy;
+    private ArrayList<draw.Circle> circlesToCopy;
+    private ArrayList<draw.ImageClass> imagesToCopy;
     private ArrayList<Rectangle> rectanglesToCopy;
     private ArrayList<Text> textsToCopy;
     private Line l2;
-    private ImageClass i2;
-    private Circle c2;
+    private draw.ImageClass i2;
+    private draw.Circle c2;
     private Rectangle r2;
     private boolean readyToMove;
     private static boolean readyToInputText;
-    private tInput ti;
+    private draw.tInput ti;
     private static String inputText;
     private ArrayList<Text> texts = new ArrayList();
     private static boolean readyToDrawText;
@@ -217,16 +217,16 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void actionPerformed(ActionEvent evt) {
         //zooming the coords dynamically
                 if (MouseInfo.getPointerInfo().getLocation().x!=0&&MouseInfo.getPointerInfo().getLocation().y!=0) 
-                    p = new Point2D.Double(Math.round((MouseInfo.getPointerInfo().getLocation().x-8-screenx)),     
+                    p = new Point2D.Double(Math.round((MouseInfo.getPointerInfo().getLocation().x-8-screenx)),
                         Math.round((MouseInfo.getPointerInfo().getLocation().y-54-screeny)));
-                p3 = new Point2D.Double();  //serializing ImageClass !!! selecting ImageClass !!!
+                p3 = new Point2D.Double();  //serializing ImageClass (BufferedImage) !!!
                 if (at!=atinverted) {
                     try {atinverted=at.createInverse();} catch (NoninvertibleTransformException hugf) {;}
-                    at=atinverted;  //dCol within objs changing dynamically !!!
+                    at=atinverted;
                 }    
-                at.transform(p, p3);    //moving not working
+                at.transform(p, p3);    //clean the Canvas code and structure it to methods/classes inside packets
                 xdyn=(int)p3.getX()+dx;    //add ctrl+z
-                ydyn=(int)p3.getY()+dy;   
+                ydyn=(int)p3.getY()+dy;   //coors when zoomed
       
         if ((command("l")||command("pl"))&&x1!=0&&y1!=0) {
             if (ortoY) x2=x1;
@@ -295,16 +295,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         g.setColor(bCol);   //drawing image
         
         //open image
-        if (!imageClasses.isEmpty()) for (ImageClass imageClass : imageClasses) {
-            if (imageClass.getImage()!=null) {   
-                imageClass.setWidth(imageClass.getImg().getWidth());
-                imageClass.setHeight(imageClass.getImg().getHeight());
+        if (!imageClasses.isEmpty()) for (draw.ImageClass imageClass : imageClasses) {
+            if (imageClass!=null) {
+                imageClass.setWidth(imageClass.getWidth());
+                imageClass.setHeight(imageClass.getHeight());
             
                 //intersection
-                if (imageSelection(imageClass)) {   
+                if (imageSelection(imageClass)) {
                     imageClass.markedOn();
                     imageClass.getContour().setImageClass(imageClass);
-                    imageClass.getGraphics().setColor(Color.GRAY);
                     imageClass.getGraphics().setColor(Color.GRAY);
                     imageClass.paint(); 
                 } else {
@@ -353,10 +352,98 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             if (c.getContains()&&snapMode) g2.draw(c.getSnapRec());    
         }
         for (ImageClass i : imageClasses) {
-            if (i.getContains1()) g2.draw(i.getSr1());   
-            else if (i.getContains2()&&snapMode) g2.draw(i.getSr2());
-            else if (i.getContains3()&&snapMode) g2.draw(i.getSr3());
-            else if (i.getContains4()&&snapMode) g2.draw(i.getSr4());
+            if (i.getContains1()) {
+                Rectangle r=i.getSr1();
+                x1rec=r.getx1();
+                x2rec=r.getx2();
+                y1rec=r.gety1();
+                y2rec=r.gety2();
+                if (x2rec>x1rec) {
+                    xr=x1rec;
+                    wr=x2rec-x1rec;
+                } else {
+                    xr=x2rec;
+                    wr=x1rec-x2rec;
+                }
+                if (y2rec>y1rec) {
+                    yr=y1rec;
+                    hr=y2rec-y1rec;
+                } else {
+                    yr=y2rec;
+                    hr=y1rec-y2rec;
+                }
+                g.drawRect(xr, yr, wr, hr);
+                //g2.draw(i.getSr1());
+            }
+            else if (i.getContains2()&&snapMode) {
+                Rectangle r=i.getSr2();
+                x1rec=r.getx1();
+                x2rec=r.getx2();
+                y1rec=r.gety1();
+                y2rec=r.gety2();
+                if (x2rec>x1rec) {
+                    xr=x1rec;
+                    wr=x2rec-x1rec;
+                } else {
+                    xr=x2rec;
+                    wr=x1rec-x2rec;
+                }
+                if (y2rec>y1rec) {
+                    yr=y1rec;
+                    hr=y2rec-y1rec;
+                } else {
+                    yr=y2rec;
+                    hr=y1rec-y2rec;
+                }
+                g.drawRect(xr, yr, wr, hr);
+                //g2.draw(i.getSr2());
+            }
+            else if (i.getContains3()&&snapMode) {
+                Rectangle r=i.getSr3();
+                x1rec=r.getx1();
+                x2rec=r.getx2();
+                y1rec=r.gety1();
+                y2rec=r.gety2();
+                if (x2rec>x1rec) {
+                    xr=x1rec;
+                    wr=x2rec-x1rec;
+                } else {
+                    xr=x2rec;
+                    wr=x1rec-x2rec;
+                }
+                if (y2rec>y1rec) {
+                    yr=y1rec;
+                    hr=y2rec-y1rec;
+                } else {
+                    yr=y2rec;
+                    hr=y1rec-y2rec;
+                }
+                g.drawRect(xr, yr, wr, hr);
+                //g2.draw(i.getSr3());
+            }
+            else if (i.getContains4()&&snapMode) {
+                Rectangle r=i.getSr4();
+                x1rec=r.getx1();
+                x2rec=r.getx2();
+                y1rec=r.gety1();
+                y2rec=r.gety2();
+                if (x2rec>x1rec) {
+                    xr=x1rec;
+                    wr=x2rec-x1rec;
+                } else {
+                    xr=x2rec;
+                    wr=x1rec-x2rec;
+                }
+                if (y2rec>y1rec) {
+                    yr=y1rec;
+                    hr=y2rec-y1rec;
+                } else {
+                    yr=y2rec;
+                    hr=y1rec-y2rec;
+                }
+                g.drawRect(xr, yr, wr, hr);
+                //g2.draw(i.getSr4());
+            }
         }
         for (Line l : lines) {
             if (l.getContains1()&&snapMode) g2.draw(l.getSr1());
@@ -785,11 +872,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 try {at.invert();} catch (Exception r) {;}
                 at.transform(pb, p3);
                 drawB((int)p3.getX(), (int)p3.getY());  
-                if (command("dist")) Draw.setText("dist: "+d+"p");
+                if (command("dist")) draw.Draw.setText("dist: "+d+"p");
             }
             if (command("null")&&selection) {
                 selection=false;
-                for (ImageClass i : imageClasses) {
+                for (draw.ImageClass i : imageClasses) {
                     if (i.isMarked()) i.selectedOn();  
                     i.paint();
                 }
@@ -1312,16 +1399,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     }
     
     //CHECK WHETHER THE SELECTION REC AND IMPORTED IMAGE INTERSECT
-    public boolean imageSelection(ImageClass imageClass) {  
-        if (xs!=0&&ys!=0&&image!=null) {   
+    public boolean imageSelection(draw.ImageClass imageClass) {
+        if (xs!=0&&ys!=0&&imageClass!=null) {
             selRec=new Rectangle2D.Double(xs,ys,ws,hs);
-            contourSel = new Rectangle2D.Double(xrec,yrec,imageClass.getImage().getWidth(this),
-                    imageClass.getImage().getHeight(this));
+            contourSel = new Rectangle2D.Double(xrec,yrec,imageClass.getWidth(), imageClass.getHeight());
 
             //contours' intersection condition
             for (xcont=contourSel.getMinX(); xcont<=contourSel.getMaxX(); xcont++) {
                 for (ycont=contourSel.getMinY(); ycont<=contourSel.getMaxY(); ycont++) {
-                    if (selRec.contains(xcont+imageClass.getXimg(),ycont+imageClass.getYimg())) return true;       
+                    if (selRec.contains(xcont+imageClass.getXimg(),ycont+imageClass.getYimg())) return true;
                 }
             }
         }
@@ -1331,7 +1417,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     }
     
     //CHECK WHETHER THE RIGHT MOUSECLICK IS OVER AN IMAGE
-    public boolean overImage(ImageClass imageClass) {
+    public boolean overImage(draw.ImageClass imageClass) {
         p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x-8-screenx,    
                 MouseInfo.getPointerInfo().getLocation().y-54-screeny);
         
@@ -1433,23 +1519,115 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
         for (ImageClass i : imageClasses) {
             i.updatesnapRecs();
-            
-            if (i.getSr1().contains((int)p2.getX(),(int)p2.getY())) {   
+
+            int x1rec1=i.getSr1().getx1();
+            int x2rec1=i.getSr1().getx2();
+            int y1rec1=i.getSr1().gety1();
+            int y2rec1=i.getSr1().gety2();
+            int xr1;
+            int yr1;
+            int wr1;
+            int hr1;
+            if (x2rec1>x1rec1) {
+                xr1=x1rec1;
+                wr1=x2rec1-x1rec1;
+            } else {
+                xr1=x2rec1;
+                wr1=x1rec1-x2rec1;
+            }
+            if (y2rec1>y1rec1) {
+                yr1=y1rec1;
+                hr1=y2rec1-y1rec1;
+            } else {
+                yr1=y2rec1;
+                hr1=y1rec1-y2rec1;
+            }
+            Rectangle2D sr1 = new Rectangle2D.Double(xr1, yr1, wr1, hr1);
+            int x1rec2=i.getSr2().getx1();
+            int x2rec2=i.getSr2().getx2();
+            int y1rec2=i.getSr2().gety1();
+            int y2rec2=i.getSr2().gety2();
+            int xr2;
+            int yr2;
+            int wr2;
+            int hr2;
+            if (x2rec2>x1rec2) {
+                xr2=x1rec2;
+                wr2=x2rec2-x1rec2;
+            } else {
+                xr2=x2rec2;
+                wr2=x1rec2-x2rec2;
+            }
+            if (y2rec2>y1rec2) {
+                yr2=y1rec2;
+                hr2=y2rec2-y1rec2;
+            } else {
+                yr2=y2rec2;
+                hr2=y1rec2-y2rec2;
+            }
+            Rectangle2D sr2 = new Rectangle2D.Double(xr2, yr2, wr2, hr2);
+            int x1rec3=i.getSr3().getx1();
+            int x2rec3=i.getSr3().getx2();
+            int y1rec3=i.getSr3().gety1();
+            int y2rec3=i.getSr3().gety2();
+            int xr3;
+            int yr3;
+            int wr3;
+            int hr3;
+            if (x2rec3>x1rec3) {
+                xr3=x1rec3;
+                wr3=x2rec3-x1rec3;
+            } else {
+                xr3=x2rec3;
+                wr3=x1rec3-x2rec3;
+            }
+            if (y2rec3>y1rec3) {
+                yr3=y1rec3;
+                hr3=y2rec3-y1rec3;
+            } else {
+                yr3=y2rec3;
+                hr3=y1rec3-y2rec3;
+            }
+            Rectangle2D sr3 = new Rectangle2D.Double(xr3, yr3, wr3, hr3);
+            int x1rec4=i.getSr4().getx1();
+            int x2rec4=i.getSr4().getx2();
+            int y1rec4=i.getSr4().gety1();
+            int y2rec4=i.getSr4().gety2();
+            int xr4;
+            int yr4;
+            int wr4;
+            int hr4;
+            if (x2rec4>x1rec4) {
+                xr4=x1rec4;
+                wr4=x2rec4-x1rec4;
+            } else {
+                xr4=x2rec4;
+                wr4=x1rec4-x2rec4;
+            }
+            if (y2rec4>y1rec4) {
+                yr4=y1rec4;
+                hr4=y2rec4-y1rec4;
+            } else {
+                yr4=y2rec4;
+                hr4=y1rec4-y2rec4;
+            }
+            Rectangle2D sr4 = new Rectangle2D.Double(xr4, yr4, wr4, hr4);
+            if (sr1.contains((int)p2.getX(),(int)p2.getY())) {
                 try {at.invert();} catch (NoninvertibleTransformException grtg) {;} 
                 at.transform(new Point2D.Double(i.getXimg(), i.getYimg()), p);
                 i.contains1on();
             } else i.contains1off();
-            if (i.getSr2().contains((int)p2.getX(),(int)p2.getY())) {  
+            if (sr2.contains((int)p2.getX(),(int)p2.getY())) {
                 try {at.invert();} catch (NoninvertibleTransformException grtg) {;} 
                 at.transform(new Point2D.Double(i.getXimg()+i.getWidth(), i.getYimg()), p);
                 i.contains2on();
             } else i.contains2off();
-            if (i.getSr3().contains((int)p2.getX(),(int)p2.getY())) {   
+            if (sr3.contains((int)p2.getX(),(int)p2.getY())) {
                 try {at.invert();} catch (NoninvertibleTransformException grtg) {;} 
                 at.transform(new Point2D.Double(i.getXimg(), i.getYimg()+i.getHeight()), p);
                 i.contains3on();
             } else i.contains3off();
-            if (i.getSr4().contains((int)p2.getX(),(int)p2.getY())) {   
+            if (sr4.contains((int)p2.getX(),(int)p2.getY())) {
                 try {at.invert();} catch (NoninvertibleTransformException grtg) {;} 
                 at.transform(new Point2D.Double(i.getXimg()+i.getWidth(), i.getYimg()+i.getHeight()), p);
                 i.contains4on();
@@ -1591,22 +1769,31 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void removeRec(Rectangle r) {
         this.rectangles.remove(r);
     }
-    public ArrayList<Circle> getCircles() {
+    public ArrayList<draw.Circle> getCircles() {
         return this.circles;
     }
-    public void setCircles(ArrayList<Circle>  c) {
+    public void setCircles(ArrayList<draw.Circle>  c) {
         this.circles=c;
+    }
+    public void setTexts(ArrayList<draw.Text>  t) {
+        this.texts=t;
     }
     public void removeCircle(int i) {
         this.circles.remove(i);
     }
-    public void removeCircle(Circle c) {
+    public void removeCircle(draw.Circle c) {
         this.circles.remove(c);
     }
-    public ArrayList<ImageClass> getImageClasses() {
+    public void removeText(int i) {
+        this.texts.remove(i);
+    }
+    public void removeText(draw.Text t) {
+        this.texts.remove(t);
+    }
+    public ArrayList<draw.ImageClass> getImageClasses() {
         return this.imageClasses;
     }
-    public void setImageClasses(ArrayList<ImageClass> ic) {
+    public void setImageClasses(ArrayList<draw.ImageClass> ic) {
         this.imageClasses=ic;
     }
     public void setImage(Image i) {
@@ -1621,7 +1808,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public static void snapModeOff() {
         snapMode=false;
     }
-    public tInput getTextInput() {
+    public draw.tInput getTextInput() {
         return this.ti;
     }
     public static Timer getTimer() {
@@ -1636,4 +1823,5 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public static void gridModeOff() {
         gridMode=false;
     }
+    public ArrayList<Text> getTexts() { return this.texts; }
 }
