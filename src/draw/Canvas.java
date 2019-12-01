@@ -979,9 +979,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
         if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
             popup = true;
-            menu = new ImgPopup(this);
+            menu = new draw.ImgPopup(this);
             menu1 = new Popup();
-            for (ImageClass i : imageClasses) {
+            for (draw.ImageClass i : imageClasses) {
                 if (overImage(i)) {
                     noOfOvers++;
                     i.overImageOn();
@@ -989,7 +989,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     menu.show(e.getComponent(), e.getX(), e.getY());
                 } else i.overImageOff();
             }
-            for (ImageClass i : imageClasses) {
+            for (draw.ImageClass i : imageClasses) {
                 if (noOfOvers == 0) menu1.show(e.getComponent(), e.getX(), e.getY());
             }
             if (imageClasses.isEmpty()) menu1.show(e.getComponent(), e.getX(), e.getY());
@@ -1471,14 +1471,23 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     //CHECK WHETHER THE RIGHT MOUSECLICK IS OVER AN IMAGE
     public boolean overImage(draw.ImageClass imageClass) {
-        p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx,
+        /*p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx,
                 MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
 
         contour2 = new Rectangle2D.Double(imageClass.getXimg(), imageClass.getYimg(),
                 imageClass.getImage().getWidth(this), imageClass.getImage().getHeight(this));
-        contour666 = at.createTransformedShape(contour2);
+        contour666 = atinverted2.createTransformedShape(contour2);
 
-        if (contour666.contains(p)) return true;
+        if (contour666.contains(p)) {
+            return true;
+        }
+        return false;*/
+        selRec = new Rectangle2D.Double(xs, ys, ws, hs);
+        System.out.println(p);
+        contourSel = new Rectangle2D.Double(xrec, yrec, imageClass.getWidth(), imageClass.getHeight());
+        if (contourSel.contains(p.getX(), p.getY())) return true;
+        if (command("esc")) return false;
+        if (imageClass == null) return false;
         return false;
     }
 
@@ -1492,7 +1501,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 ImageIO.write(bufferedImage, "jpeg", new File(dir + "\\" + filename + ".jpeg"));
             else if (System.getProperty("os.name").toLowerCase().contains("linux"))
                 ImageIO.write(bufferedImage, "jpeg", new File(dir + "/" + filename + ".jpeg"));
-        } else Draw.setText("Error");
+        } else draw.Draw.setText("Error");
     }
 
     //IMPORT FILE
