@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.awt.Graphics;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Line implements Serializable {
     private int x1;
@@ -21,6 +22,9 @@ public class Line implements Serializable {
     private boolean contains2;
     private boolean copied;
     private boolean coloured;
+    private ArrayList<Rectangle2D> snapRecs=new ArrayList();
+    private boolean horizontal;
+    private ArrayList<Boolean> srContains=new ArrayList();
     
     public Line(int x1, int x2, int y1, int y2, Color c, boolean p) {
         this.x1=x1;
@@ -30,6 +34,16 @@ public class Line implements Serializable {
         this.c=c;
         this.ch=c;
         this.polyline=p;
+    }
+    public Line(int x1, int x2, int y1, int y2, Color c, boolean p, boolean h) {
+        this.x1=x1;
+        this.x2=x2;
+        this.y1=y1;
+        this.y2=y2;
+        this.c=c;
+        this.ch=c;
+        this.polyline=p;
+        this.horizontal=h;
     }
     public int getx1() {
         return this.x1;
@@ -128,4 +142,13 @@ public class Line implements Serializable {
     }
     public void setColoured() {this.coloured=true;}
     public boolean getColoured() {return this.coloured;}
+    public void addSnapRec(Rectangle2D r) {
+        this.snapRecs.add(r);
+        this.srContains.add(false);
+    }
+    public ArrayList<Rectangle2D> getSnapRecs() {return this.snapRecs;}
+    public boolean isHorizontal() {return this.horizontal;}
+    public void srContainsOn(int i) {this.srContains.set(i, true);}
+    public void srContainsOff(int i) {this.srContains.set(i, false);}
+    public boolean getSrContains(int i) {return this.srContains.get(i);}
 }

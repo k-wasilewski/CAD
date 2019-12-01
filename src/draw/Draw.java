@@ -43,8 +43,8 @@ public class Draw extends JFrame {
         javax.swing.JMenuItem menuItem5 = new javax.swing.JMenuItem();
         javax.swing.JMenuItem menuItem6 = new javax.swing.JMenuItem();
         menuItem4 = new javax.swing.JMenuItem();
-        index = new Index();
-        About about = new About();
+        index = new draw.Index();
+        draw.About about = new draw.About();
         javax.swing.JFileChooser jFileChooser1 = new javax.swing.JFileChooser();
         javax.swing.JFileChooser jFileChooser2 = new javax.swing.JFileChooser();
         javax.swing.JFileChooser jFileChooser3 = new javax.swing.JFileChooser();
@@ -150,11 +150,13 @@ public class Draw extends JFrame {
           if (button == jFileChooser3.APPROVE_OPTION) {
               canvas.setFilename(jFileChooser3.getSelectedFile().getName());
               canvas.setDir(jFileChooser3.getCurrentDirectory().toString());
-              FileInputStream myFileInputStream = new FileInputStream(canvas.getDir() +"/"+ canvas.getFilename());
-              ObjectInputStream myObjectInputStream = new ObjectInputStream(myFileInputStream); //add 2vars win/linux
+              String dirc="";
+              if (System.getProperty("os.name").toLowerCase().contains("win")) dirc="\\";
+              else if (System.getProperty("os.name").toLowerCase().contains("linux")) dirc="/";
+              FileInputStream myFileInputStream = new FileInputStream(canvas.getDir() +dirc+ canvas.getFilename());
+              ObjectInputStream myObjectInputStream = new ObjectInputStream(myFileInputStream);
               Cvs cvs=null;
-              try {cvs = (Cvs) myObjectInputStream.readObject();} catch (Exception cne) {jTextArea3.setText(cne.toString());}   //NulPointerException here !!!
-              if (cvs!=null&&cvs.getLines()!=null) canvas.setLines(cvs.getLines());
+              try {cvs = (Cvs) myObjectInputStream.readObject();} catch (Exception cne) {jTextArea3.setText(cne.toString());}
               if (cvs!=null&&cvs.getRectangles()!=null) canvas.setRectangles(cvs.getRectangles());
               if (cvs!=null&&cvs.getCircles()!=null) canvas.setCircles(cvs.getCircles());
               if (cvs!=null&&cvs.getImageClasses()!=null) canvas.setImageClasses(cvs.getImageClasses());
@@ -282,7 +284,7 @@ public class Draw extends JFrame {
       jTextArea3.setText(s);
   }
   public static void main(String[] args) {
-      System.setProperty("java.awt.headless", "true");
+    System.setProperty("java.awt.headless", "true");    //just in case f/ linux
     Draw sw = new Draw();
     sw.run(sw);
   }
