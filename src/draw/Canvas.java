@@ -211,12 +211,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     @Override
     @SuppressWarnings("empty-statement")
     public void actionPerformed(ActionEvent evt) {
+        //no zoom on gridMode
         if (gridMode) {
             zoomFactor = 1;
             prevZoomFactor = 1;
             xOffset = 1;
             yOffset = 1;
         }
+
         //zooming the coords dynamically
         if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
             p = new Point2D.Double(Math.round((MouseInfo.getPointerInfo().getLocation().x - 8 - screenx)),
@@ -239,7 +241,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             at = atinverted2;
         }
         atinverted.transform(p, p3);    //clean the Canvas code and structure it to methods/classes inside packets
-        xdyn = (int) p3.getX() + dx;    //add ctrl+z
+        xdyn = (int) p3.getX() + dx;    //add ctrl+z, ctrl+save, ctrl+open, ctrl+import
         ydyn = (int) p3.getY() + dy;
 
         if ((command("l") || command("pl")) && x1 != 0 && y1 != 0) {
@@ -307,7 +309,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g2 = (Graphics2D) g;
-        g.setColor(bCol);   //drawing image
+        g.setColor(bCol);
 
         //open image
         if (!imageClasses.isEmpty()) for (draw.ImageClass imageClass : imageClasses) {
@@ -315,7 +317,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 imageClass.setWidth(imageClass.getWidth());
                 imageClass.setHeight(imageClass.getHeight());
 
-                //intersection
+                //images marked on
                 if (imageSelection(imageClass)) {
                     imageClass.markedOn();
                     imageClass.getContour().setImageClass(imageClass);
@@ -332,7 +334,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             }
         }
 
-        //zoom
+        //zoom image
         at = new AffineTransform();
         xRel = MouseInfo.getPointerInfo().getLocation().getX() - getLocationOnScreen().getX();
         yRel = MouseInfo.getPointerInfo().getLocation().getY() - getLocationOnScreen().getY();
@@ -361,14 +363,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         g.setColor(bCol);
         g2.setBackground(bCol);
 
-        //snap localization
-        g2.setColor(dCol);
-        for (draw.Circle c : circles) {
-            if (c.getContains()) {
-                if (c.getContains() && snapMode) g2.draw(c.getSnapRec());
-            }
-        }
-
+        //grid snapRecs
         g.setColor(Color.BLACK);
         if (atSR == null || atSR != atinverted2) {
             try {
@@ -400,6 +395,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             }
         }
 
+        //circles snapRec
+        g2.setColor(dCol);
+        for (draw.Circle c : circles) {
+            if (c.getContains()) {
+                if (c.getContains() && snapMode) g2.draw(c.getSnapRec());
+            }
+        }
+
+        //images snapRecs
         for (draw.ImageClass i : imageClasses) {
             if (i.getContains1()) {
                 Rectangle r = i.getSr1();
@@ -487,17 +491,22 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 g.drawRect(xr, yr, wr, hr);
             }
         }
+
+        //lines snapRecs
         for (Line l : lines) {
             if (l.getContains1() && snapMode) g2.draw(l.getSr1());
             else if (l.getContains2() && snapMode) g2.draw(l.getSr2());
         }
 
+        //rectangles snapRecs
         for (Rectangle r : rectangles) {
             if (r.getContains1() && snapMode) g2.draw(r.getSr1());
             else if (r.getContains2() && snapMode) g2.draw(r.getSr2());
             else if (r.getContains3() && snapMode) g2.draw(r.getSr3());
             else if (r.getContains4() && snapMode) g2.draw(r.getSr4());
         }
+
+        //text snapRec
         for (Text t : texts) {
             if (t.getContains() && snapMode) g2.draw(t.getSr());
         }
@@ -506,7 +515,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         g.setColor(dCol);
         if (x1 != 0 && y1 != 0) g.drawLine(x1, y1, x2, y2);
         for (Line l : lines) {
-            //intersection
+            //line marked on
             if (l.getx1() != 0 && l.getx2() != 0 && lineSelection(l)) {
                 l.setCol(Color.GRAY);
                 l.markedOn();
@@ -524,21 +533,20 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             if (l.getx1() != 0 && l.gety1() != 0 && l.getx2() != 0 && l.gety2() != 0 && !l.isSelected())
                 g.drawLine(l.getx1(), l.gety1(), l.getx2(), l.gety2());
             else if (l.getx1() != 0 && l.gety1() != 0 && l.getx2() != 0 && l.gety2() != 0 && l.isSelected()) {
-                //intersection
+                //line bold
                 g2.setStroke(new BasicStroke(3));
                 g2.drawLine(l.getx1(), l.gety1(), l.getx2(), l.gety2());
                 g2.setStroke(new BasicStroke(1));
             }
         }
+
         //drawing not-zoomed grid
         g.setColor(Color.GRAY);
         if (atGrid == null || atGrid != atinverted) {
             try {
                 if (atSR != null) atGrid = atSR;
                 else atGrid = (AffineTransform) at.createInverse().clone();
-            } catch (NoninvertibleTransformException hugf) {
-            ;
-        }
+            } catch (NoninvertibleTransformException hugf) {;}
         }
         if (!gridLines.isEmpty()) for (Line l : gridLines) {
             pGrid1 = new Point2D.Double(l.getx1(), l.gety1());
@@ -559,6 +567,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             } catch (NoninvertibleTransformException trgt) {
             }
         }
+
         //drawing a rec dynamically
         if (x2r > x1r) {
             xr = x1r;
@@ -577,7 +586,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         g.setColor(dCol);
         if (xr != 0 && yr != 0) g.drawRect(xr, yr, wr, hr);
         if (!rectangles.isEmpty()) for (Rectangle r : rectangles) {
-            //intersection
+            //recs marked on
             if (r.getx1() != 0 && r.getx2() != 0 && recSelection(r)) {
                 r.setCol(Color.GRAY);
                 r.markedOn();
@@ -598,6 +607,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     r.setCol(dCol);
                 }
             }
+
             //drawing a rec statically
             g.setColor(r.getCol());
             x1rec = r.getx1();
@@ -622,16 +632,18 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             if (r.getx1() != 0 && r.gety1() != 0 && r.getx2() != 0 && r.gety2() != 0 && !r.isSelected())
                 g.drawRect(xr, yr, wr, hr);
             else if (r.getx1() != 0 && r.gety1() != 0 && r.getx2() != 0 && r.gety2() != 0 && r.isSelected()) {
+                //recs bold
                 g2.setStroke(new BasicStroke(3));
                 g2.drawRect(xr, yr, wr, hr);
                 g2.setStroke(new BasicStroke(1));
             }
         }
+
         //drawing a circle dynamically
         g.setColor(dCol);
         if (xo != 0 && yo != 0 && r != 0) g.drawOval(xo - r, yo - r, 2 * r, 2 * r);
-        for (Circle c : circles) {
-            //intersection
+        for (draw.Circle c : circles) {
+            //circles marked on
             if (c.getX() != 0 && c.getY() != 0 && circleSelection(c)) {
                 c.setCol(Color.GRAY);
                 c.markedOn();
@@ -649,6 +661,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             if (c.getX() != 0 && c.getY() != 0 && !c.isSelected())
                 g.drawOval(c.getX() - c.getR(), c.getY() - c.getR(), 2 * c.getR(), 2 * c.getR());
             else if (c.getX() != 0 && c.getY() != 0 && c.isSelected()) {
+                //circle bold
                 g2.setStroke(new BasicStroke(3));
                 g2.drawOval(c.getX() - c.getR(), c.getY() - c.getR(), 2 * c.getR(), 2 * c.getR());
                 g2.setStroke(new BasicStroke(1));
@@ -656,12 +669,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
 
         //unconditional timer
-            if (timer == null || (timer != null && !timer.isRunning())) {
-                timer = new Timer(1, this);
-                timer.setRepeats(true);
-                timer.start();
+         if (timer == null || (timer != null && !timer.isRunning())) {
+            timer = new Timer(1, this);
+            timer.setRepeats(true);
+            timer.start();
             }
 
+         //resetting input
         if ((!command("l")) && (!command("pl")) && (!command("c")) && (!command("dist")) && (!command("rec")))
             input = "null";
 
@@ -676,7 +690,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 g2.setColor(t.getCol());
                 g2.drawString(t.getText(), t.getx(), t.gety());
             } else if (t.isSelected()) {
-                //intersection
+                //text font bold
                 font = super.getFont();
                 g2.setColor(t.getCol());
                 g2.setFont(new Font("default", Font.BOLD, font.getSize()));
@@ -684,6 +698,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 g2.setFont(font);
                 repaint();
             }
+            //text marked on
             if (textSelection(t)) {
                 t.setCol(Color.GRAY);
                 t.markedOn();
@@ -699,7 +714,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
     }
 
-    //DRAWING COMMANDS
+    //COMMAND LINE
     public void commandLineInput(String s) {
         safelyRepaint();
         input = s;
@@ -807,8 +822,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             }
             for (Text t : texts) if (t.isSelected()) t.selectedOff();
             for (Rectangle r : rectangles) if (r.isSelected()) r.selectedOff();
-            for (Circle c : circles) if (c.isSelected()) c.selectedOff();
-            for (ImageClass i : imageClasses) if (i.isSelected()) i.selectedOff();
+            for (draw.Circle c : circles) if (c.isSelected()) c.selectedOff();
+            for (draw.ImageClass i : imageClasses) if (i.isSelected()) i.selectedOff();
             esc();
             safelyRepaint();
             repaint();
@@ -820,8 +835,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             repaint();
         } else if (command("l") || command("c") || command("dist") || command("rec") || command("pl")) {
         } else {
-            Draw.unknownOn();
-            Draw.setText("unknown command");
+            draw.Draw.unknownOn();
+            draw.Draw.setText("unknown command");
         }
         inputH = input;
         if (!drawing) safelyRepaint();
@@ -841,23 +856,26 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
     }
 
+    //MOUSE PRESSED
     @Override
     @SuppressWarnings("empty-statement")
     public void mousePressed(MouseEvent e) {
+        //left mouse button
         if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
+            //moving
             for (Line l : lines) {
                 if (l.isSelected() && (readyToMove)) moving = true;
             }
             for (Text t : texts) {
                 if (t.isSelected() && (readyToMove)) moving = true;
             }
-            for (ImageClass i : imageClasses) {
+            for (draw.ImageClass i : imageClasses) {
                 if (i.isSelected() && (readyToMove)) moving = true;
             }
             for (Rectangle r : rectangles) {
                 if (r.isSelected() && (readyToMove)) moving = true;
             }
-            for (Circle c : circles) {
+            for (draw.Circle c : circles) {
                 if (c.isSelected() && (readyToMove)) moving = true;
             }
             for (Line l : lines) {
@@ -866,19 +884,21 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             for (Text t : texts) {
                 if (t.isSelected() && (readyToCopy)) copying = true;
             }
-            for (ImageClass i : imageClasses) {
+            for (draw.ImageClass i : imageClasses) {
                 if (i.isSelected() && (readyToCopy)) copying = true;
             }
             for (Rectangle r : rectangles) {
                 if (r.isSelected() && (readyToCopy)) copying = true;
             }
-            for (Circle c : circles) {
+            for (draw.Circle c : circles) {
                 if (c.isSelected() && (readyToCopy)) copying = true;
             }
+            //drawing
             if ((command("l") || command("pl") || command("c") || command("dist") || command("rec") || moving || copying) && !drawing) {
                 if (!selection || (x1 != 0 && y1 != 0 && (command("l") || command("pl"))) || (xo != 0 && yo != 0 && command("c")) ||
                         (xd != 0 && yd != 0 && command("dist")) || (x1r != 0 && y1r != 0 && command("rec") || moving || copying))
                     drawing = true;
+                //point A
                 if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0) {
                     pa = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx, MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
                     p2 = new Point2D.Double();
@@ -888,9 +908,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                         ;
                     }
                     at.transform(pa, p2);
-                    drawA((int) p2.getX(), (int) p2.getY());
+                    drawA((int) p2.getX(), (int) p2.getY());    //method point A
                 }
             } else if (command("null") && !selection && !moving && !copying && !readyToInputText && !drawing) {
+                //selection rec
                 if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
                     p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx, MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
                 p1sel = new Point2D.Double();
@@ -905,6 +926,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 safelyRepaint();
                 return;
             } else if (drawing) {
+                //point B
                 if (!command("pl")) drawing = false;
                 if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
                     pb = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x, MouseInfo.getPointerInfo().getLocation().y);
@@ -915,9 +937,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     ;
                 }
                 at.transform(pb, p3);
-                drawB((int) p3.getX(), (int) p3.getY());
+                drawB((int) p3.getX(), (int) p3.getY());    //method point B
             }
             if (command("null") && selection) {
+                //selecting (when marked)
                 selection = false;
                 for (draw.ImageClass i : imageClasses) {
                     if (i.isMarked()) i.selectedOn();
@@ -943,7 +966,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 ws = 0;
                 hs = 0;
             }
-            if (readyToInputText) { //show text input window
+            if (readyToInputText) {
+                //show text input window
                 pa = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - screenx,
                         MouseInfo.getPointerInfo().getLocation().y - screeny);
                 p2 = new Point2D.Double();
@@ -961,8 +985,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 ti.setVisible(true);
             }
         }
+        //scroll mouse button
         if ((e.getModifiers() & InputEvent.BUTTON2_MASK) != 0) {
             if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
+                //moving thru canvas
                 p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x,
                         MouseInfo.getPointerInfo().getLocation().y);
             p1s = new Point2D.Double();
@@ -977,10 +1003,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             movingC = true;
             repaint();
         }
+        //right mouse button
         if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
             popup = true;
             menu = new draw.ImgPopup(this);
             menu1 = new Popup();
+            //ImgPopup (move to front/back)
             for (draw.ImageClass i : imageClasses) {
                 if (overImage(i)) {
                     noOfOvers++;
@@ -989,6 +1017,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     menu.show(e.getComponent(), e.getX(), e.getY());
                 } else i.overImageOff();
             }
+            //Popup (right mouseclick menu)
             for (draw.ImageClass i : imageClasses) {
                 if (noOfOvers == 0) menu1.show(e.getComponent(), e.getX(), e.getY());
             }
@@ -1018,7 +1047,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     }
 
-    //CHECK WHETHER THE COMMAND IS S
+    //CHECK WHETHER THE COMMAND IS s
     public boolean command(String s) {
         boolean active = false;
         Pattern p1 = Pattern.compile("\n" + s);
@@ -1029,7 +1058,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         return active;
     }
 
-    //FIRST MOUSECLICK
+    //FIRST MOUSECLICK (draw point A)
     public void drawA(int x, int y) {
         if (x != 0 && y != 0) {
             if (command("l") || command("pl")) {
@@ -1055,12 +1084,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
     }
 
-    //SECOND MOUSECLICK
+    //SECOND MOUSECLICK (draw point B)
     public void drawB(int x, int y) {
+        //adding drawn objects to lists
         if (x1 != 0 && x2 != 0 && !command("pl")) lines.add(new Line(x1, x2, y1, y2, dCol, false));
         else if (x1 != 0 && x2 != 0 && command("pl")) lines.add(new Line(x1, x2, y1, y2, dCol, true));
         if (x1r != 0 && x2r != 0) rectangles.add(new Rectangle(x1r, x2r, y1r, y2r, dCol));
-        if (xo != 0 && yo != 0) circles.add(new Circle(xo, yo, r, dCol));
+        if (xo != 0 && yo != 0) circles.add(new draw.Circle(xo, yo, r, dCol));
 
         if (x != 0 && y != 0) {
             if (command("l") || command("pl")) {
@@ -1103,19 +1133,18 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void moveC() {
         pas = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x,
                 MouseInfo.getPointerInfo().getLocation().y);
-
         pbs = new Point2D.Double();
         atinverted.transform(pas, pbs);
         //------------------
         x2s = (int) pbs.getX();
         y2s = (int) pbs.getY();
 
-        boolean dif = (x2s != x2sh || y2s != y2sh);
+        boolean dif = (x2s != x2sh || y2s != y2sh); //if canvas moved
 
         dx = x2s - x1s;
         dy = y1s - y2s;
 
-        //dynamic moving
+        //dynamic drawing (while drawing)
         if (command("l") || (command("pl"))) {
             x1 += dx;
             y1 -= dy;
@@ -1170,7 +1199,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
     }
 
-    //MOVING SELECTED DRAWN OBJECTS
+    //MOVING SELECTED DRAWN OBJECTS (command "m")
     public void move() {
         pam = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx,
                 MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
@@ -1178,7 +1207,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         atinverted.transform(pam, pbm);
         x2m = (int) pbm.getX();
         y2m = (int) pbm.getY();
-        boolean dif = x2m != x2mh || y2m != y2mh;
+        boolean dif = x2m != x2mh || y2m != y2mh;   //if object was moved
 
         dxm = x2m - x1m;
         dym = y1m - y2m;
@@ -1198,7 +1227,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     t.sety(t.gety() - dym);
                 }
             }
-            for (Circle c : circles) {
+            for (draw.Circle c : circles) {
                 if (c.isSelected()) {
                     c.setX(c.getX() + dxm);
                     c.setY(c.getY() - dym);
@@ -1234,11 +1263,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         atinverted.transform(pac, pbc);
         x2c = (int) pbc.getX();
         y2c = (int) pbc.getY();
-        boolean dif = x2c != x2ch || y2c != y2ch;
+        boolean dif = x2c != x2ch || y2c != y2ch;   //if copied object was moved
 
         dxc = x2c - x1c;
         dyc = y1c - y2c;
 
+        //object-to-copy lists
         linesToCopy = new ArrayList();
         circlesToCopy = new ArrayList();
         imagesToCopy = new ArrayList();
@@ -1408,7 +1438,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             selRec = new Rectangle2D.Double(xs, ys, ws, hs);
             r2d = new Rectangle2D.Double(x0r, y0r, w0r, h0r);
 
-            //contours' intersection condition
+            //contour's intersection condition
             for (xrec = r2d.getMinX(); xrec <= r2d.getMaxX(); xrec++) {
                 if (selRec.contains(xrec, r2d.getMinY()) || selRec.contains(xrec, r2d.getMaxY())) intersection1 = true;
             }
@@ -1421,7 +1451,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     }
 
     //CHECK WHETHER THE SELECTION REC AND DRAWN CIRCLE INTERSECT
-    public boolean circleSelection(Circle c) {
+    public boolean circleSelection(draw.Circle c) {
         intersection1 = false;
         intersection2 = false;
         if (xs != 0 && ys != 0 && ws != 0 && hs != 0 && c.getX() != 0 && c.getY() != 0 && c.getR() != 0) {
@@ -1457,7 +1487,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             selRec = new Rectangle2D.Double(xs, ys, ws, hs);
             contourSel = new Rectangle2D.Double(xrec, yrec, imageClass.getWidth(), imageClass.getHeight());
 
-            //contours' intersection condition
+            //contour's intersection condition
             for (xcont = contourSel.getMinX(); xcont <= contourSel.getMaxX(); xcont++) {
                 for (ycont = contourSel.getMinY(); ycont <= contourSel.getMaxY(); ycont++) {
                     if (selRec.contains(xcont + imageClass.getXimg(), ycont + imageClass.getYimg())) return true;
@@ -1471,21 +1501,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     //CHECK WHETHER THE RIGHT MOUSECLICK IS OVER AN IMAGE
     public boolean overImage(draw.ImageClass imageClass) {
-        /*p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx,
-                MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
-
-        contour2 = new Rectangle2D.Double(imageClass.getXimg(), imageClass.getYimg(),
-                imageClass.getImage().getWidth(this), imageClass.getImage().getHeight(this));
-        contour666 = atinverted2.createTransformedShape(contour2);
-
-        if (contour666.contains(p)) {
-            return true;
-        }
-        return false;*/
         selRec = new Rectangle2D.Double(xs, ys, ws, hs);
-        System.out.println(p);
-        contourSel = new Rectangle2D.Double(xrec, yrec, imageClass.getWidth(), imageClass.getHeight());
-        if (contourSel.contains(p.getX(), p.getY())) return true;
+        contourSel = new Rectangle2D.Double(imageClass.getX(), imageClass.getY(), imageClass.getWidth(), imageClass.getHeight());
+        Shape newContourSel=atinverted2.createTransformedShape(contourSel);
+        if (newContourSel.contains(p.getX(), p.getY())) return true;
         if (command("esc")) return false;
         if (imageClass == null) return false;
         return false;
@@ -1512,7 +1531,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         else if (System.getProperty("os.name").toLowerCase().contains("win"))
             img = ImageIO.read(new File(dir + "\\" + filename));
         contour = new Rectangle(ximg - 2, ximg + img.getWidth(this) + 1, yimg - 2, yimg + img.getHeight(this) + 1, dCol);
-        imageClass = new ImageClass(image, img, ximg, yimg, contour, bCol);
+        imageClass = new draw.ImageClass(image, img, ximg, yimg, contour, bCol);
         contour.setImageClass(imageClass);  //drawing contour
         imageClasses.add(imageClass);
         safelyRepaint();
@@ -1532,7 +1551,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             l.setCol(l.getCol());
             l.selectedOff();
         }
-        for (Circle c : circles) {
+        for (draw.Circle c : circles) {
             c.setCol(c.getCol());
             c.markedOff();
             c.selectedOff();
@@ -1573,12 +1592,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             for (Line l : gridLines) {
                 if (l.isHorizontal()) {
                     for (int i = 0; i < this.getWidth()/gridSize+2; i++) {
-                        if (!gridSRadded) l.addSnapRec(new Rectangle2D.Double(l.getx1()+offset-18, l.gety1()-8, 16, 16));      //grid SRs geom !!!
+                        //grid snapRecs geometry
+                        if (!gridSRadded) l.addSnapRec(new Rectangle2D.Double(l.getx1()+offset-18, l.gety1()-8, 16, 16));
                         offset += gridSize;
                     }
                 }
                 offset=0;
 
+                //if snapRec contains mousePointer
                 if (!l.getSnapRecs().isEmpty()) for (Rectangle2D sr : l.getSnapRecs()) {
                     if (sr.contains((int) p.getX(), (int) p.getY())) {
                         xsnap = (int) sr.getCenterX();
@@ -1596,6 +1617,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             gridSRadded=true;
         }
         try {
+            //actual mousePointer-moving
             robot = new Robot();
             if (pSnap.getX() != 0 && pSnap.getY() != 0 && snapToGridMode && !snapExecuted) {
                 robot.mouseMove((int) pSnap.getX() + 7 + screenx, (int) pSnap.getY() + 53 + screeny);   //moves to actual mouse position itself !!
@@ -1613,12 +1635,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     //SNAP MODE
     public void snap() {
+        //zooming
         p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 7 - screenx,
                 MouseInfo.getPointerInfo().getLocation().y - 53 - screeny);
         p2 = new Point2D.Double();
         pSnap=new Point2D.Double();
         at.transform(p, p2);
 
+        //circles
         for (draw.Circle c : circles) {
             c.setSr(new Rectangle2D.Double(c.getX() - 8, c.getY() - 8, 16, 16));
             if (c.getSnapRec().contains((int) p2.getX(), (int) p2.getY())) {
@@ -1633,6 +1657,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 c.containsOn();
             } else c.containsOff();
         }
+
+        //texts
         for (Text t : texts) {
             t.setSr(new Rectangle2D.Double(t.getx() - 8, t.gety() - 8, 16, 16));
             if (t.getSr().contains((int) p2.getX(), (int) p2.getY())) {
@@ -1647,6 +1673,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 t.containsOn();
             } else t.containsOff();
         }
+
+        //images snapRec1-snapRec4
         for (draw.ImageClass i : imageClasses) {
             i.updatesnapRecs();
 
@@ -1741,6 +1769,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 yr4 = y2rec4;
                 hr4 = y1rec4 - y2rec4;
             }
+
+            //conditions 'snapRec contains'
             Rectangle2D sr4 = new Rectangle2D.Double(xr4, yr4, wr4, hr4);
             if (sr1.contains((int) p2.getX(), (int) p2.getY())) {
                 try {
@@ -1779,6 +1809,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 i.contains4on();
             } else i.contains4off();
         }
+
+        //lines SnapRec1, 2
         for (Line l : lines) {
             l.setSr1(new Rectangle2D.Double(l.getx1() - 8, l.gety1() - 8, 16, 16));
             if (l.getSr1().contains((int) p2.getX(), (int) p2.getY())) {
@@ -1805,6 +1837,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 l.contains2on();
             } else l.contains2off();
         }
+
+        //rectangles snapRec1-snapRec4
         for (Rectangle r : rectangles) {
             r.setSr1(new Rectangle2D.Double(r.getx1() - 8, r.gety1() - 8, 16, 16));
             if (r.getSr1().contains((int) p2.getX(), (int) p2.getY())) {
@@ -1856,6 +1890,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             } else r.contains4off();
         }
 
+        //actual mousePointer-moving
         try {
             robot = new Robot();
             if (pSnap.getX() != 0 && pSnap.getY() != 0 && snapMode && !snapExecuted) {
@@ -1872,12 +1907,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
     }
 
+    //to be able to exit the snapMode
     public void waittt() throws InterruptedException {
         Thread.sleep(10);
         xsnap=0;
         ysnap=0;
         snapExecuted=false;
     }
+
+    //drawing grid as lines
     public void grid() {
         gridX = -20;
         gridY = -20;
@@ -1897,6 +1935,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
         repaint();
     }
+
+    //getters and setters
     public void popupOff() {
         this.popup=false;
     }

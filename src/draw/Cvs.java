@@ -3,6 +3,7 @@ package draw;
 import java.util.ArrayList;
 import java.io.Serializable;
 
+//serializing drawn objects thru Cvs class
 public class Cvs implements Serializable {
     private ArrayList<Line> lines;
     private ArrayList<draw.Circle> circles;
@@ -11,6 +12,7 @@ public class Cvs implements Serializable {
     private ArrayList<Text> texts;
     private int n;
 
+    //constructor
     public Cvs(ArrayList<Line> lines, ArrayList<draw.Circle> circles, ArrayList<Rectangle> rectangles,
                ArrayList<draw.ImageClass> imageClasses, ArrayList<Text> texts) {
         this.lines = lines;
@@ -19,6 +21,8 @@ public class Cvs implements Serializable {
         this.imageClasses = imageClasses;
         this.texts = texts;
     }
+
+    //getters and setters
     public ArrayList<Line> getLines() {
         return this.lines;
     }

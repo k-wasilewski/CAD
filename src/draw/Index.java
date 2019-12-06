@@ -115,7 +115,7 @@ public class Index extends javax.swing.JFrame {
 
         jLabel26.setText("move  mousewheel - zoom in / out;");
 
-        jLabel25.setText("CTRL+S - save file;");
+        jLabel25.setText("CTRL+E - export file;");
 
         jLabel27.setText("regen - regenerating the canvas for");
 

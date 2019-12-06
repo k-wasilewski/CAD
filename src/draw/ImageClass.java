@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package draw;
 
 import javax.imageio.ImageIO;
@@ -16,14 +11,9 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.io.Serializable;
 
-
-/**
- *
- * @author lenovo
- */
 public class ImageClass extends JPanel implements Serializable, ImageObserver {
-    private transient java.awt.Image image; //Image is not serializable !!!
-    private transient java.awt.image.BufferedImage img; //BufferedImage is not serializable !!!
+    private transient java.awt.Image image;
+    private transient java.awt.image.BufferedImage img;
     private int ximg=0;
     private int yimg=0;
     private Rectangle contour;
@@ -31,8 +21,8 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
     private boolean marked;
     private int width;
     private int height;
-    private transient BufferedImage imgcont;  //BufferedImage is not serializable !!!
-    private transient Graphics graphics;  //Graphics is not serializable !!!
+    private transient BufferedImage imgcont;
+    private transient Graphics graphics;
     private int xr;
     private int yr;
     private int wr;
@@ -51,11 +41,8 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
     private boolean overImage;
     private boolean copied;
     private ImageIcon ii;
-
-    public boolean imageUpdate(Image i, int a, int b, int c, int d, int e) {return true;}
     
     public ImageClass(java.awt.Image image, BufferedImage img, int ximg, int yimg, Rectangle contour, Color col) {
-        System.out.println("ImageClass constructed");//reter
         this.image=image;
         this.img=img;
         this.ximg=ximg;
@@ -64,12 +51,9 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         this.col=col;
         if (ii!=null) width=ii.getIconWidth(); else width=img.getWidth();
         if (ii!=null) height=ii.getIconHeight(); else height=img.getHeight();
-        System.out.println("dimensions:"+width+", "+height);
-        System.out.println("location:"+this.ximg+", "+this.yimg);
         snapRecs=new ArrayList();
         
-        //snap
-        //snapRec1 = new Rectangle2D.Double(this.ximg-8, this.yimg-8, 16, 16);
+        //snapRecs
         snapRec1 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK);
         snapRec2 = new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK);
         snapRec3 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK);
@@ -78,60 +62,50 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         snapRecs.add(snapRec2);
         snapRecs.add(snapRec3);
         snapRecs.add(snapRec4);
-        
-        int x1rec=contour.getx1();
-        int x2rec=contour.getx2();
-        int y1rec=contour.gety1();
-        int y2rec=contour.gety2();
 
-            if (x2rec>x1rec) {
-                xr=x1rec;
-                wr=x2rec-x1rec;
-            } else { 
-                xr=x2rec;
-                wr=x1rec-x2rec;
-            }
-            if (y2rec>y1rec) {
-                yr=y1rec;
-                hr=y2rec-y1rec;
-            } else {
-                yr=y2rec;
-                hr=y1rec-y2rec;
-            }
-            
+        //image and contour on the same layer
         imgcont=new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         paint();
     }
-    public void updatesnapRecs() {//update ximg and yimg in snapRecs
+
+    //update ximg and yimg in snapRecs
+    public void updatesnapRecs() {
         snapRecs.set(0, new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK));
         snapRecs.set(1, new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK));
         snapRecs.set(2, new Rectangle(this.ximg-8, this.ximg+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK));
         snapRecs.set(3, new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK));
     }
+
+    //paint the image and its contour on BufferedImage
     public void paint() {
         graphics=imgcont.createGraphics();
-        if (ii!=null) ii.paintIcon(null, graphics, 0, 0);   //HERE causes not-drawing-altogether
-        //graphics.setBackground(col);
+        if (ii!=null) ii.paintIcon(null, graphics, 0, 0);
+        //draw image
         graphics.drawImage(img, 0, 0, null);
+        //draw marked-on contour
         if (marked) {
             graphics.setColor(Color.GRAY);
             graphics.drawRect(0, 0, width-1, height-1);
+        //draw contour
         } else {
             graphics.setColor(Color.BLACK);
         }
+        //draw bold contour
         if (selected) {
             graphics.setColor(Color.BLACK);
-            //graphics.setStroke(new BasicStroke(3));
             graphics.drawRect(0, 0, width-1, height-1);
             graphics.drawRect(+1, +1, width-3, height-3);
             graphics.drawRect(+2, +2, width-5, height-5);
-            //graphics.setStroke(new BasicStroke(1));
         }
     }
+
+    //when reading serialized file - converting ImageIcon to BufferedImage
     public void iiToBuffImg(ImageIcon ii) {
         imgcont=new BufferedImage(ii.getIconWidth(), ii.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
         paint();
     }
+
+    //getters and setters
     public java.awt.Image getImage() {
         return this.image;
     }
@@ -186,7 +160,9 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
     public Rectangle getSr1() {
         return this.snapRecs.get(0);
     }
-    public Rectangle getSr2() { return this.snapRecs.get(1); }
+    public Rectangle getSr2() {
+        return this.snapRecs.get(1);
+    }
     public Rectangle getSr3() {
         return this.snapRecs.get(2);
     }
@@ -259,13 +235,13 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
     //SERIALIZATION
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();   //all non-transient fields
-        out.writeObject(new ImageIcon(imgcont));    //custom ser
+        out.writeObject(new ImageIcon(imgcont));    //custom serialization BufferedImage (imgCont) -> ImageIcon
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        ii = (ImageIcon) in.readObject();
-        iiToBuffImg(ii);
+        in.defaultReadObject(); //all non-transient fields
+        ii = (ImageIcon) in.readObject();   //...
+        iiToBuffImg(ii);    //custom deserialization ImageIcon -> BufferedImage (imgCont)
         }
     }
 

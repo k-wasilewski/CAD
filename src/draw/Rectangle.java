@@ -13,7 +13,7 @@ public class Rectangle implements Serializable {
     private Color ch;
     private boolean marked;
     private boolean selected=false;
-    private ImageClass imageClass=null;
+    private draw.ImageClass imageClass=null;
     private Rectangle2D snapRec1;
     private Rectangle2D snapRec2;
     private Rectangle2D snapRec3;
@@ -24,7 +24,8 @@ public class Rectangle implements Serializable {
     private boolean contains4;
     private boolean copied;
     private boolean coloured;
-    
+
+    //constructor
     public Rectangle(int x1, int x2, int y1, int y2, Color c) {
         this.x1r=x1;
         this.x2r=x2;
@@ -33,6 +34,8 @@ public class Rectangle implements Serializable {
         this.c=c;
         this.ch=c;
     }
+
+    //getters and setters
     public int getx1() {
         return this.x1r;
     }

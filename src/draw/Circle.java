@@ -16,7 +16,8 @@ public class Circle implements Serializable {
     private boolean contains;
     private boolean copied;
     private boolean coloured;
-    
+
+    //constructor
     public Circle(int x, int y, int r, Color c) {
         this.x=x;
         this.y=y;
@@ -24,6 +25,8 @@ public class Circle implements Serializable {
         this.c=c;
         this.ch=c;
     }
+
+    //getters and setters
     public int getX() {
         return x;
     }

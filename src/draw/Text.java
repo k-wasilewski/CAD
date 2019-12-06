@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package draw;
 
-/**
- *
- * @author lenovo
- */
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
@@ -24,13 +15,16 @@ public class Text implements Serializable {
     private Rectangle2D snapRec;
     private boolean contains;
     private boolean copied;
-    
+
+    //constructor
     public Text(String t, int x, int y, Color c) {
         this.txt=t;
         this.x=x;
         this.y=y;
         this.c=c;
     }
+
+    //getters and setters
     public int getx() {
         return this.x;
     }

@@ -3,7 +3,7 @@ package draw;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-
+//*.cvs extension
 public class CvsExt extends FileFilter
 {
     private String type;
