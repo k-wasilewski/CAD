@@ -183,7 +183,7 @@ public class Draw extends JFrame {
                   Cvs cvs = null;
                   try {
                       cvs = (Cvs) myObjectInputStream.readObject();
-                  } catch (Exception cne) {git
+                  } catch (Exception cne) {
                       jTextArea3.setText(cne.toString());
                   }
                   if (cvs != null && cvs.getLines() != null) canvas.setLines(cvs.getLines());
@@ -201,7 +201,6 @@ public class Draw extends JFrame {
               if (button == jFileChooser1.CANCEL_OPTION) {
                   jFileChooser1.setVisible(false);
               }
-              System.out.println(canvas.getLines());
           }
       });
 
