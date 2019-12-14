@@ -64,14 +64,20 @@ public class Draw extends JFrame {
       help.add(menuItem2);
       menuItem3.setText("Save");
       file.add(menuItem3);
+      menuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
+              java.awt.event.InputEvent.CTRL_MASK));
       menuItem6.setText("Open");
       file.add(menuItem6);
+      menuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O,
+              java.awt.event.InputEvent.CTRL_MASK));
       menuItem4.setText("Export");
       file.add(menuItem4);
       menuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E,
               java.awt.event.InputEvent.CTRL_MASK));
       menuItem5.setText("Import");
       file.add(menuItem5);
+      menuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I,
+              java.awt.event.InputEvent.CTRL_MASK));
 
       //index
       menuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -159,7 +165,7 @@ public class Draw extends JFrame {
               try {
                   menuItem6ActionPerformed(evt);
               } catch (IOException ioe) {
-                  ;
+                  jTextArea3.setText(ioe.toString());
               }
           }
 
@@ -177,9 +183,10 @@ public class Draw extends JFrame {
                   Cvs cvs = null;
                   try {
                       cvs = (Cvs) myObjectInputStream.readObject();
-                  } catch (Exception cne) {
+                  } catch (Exception cne) {git
                       jTextArea3.setText(cne.toString());
                   }
+                  if (cvs != null && cvs.getLines() != null) canvas.setLines(cvs.getLines());
                   if (cvs != null && cvs.getRectangles() != null) canvas.setRectangles(cvs.getRectangles());
                   if (cvs != null && cvs.getCircles() != null) canvas.setCircles(cvs.getCircles());
                   if (cvs != null && cvs.getImageClasses() != null) canvas.setImageClasses(cvs.getImageClasses());
@@ -194,6 +201,7 @@ public class Draw extends JFrame {
               if (button == jFileChooser1.CANCEL_OPTION) {
                   jFileChooser1.setVisible(false);
               }
+              System.out.println(canvas.getLines());
           }
       });
 
