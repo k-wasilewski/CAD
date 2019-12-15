@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-X-COMMENT: Main-Class will be added automatically by build
+X-COMMENT: Main-Class will be added automatically by build r
 Main-Class: draw.Draw
 Class-Path: /home/kuba/Desktop/pojos/CAD/src
 
