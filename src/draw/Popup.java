@@ -1,7 +1,7 @@
-package draw;
 import javax.swing.*;
 
 //RIGHT MOUSEBUTTON MENU
+@SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal", "CanBeFinal", "unused"})
 public class Popup extends JPopupMenu {
     private JMenuItem snap;
     private JMenuItem snapToGrid;
@@ -18,21 +18,9 @@ public class Popup extends JPopupMenu {
         add(snap);
         add(grid);
         add(snapToGrid);
-        snap.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                snapActionPerformed(evt);
-            }
-        });
-        grid.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                gridActionPerformed(evt);
-            }
-        });
-        snapToGrid.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                snapToGridActionPerformed(evt);
-            }
-        });
+        snap.addActionListener(this::snapActionPerformed);
+        grid.addActionListener(this::gridActionPerformed);
+        snapToGrid.addActionListener(this::snapToGridActionPerformed);
     }
     
     private void snapActionPerformed(java.awt.event.ActionEvent evt) {
@@ -43,20 +31,21 @@ public class Popup extends JPopupMenu {
     }
     private void gridActionPerformed(java.awt.event.ActionEvent evt) {
         if (!Canvas.isGridMode()) {
-            gi = new draw.gInput();
+            gi = new gInput();
+            //noinspection RedundantCast,RedundantCast
             gi.setLocation((int)200, (int)200);
             gi.setVisible(true);
         }
         else Canvas.gridModeOff();
     }
     private void snapToGridActionPerformed(java.awt.event.ActionEvent evt) {
-        if (!draw.Canvas.isSnapToGridMode()) {
-            draw.Canvas.snapToGridOn();
-            if (draw.Canvas.getSRadded()==true) draw.Canvas.setSRfalse();
+        if (!Canvas.isSnapToGridMode()) {
+            Canvas.snapToGridOn();
+            if (Canvas.getSRadded()) Canvas.setSRfalse();
         }
         else {
-            draw.Canvas.setSRfalse();
-            draw.Canvas.snapToGridOff();
+            Canvas.setSRfalse();
+            Canvas.snapToGridOff();
         }
     }
 }

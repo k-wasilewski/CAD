@@ -1,31 +1,27 @@
-package draw;
-
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
+@SuppressWarnings({"SpellCheckingInspection", "deprecation", "unchecked", "AccessStaticViaInstance", "CanBeFinal", "RedundantThrows", "unused", "rawtypes"})
 public class Draw extends JFrame {
   private Canvas canvas;
   private static boolean unknown;
   private static javax.swing.JTextArea jTextArea3;
-  private boolean export;
+  private boolean ctrl;
+  @SuppressWarnings("FieldCanBeLocal")
   private javax.swing.JMenuItem menuItem4;
   private ArrayList<Line> linesToDelete;
-  private ArrayList<draw.Circle> circlesToDelete;
+  private ArrayList<Circle> circlesToDelete;
   private ArrayList<Rectangle> rectanglesToDelete;
   private ArrayList<Text> textsToDelete;
-  private ArrayList<draw.ImageClass> toDelete;
-  private ArrayList<draw.ImageClass> imageClasses;
-  private static draw.Index index;
+  private ArrayList<ImageClass> toDelete;
+  private ArrayList<ImageClass> imageClasses;
+  private static Index index;
 
   public void run(JFrame f) {
-      SwingUtilities.invokeLater(new Runnable() {
-          public void run() {f.setVisible(true);}
-      });
+      SwingUtilities.invokeLater(() -> f.setVisible(true));
   }
   public Draw() {
       canvas = new Canvas();
@@ -46,8 +42,8 @@ public class Draw extends JFrame {
       javax.swing.JMenuItem menuItem6 = new javax.swing.JMenuItem();
       menuItem4 = new javax.swing.JMenuItem();
       //Index and About windows
-      index = new draw.Index();
-      draw.About about = new draw.About();
+      index = new Index();
+      About about = new About();
       //save/export, import, open fileChoosers
       javax.swing.JFileChooser jFileChooser1 = new javax.swing.JFileChooser();
       javax.swing.JFileChooser jFileChooser2 = new javax.swing.JFileChooser();
@@ -126,7 +122,7 @@ public class Draw extends JFrame {
               else if (System.getProperty("os.name").toLowerCase().contains("linux")) dirc = "/";
               FileOutputStream myFileOutputStream = new FileOutputStream(canvas.getDir() + dirc + canvas.getFilename() + ".cvs");
               ObjectOutputStream myObjectOutputStream = new ObjectOutputStream(myFileOutputStream);
-              myObjectOutputStream.writeObject(new draw.Cvs(canvas.getLines(), canvas.getCircles(), canvas.getRectangles(),
+              myObjectOutputStream.writeObject(new Cvs(canvas.getLines(), canvas.getCircles(), canvas.getRectangles(),
                       canvas.getImageClasses(), canvas.getTexts()));
               myObjectOutputStream.close();
           }
@@ -137,8 +133,7 @@ public class Draw extends JFrame {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
               try {
                   menuItem5ActionPerformed(evt);
-              } catch (IOException ioe) {
-                  ;
+              } catch (IOException ignored) {
               }
           }
 
@@ -229,9 +224,14 @@ public class Draw extends JFrame {
 
       //KEYBOARD INPUT
       jTextArea3.addKeyListener(new KeyListener() {
+          @SuppressWarnings("RedundantCast")
           public void keyPressed(KeyEvent e) {
               if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                   //command line input
+                  if (canvas.command("pl")) {
+                      canvas.commandLineInput("null");
+                      canvas.setPlindex(canvas.getPlindex()+1);
+                  }
                   try {
                       canvas.commandLineInput(jTextArea3.getText());
                   } catch (NullPointerException npe) {
@@ -279,11 +279,12 @@ public class Draw extends JFrame {
                       if (imageClass.isSelected()) toDelete.add(imageClass);
                   for (ImageClass imageClass : toDelete) {
                       imageClasses.remove(imageClass);
+                      //noinspection UnusedAssignment
                       imageClass = null;
                   }
                   canvas.setImage(null);
                   canvas.repaint();
-              } else if (e.getKeyCode() == KeyEvent.VK_CONTROL) export = true;
+              } else if (e.getKeyCode() == KeyEvent.VK_CONTROL) ctrl = true;
               canvas.repaint();
           }
 
@@ -291,14 +292,14 @@ public class Draw extends JFrame {
           }
 
           public void keyReleased(KeyEvent e) {
-              //export
-              if (e.getKeyCode() == KeyEvent.VK_E && export) {
+              //ctrl+z
+              if (e.getKeyCode() == KeyEvent.VK_Z && ctrl) {
                   try {
-                      canvas.export();
+                      canvas.revCmd();
                   } catch (Exception ex) {
                       jTextArea3.setText("Error");
                   }
-              } else if (e.getKeyCode() == KeyEvent.VK_CONTROL) export = false;
+              } else if (e.getKeyCode() == KeyEvent.VK_CONTROL) ctrl = false;
           }
       });
 

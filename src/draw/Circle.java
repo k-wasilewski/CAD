@@ -1,14 +1,14 @@
-package draw;
-
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
+@SuppressWarnings("unused")
 public class Circle implements Serializable {
     private int x;
     private int y;
     private int r;
     private Color c;
+    @SuppressWarnings("CanBeFinal")
     private Color ch;
     private boolean marked;
     private boolean selected=false;

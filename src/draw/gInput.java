@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package draw;
-
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+@SuppressWarnings("DuplicatedCode")
 public class gInput extends javax.swing.JFrame implements KeyListener {
 
     public gInput() {
@@ -22,9 +17,9 @@ public class gInput extends javax.swing.JFrame implements KeyListener {
             if (this.isVisible()) this.dispose();
         }
         if(e.getKeyCode() == KeyEvent.VK_ENTER){
-            draw.Canvas.setGrid(Integer.parseInt(jTextField1.getText()));
-            draw.Canvas.getTimer().start();  //setting size grid
-            draw.Canvas.gridModeOn();
+            Canvas.setGrid(Integer.parseInt(jTextField1.getText()));
+            Canvas.getTimer().start();  //setting size grid
+            Canvas.gridModeOn();
             this.dispose();
         }
     }
@@ -33,7 +28,6 @@ public class gInput extends javax.swing.JFrame implements KeyListener {
 
     public void keyReleased(KeyEvent e) {}
 
-    @SuppressWarnings("unchecked")
     private void initComponents() {
 
         jTextField1 = new javax.swing.JTextField();
@@ -43,11 +37,7 @@ public class gInput extends javax.swing.JFrame implements KeyListener {
 
         jTextField1.setText("");
         jTextField1.setPreferredSize(getPreferredSize());
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
+        jTextField1.addActionListener(this::jTextField1ActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -70,7 +60,7 @@ public class gInput extends javax.swing.JFrame implements KeyListener {
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -78,21 +68,13 @@ public class gInput extends javax.swing.JFrame implements KeyListener {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
             java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                tInput ti = new tInput();
-                ti.setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            tInput ti = new tInput();
+            ti.setVisible(true);
         });
     }
 

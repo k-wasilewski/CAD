@@ -1,9 +1,8 @@
-package draw;
-
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
+@SuppressWarnings({"SpellCheckingInspection", "CanBeFinal", "unused"})
 public class Text implements Serializable {
     private String txt;
     private int x;

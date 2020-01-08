@@ -1,11 +1,9 @@
-package draw;
-
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
-import java.awt.Graphics;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+@SuppressWarnings({"unchecked", "CanBeFinal", "rawtypes", "SpellCheckingInspection"})
 public class Line implements Serializable {
     private int x1;
     private int x2;
@@ -25,6 +23,7 @@ public class Line implements Serializable {
     private ArrayList<Rectangle2D> snapRecs=new ArrayList();
     private boolean horizontal;
     private ArrayList<Boolean> srContains=new ArrayList();
+    private int plindex;
     
     public Line(int x1, int x2, int y1, int y2, Color c, boolean p) {
         this.x1=x1;
@@ -34,6 +33,17 @@ public class Line implements Serializable {
         this.c=c;
         this.ch=c;
         this.polyline=p;
+    }
+    public Line(int x1, int x2, int y1, int y2, Color c, boolean p, int plindex) {
+        this.x1=x1;
+        this.x2=x2;
+        this.y1=y1;
+        this.y2=y2;
+        this.c=c;
+        this.ch=c;
+        this.polyline=p;
+        this.plindex=plindex;
+        System.out.println(plindex);
     }
     public Line(int x1, int x2, int y1, int y2, Color c, boolean p, boolean h) {
         this.x1=x1;
@@ -151,4 +161,5 @@ public class Line implements Serializable {
     public void srContainsOn(int i) {this.srContains.set(i, true);}
     public void srContainsOff(int i) {this.srContains.set(i, false);}
     public boolean getSrContains(int i) {return this.srContains.get(i);}
+    public int getPlindex() {return this.plindex;}
 }

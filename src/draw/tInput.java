@@ -1,8 +1,8 @@
-package draw;
-
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+@SuppressWarnings({"DuplicatedCode", "unused"})
 public class tInput extends javax.swing.JFrame implements KeyListener {
 
     public tInput() {
@@ -26,7 +26,6 @@ public class tInput extends javax.swing.JFrame implements KeyListener {
     
     public void keyReleased(KeyEvent e) {}
 
-    @SuppressWarnings("unchecked")
     private void initComponents() {
 
         jTextField1 = new javax.swing.JTextField();
@@ -36,11 +35,7 @@ public class tInput extends javax.swing.JFrame implements KeyListener {
 
         jTextField1.setText("");
         jTextField1.setPreferredSize(getPreferredSize());
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
+        jTextField1.addActionListener(this::jTextField1ActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -60,11 +55,12 @@ public class tInput extends javax.swing.JFrame implements KeyListener {
         pack();
     }
 
+    @SuppressWarnings("EmptyMethod")
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
 
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -72,21 +68,13 @@ public class tInput extends javax.swing.JFrame implements KeyListener {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
             java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                tInput ti = new tInput();
-                ti.setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            tInput ti = new tInput();
+            ti.setVisible(true);
         });
     }
 

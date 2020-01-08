@@ -1,11 +1,11 @@
-package draw;
-
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
 //*.cvs extension
+@SuppressWarnings("SwitchStatementWithTooFewBranches")
 public class CvsExt extends FileFilter
 {
+    @SuppressWarnings("CanBeFinal")
     private String type;
 
     public CvsExt(String type)

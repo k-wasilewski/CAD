@@ -1,19 +1,15 @@
-package draw;
-
+@SuppressWarnings("ALL")
 public class About extends javax.swing.JFrame {
 
     public About() {
         initComponents();
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -54,7 +50,7 @@ public class About extends javax.swing.JFrame {
         pack();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new About().setVisible(true);
@@ -62,8 +58,4 @@ public class About extends javax.swing.JFrame {
         });
     }
 
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
 }

@@ -1,15 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package draw;
 import javax.swing.*;
 
-/**
- *
- * @author lenovo
- */
+@SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused"})
 public class ImgPopup extends JPopupMenu {
     private JMenuItem front;
     private JMenuItem back;
@@ -23,16 +14,8 @@ public class ImgPopup extends JPopupMenu {
         back = new JMenuItem("Move image to back");
         add(front);
         add(back);
-        front.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                frontActionPerformed(evt);
-            }
-        });
-        back.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                backActionPerformed(evt);
-            }
-        });
+        front.addActionListener(this::frontActionPerformed);
+        back.addActionListener(this::backActionPerformed);
     }
     
     private void frontActionPerformed(java.awt.event.ActionEvent evt) {

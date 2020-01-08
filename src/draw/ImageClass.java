@@ -1,6 +1,3 @@
-package draw;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,11 +8,12 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.io.Serializable;
 
+@SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal", "CanBeFinal", "unused", "rawtypes"})
 public class ImageClass extends JPanel implements Serializable, ImageObserver {
     private transient java.awt.Image image;
     private transient java.awt.image.BufferedImage img;
-    private int ximg=0;
-    private int yimg=0;
+    private int ximg;
+    private int yimg;
     private Rectangle contour;
     private boolean selected;
     private boolean marked;
@@ -51,6 +49,7 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         this.col=col;
         if (ii!=null) width=ii.getIconWidth(); else width=img.getWidth();
         if (ii!=null) height=ii.getIconHeight(); else height=img.getHeight();
+        //noinspection unchecked,rawtypes
         snapRecs=new ArrayList();
         
         //snapRecs

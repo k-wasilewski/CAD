@@ -1,9 +1,8 @@
-package draw;
-
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
+@SuppressWarnings({"SpellCheckingInspection", "CanBeFinal", "unused"})
 public class Rectangle implements Serializable {
     private int x1r;
     private int x2r;
@@ -13,7 +12,7 @@ public class Rectangle implements Serializable {
     private Color ch;
     private boolean marked;
     private boolean selected=false;
-    private draw.ImageClass imageClass=null;
+    private ImageClass imageClass=null;
     private Rectangle2D snapRec1;
     private Rectangle2D snapRec2;
     private Rectangle2D snapRec3;
