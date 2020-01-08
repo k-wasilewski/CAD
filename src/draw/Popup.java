@@ -1,12 +1,12 @@
 import javax.swing.*;
 
-//RIGHT MOUSEBUTTON MENU
+//----------RIGHT MOUSEBUTTON MENU----------------------------------------------------------------------------
 @SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal", "CanBeFinal", "unused"})
 public class Popup extends JPopupMenu {
     private JMenuItem snap;
     private JMenuItem snapToGrid;
     private JMenuItem grid;
-    private gInput gi;
+    private GridsizeInput gi;
             
     public Popup() {
         if (Canvas.isSnapToGridMode()) snapToGrid = new JMenuItem("Snap-to-grid mode OFF");
@@ -31,7 +31,7 @@ public class Popup extends JPopupMenu {
     }
     private void gridActionPerformed(java.awt.event.ActionEvent evt) {
         if (!Canvas.isGridMode()) {
-            gi = new gInput();
+            gi = new GridsizeInput();
             //noinspection RedundantCast,RedundantCast
             gi.setLocation((int)200, (int)200);
             gi.setVisible(true);

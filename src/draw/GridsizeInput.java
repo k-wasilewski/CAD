@@ -3,9 +3,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 @SuppressWarnings("DuplicatedCode")
-public class gInput extends javax.swing.JFrame implements KeyListener {
+public class GridsizeInput extends javax.swing.JFrame implements KeyListener {
 
-    public gInput() {
+    public GridsizeInput() {
         this.setUndecorated(true);
         initComponents();
         addKeyListener(this);
@@ -69,11 +69,11 @@ public class gInput extends javax.swing.JFrame implements KeyListener {
                 }
             }
         } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
-            java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TextInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         java.awt.EventQueue.invokeLater(() -> {
-            tInput ti = new tInput();
+            TextInput ti = new TextInput();
             ti.setVisible(true);
         });
     }

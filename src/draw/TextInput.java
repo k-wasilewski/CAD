@@ -3,9 +3,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 @SuppressWarnings({"DuplicatedCode", "unused"})
-public class tInput extends javax.swing.JFrame implements KeyListener {
+public class TextInput extends javax.swing.JFrame implements KeyListener {
 
-    public tInput() {
+    public TextInput() {
         initComponents();
         addKeyListener(this);
         jTextField1.addKeyListener(this);
@@ -69,11 +69,11 @@ public class tInput extends javax.swing.JFrame implements KeyListener {
                 }
             }
         } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
-            java.util.logging.Logger.getLogger(tInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TextInput.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         java.awt.EventQueue.invokeLater(() -> {
-            tInput ti = new tInput();
+            TextInput ti = new TextInput();
             ti.setVisible(true);
         });
     }

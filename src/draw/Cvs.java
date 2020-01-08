@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.io.Serializable;
 
-//serializing drawn objects thru Cvs class
+//----------SERIALIZING DRAWN OBJECTS THRU CVS CLASS------------------------------------------------------
 @SuppressWarnings("CanBeFinal")
 public class Cvs implements Serializable {
     private ArrayList<Line> lines;
@@ -10,7 +10,7 @@ public class Cvs implements Serializable {
     private ArrayList<ImageClass> imageClasses;
     private ArrayList<Text> texts;
 
-    //constructor
+    //--------CONSTRUCTOR---------------------------------------------------------------------------------
     public Cvs(ArrayList<Line> lines, ArrayList<Circle> circles, ArrayList<Rectangle> rectangles,
                ArrayList<ImageClass> imageClasses, ArrayList<Text> texts) {
         this.lines = lines;
@@ -20,7 +20,7 @@ public class Cvs implements Serializable {
         this.texts = texts;
     }
 
-    //getters and setters
+    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
     public ArrayList<Line> getLines() {
         return this.lines;
     }

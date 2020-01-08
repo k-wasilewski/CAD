@@ -1,5 +1,6 @@
 import javax.swing.*;
 
+//----------------MOVE IMG TO FRONT/BACK MENU----------------------------------------------------------------
 @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused"})
 public class ImgPopup extends JPopupMenu {
     private JMenuItem front;

@@ -1,7 +1,7 @@
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-//*.cvs extension
+//----------------*.CVS CUSTOM EXTENSION--------------------------------------------------------------------------------
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
 public class CvsExt extends FileFilter
 {

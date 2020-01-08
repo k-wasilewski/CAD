@@ -25,13 +25,13 @@ public class Draw extends JFrame {
   }
   public Draw() {
       canvas = new Canvas();
-      //scrolling command lines
+      //.......scrolling command lines...................
       javax.swing.JScrollPane jScrollPane3 = new javax.swing.JScrollPane();
       jTextArea3 = new javax.swing.JTextArea();
       jTextArea3.setColumns(20);
       jTextArea3.setRows(1);
       jScrollPane3.setViewportView(jTextArea3);
-      //menu bar
+      //........menu bar..................................
       javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
       javax.swing.JMenu help = new javax.swing.JMenu();
       javax.swing.JMenu file = new javax.swing.JMenu();
@@ -41,10 +41,10 @@ public class Draw extends JFrame {
       javax.swing.JMenuItem menuItem5 = new javax.swing.JMenuItem();
       javax.swing.JMenuItem menuItem6 = new javax.swing.JMenuItem();
       menuItem4 = new javax.swing.JMenuItem();
-      //Index and About windows
+      //........Index and About windows...................
       index = new Index();
       About about = new About();
-      //save/export, import, open fileChoosers
+      //........save/export, import, open fileChoosers.....
       javax.swing.JFileChooser jFileChooser1 = new javax.swing.JFileChooser();
       javax.swing.JFileChooser jFileChooser2 = new javax.swing.JFileChooser();
       javax.swing.JFileChooser jFileChooser3 = new javax.swing.JFileChooser();
@@ -75,7 +75,7 @@ public class Draw extends JFrame {
       menuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I,
               java.awt.event.InputEvent.CTRL_MASK));
 
-      //index
+      //.........index of commands window............
       menuItem1.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
               menuItem1ActionPerformed(evt);
@@ -86,7 +86,7 @@ public class Draw extends JFrame {
           }
       });
 
-      //about
+      //..........about window......................
       menuItem2.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
               try {
@@ -101,7 +101,7 @@ public class Draw extends JFrame {
           }
       });
 
-      //SAVE FILE
+      //--------------SAVE FILE-------------------------------------------------------------------------
       menuItem3.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
               int button = jFileChooser1.showSaveDialog(Draw.this);
@@ -128,7 +128,7 @@ public class Draw extends JFrame {
           }
       });
 
-      //IMPORT IMAGE
+      //----------------IMPORT IMAGE----------------------------------------------------------------------
       menuItem5.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
               try {
@@ -154,7 +154,7 @@ public class Draw extends JFrame {
           }
       });
 
-      //OPEN FILE
+      //------------------OPEN FILE-----------------------------------------------------------------------
       menuItem6.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
               try {
@@ -199,7 +199,7 @@ public class Draw extends JFrame {
           }
       });
 
-      //EXPORT IMAGE
+      //-----------------EXPORT IMAGE----------------------------------------------------------------------------
       menuItem4.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
               menuItem4ActionPerformed(evt);
@@ -222,12 +222,12 @@ public class Draw extends JFrame {
           }
       });
 
-      //KEYBOARD INPUT
+      //---------------KEYBOARD INPUT--------------------------------------------------------------------------
       jTextArea3.addKeyListener(new KeyListener() {
           @SuppressWarnings("RedundantCast")
           public void keyPressed(KeyEvent e) {
               if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                  //command line input
+                  //.......command line input...............
                   if (canvas.command("pl")) {
                       canvas.commandLineInput("null");
                       canvas.setPlindex(canvas.getPlindex()+1);
@@ -241,13 +241,13 @@ public class Draw extends JFrame {
                   unknown = false;
                   for (Line l : (ArrayList<Line>) canvas.getLines()) l.polylineOff();
               } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                  //cancel
+                  //...........cancel...........................
                   if (canvas.getTextInput() != null && canvas.getTextInput().isVisible())
                       canvas.getTextInput().dispose();
                   canvas.commandLineInput("esc");
                   jTextArea3.setText("");
               } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                  //delete drawn objects
+                  //...........delete drawn objects.............
                   linesToDelete = new ArrayList();
                   circlesToDelete = new ArrayList();
                   rectanglesToDelete = new ArrayList();
@@ -292,7 +292,7 @@ public class Draw extends JFrame {
           }
 
           public void keyReleased(KeyEvent e) {
-              //ctrl+z
+              //.......ctrl+z...............................................
               if (e.getKeyCode() == KeyEvent.VK_Z && ctrl) {
                   try {
                       canvas.revCmd();
@@ -305,7 +305,7 @@ public class Draw extends JFrame {
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-      //Canvas as JPanel
+      //.................Canvas as JPanel.....................
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
@@ -327,19 +327,19 @@ public class Draw extends JFrame {
       canvas.setBackground(Color.white);
   }
 
-  //unknown command
+  //----------------------UNKNOWN COMMAND----------------------------------------------------------------
   public static void unknownOn() {
       unknown=true;
   }
 
-  //output messages thru command line
+  //---------------------OUTPUT MSGS THRU CMD LINE-------------------------------------------------
   public static void setText(String s) {
       jTextArea3.setText(s);
   }
 
-  //run
+  //------------------RUN----------------------------------------------------------------------------------
   public static void main(String[] args) {
-    System.setProperty("java.awt.headless", "true");    //just in case f/ linux
+    System.setProperty("java.awt.headless", "true");    //just in case (f/ linux os)
     Draw sw = new Draw();
     sw.run(sw);
   }

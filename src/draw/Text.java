@@ -15,7 +15,7 @@ public class Text implements Serializable {
     private boolean contains;
     private boolean copied;
 
-    //constructor
+    //----------CONSTRUCTOR----------------------------------------------------------------------------------
     public Text(String t, int x, int y, Color c) {
         this.txt=t;
         this.x=x;
@@ -23,7 +23,7 @@ public class Text implements Serializable {
         this.c=c;
     }
 
-    //getters and setters
+    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
     public int getx() {
         return this.x;
     }

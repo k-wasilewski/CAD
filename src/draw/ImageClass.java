@@ -39,7 +39,8 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
     private boolean overImage;
     private boolean copied;
     private ImageIcon ii;
-    
+
+    //----------CONSTRUCTOR-------------------------------------------------------------------------------------
     public ImageClass(java.awt.Image image, BufferedImage img, int ximg, int yimg, Rectangle contour, Color col) {
         this.image=image;
         this.img=img;
@@ -52,7 +53,7 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         //noinspection unchecked,rawtypes
         snapRecs=new ArrayList();
         
-        //snapRecs
+        //............snapRecs.................................
         snapRec1 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK);
         snapRec2 = new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK);
         snapRec3 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK);
@@ -62,12 +63,12 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         snapRecs.add(snapRec3);
         snapRecs.add(snapRec4);
 
-        //image and contour on the same layer
+        //..........image and contour on the same layer............
         imgcont=new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         paint();
     }
 
-    //update ximg and yimg in snapRecs
+    //-------------UPDATE XIMG AND YIMG IN SNAPRECS--------------------------------------------------------------
     public void updatesnapRecs() {
         snapRecs.set(0, new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK));
         snapRecs.set(1, new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK));
@@ -75,21 +76,21 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         snapRecs.set(3, new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK));
     }
 
-    //paint the image and its contour on BufferedImage
+    //---------------PAINT THE IMG AND ITS CONTOUR ON BUFFEREDIMAGE-----------------------------------------------
     public void paint() {
         graphics=imgcont.createGraphics();
         if (ii!=null) ii.paintIcon(null, graphics, 0, 0);
-        //draw image
+        //...........draw image.....................
         graphics.drawImage(img, 0, 0, null);
-        //draw marked-on contour
+        //...........draw marked-on contour........
         if (marked) {
             graphics.setColor(Color.GRAY);
             graphics.drawRect(0, 0, width-1, height-1);
-        //draw contour
+        //..........draw contour................
         } else {
             graphics.setColor(Color.BLACK);
         }
-        //draw bold contour
+        //.........draw bold contour.............
         if (selected) {
             graphics.setColor(Color.BLACK);
             graphics.drawRect(0, 0, width-1, height-1);
@@ -98,13 +99,13 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         }
     }
 
-    //when reading serialized file - converting ImageIcon to BufferedImage
+    //-----------WHEN READING SERIALIZED FILE - CONVERTING IMAGEICON TO BUFFEREDIMAGE-----------------------
     public void iiToBuffImg(ImageIcon ii) {
         imgcont=new BufferedImage(ii.getIconWidth(), ii.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
         paint();
     }
 
-    //getters and setters
+    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
     public java.awt.Image getImage() {
         return this.image;
     }

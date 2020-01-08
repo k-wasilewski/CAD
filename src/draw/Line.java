@@ -24,7 +24,8 @@ public class Line implements Serializable {
     private boolean horizontal;
     private ArrayList<Boolean> srContains=new ArrayList();
     private int plindex;
-    
+
+    //----------CONSTRUCTORS----------------------------------------------------------------------------------------
     public Line(int x1, int x2, int y1, int y2, Color c, boolean p) {
         this.x1=x1;
         this.x2=x2;
@@ -55,6 +56,8 @@ public class Line implements Serializable {
         this.polyline=p;
         this.horizontal=h;
     }
+
+    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
     public int getx1() {
         return this.x1;
     }

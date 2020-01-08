@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.awt.geom.*;
 
-//FOR DRAWING NOT STROKE-SENSITIVE GRID
+//-----------FOR DRAWING NOT STROKE-SENSITIVE GRID-----------------------------------------------------------
 @SuppressWarnings({"SpellCheckingInspection", "CanBeFinal"})
 public class TransformedStroke implements Stroke {
     private AffineTransform at;
