@@ -1,16 +1,18 @@
+package draw;
+
+import objs.*;
 import java.awt.*;
-import java.util.ArrayList;
-import javax.swing.JPanel;
+import objs.Rectangle;
+import ui.ImgPopup;
+import ui.Popup;
+import ui.TextInput;
+
 import java.awt.event.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.AffineTransform;
+import java.awt.geom.*;
+import java.util.ArrayList;
+import javax.swing.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.Timer;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -161,8 +163,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             }
             at = atinverted2;
         }
-        atinverted.transform(p, p3);    //clean the Canvas code and structure it to methods/classes inside packets
-        xdyn = (int) p3.getX() + dx;    //add ctrl+z, ctrl+save, ctrl+open, ctrl+import
+        atinverted.transform(p, p3);
+        xdyn = (int) p3.getX() + dx;
         ydyn = (int) p3.getY() + dy;
 
         if ((command("l") || command("pl")) && x1 != 0 && y1 != 0) {
@@ -925,7 +927,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         //...................right mouse button...............
         if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
             ImgPopup menu = new ImgPopup(this);
-            Popup menu1 = new Popup();
+            ui.Popup menu1 = new Popup();
             //................ImgPopup (move to front/back)....
             for (ImageClass i : imageClasses) {
                 if (overImage(i)) {
@@ -1003,7 +1005,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
         else if (x1 != 0 && x2 != 0 && command("pl")) {
             lines.add(new Line(x1, x2, y1, y2, dCol, true, plindex));
-            System.out.println(plindex);
             cmd="plineadd";
         }
         if (x1r != 0 && x2r != 0) rectangles.add(new Rectangle(x1r, x2r, y1r, y2r, dCol));
