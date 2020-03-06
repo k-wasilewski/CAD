@@ -124,6 +124,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private int plindex = 0;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private boolean popup;
+    private Zoom zoom = new Zoom(this);
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -137,12 +138,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     @SuppressWarnings("empty-statement")
     public void actionPerformed(ActionEvent evt) {
         //...........no zoom on gridMode............................
-        if (gridMode) {
-            zoomFactor = 1;
-            prevZoomFactor = 1;
-            xOffset = 1;
-            yOffset = 1;
-        }
+        zoom.noZoom();
 
         //..........zooming the coords dynamically...................
         if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
@@ -1949,4 +1945,56 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public static boolean getSRadded() {return gridSRadded;}
     public void setPlindex(int i) {this.plindex=i;}
     public int getPlindex() {return this.plindex;}
+    public void setZoomFactor(double zoomFactor) {this.zoomFactor=zoomFactor;}
+    public boolean getGridMode() {return this.gridMode;}
+    public void setPrevZoomFactor(double prevZoomFactor) {this.prevZoomFactor=prevZoomFactor;}
+    public void setxOffset(double xOffset) {this.xOffset=xOffset;}
+    public void setyOffset(double yOffset) {this.yOffset=yOffset;}
+    public void setPoint(Point2D point) {this.p=point;}
+    public Point2D getPoint() {return this.p;}
+    public int getScreenx() {return this.screenx;}
+    public int getScreeny() {return this.screeny;}
+    public AffineTransform getAt() {return this.at;}
+    public AffineTransform getAtinverted() {return this.atinverted;}
+    public AffineTransform getAtinverted2() {return this.atinverted2;}
+    public void setAtinverted(AffineTransform atinverted) {this.atinverted = atinverted;}
+    public void setAtinverted2(AffineTransform atinverted2) {this.atinverted2 = atinverted2;}
+    public void setAt(AffineTransform at) {this.at=at;}
+    public void setXdyn(int xdyn) {this.xdyn=xdyn;}
+    public int getDx() {return this.dx;}
+    public void setYdyn(int ydyn) {this.ydyn=ydyn;}
+    public int getDy() {return this.dy;}
+    public int getX1() {return this.x1;}
+    public int getY1() {return this.y1;}
+    public boolean getOrtoX() {return this.ortoX;}
+    public boolean getOrtoY() {return this.ortoY;}
+    public void setX2(int x2) {this.x2=x2;}
+    public void setY2(int y2) {this.y2=y2;}
+    public int getXdyn() {return this.xdyn;}
+    public int getYdyn() {return this.ydyn;}
+    public int getXo() {return this.xo;}
+    public int getYo() {return this.yo;}
+    public void setR(int r) {this.r=r;}
+    public int getXd() {return this.xd;}
+    public void setD(int d) {this.d=d;}
+
+    public int getYd() {
+        return yd;
+    }
+
+    public int getX1r() {
+        return x1r;
+    }
+
+    public int getY1r() {
+        return y1r;
+    }
+
+    public void setX2r(int x2r) {
+        this.x2r = x2r;
+    }
+
+    public void setY2r(int y2r) {
+        this.y2r = y2r;
+    }
 }
