@@ -1,5 +1,7 @@
 package draw;
 
+import draw.paint.PaintingImages;
+import draw.paint.PaintingLines;
 import objs.*;
 import java.awt.*;
 import objs.Rectangle;
@@ -129,6 +131,16 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private double yRel;
     private double zoomDiv;
     private Snap snap = new Snap(this);
+    private PaintingImages paintingImages = new PaintingImages(this);
+    private int y2rec;
+    private int x2rec;
+    private int y1rec;
+    private int x1rec;
+    private int hr;
+    private int wr;
+    private int yr;
+    private int xr;
+    private PaintingLines paintingLines = new PaintingLines(this);
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -184,7 +196,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
         if (snapToGridMode) snapToGrid();
         grid();
-        snap();
+        snap.snapOnIntervals();
         repaint();
     }
 
@@ -197,37 +209,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         g.setColor(bCol);
 
         //............open image.........................
-        if (!imageClasses.isEmpty()) for (ImageClass imageClass : imageClasses) {
-            if (imageClass != null) {
-                imageClass.setWidth(imageClass.getWidth());
-                imageClass.setHeight(imageClass.getHeight());
-
-                //.....images marked on..................
-                if (imageSelection(imageClass)) {
-                    imageClass.markedOn();
-                    imageClass.getContour().setImageClass(imageClass);
-                    imageClass.getGraphics().setColor(Color.GRAY);
-                    imageClass.paint();
-                } else {
-                    imageClass.getContour().markedOff();
-                    imageClass.markedOff();
-                    imageClass.paint();
-                }
-            } else {
-                ximg = 0;
-                yimg = 0;
-            }
-        }
+        paintingImages.importImage();
 
         //...............zoom image.........................
         zoom.zoomImage();
 
         //..............images with their contours on the same layers
-        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
-        g2.setComposite(ac);
-        for (ImageClass i : imageClasses) {
-            g2.drawImage(i.getImgCont(), i.getXimg(), i.getYimg(), null);
-        }
+        paintingImages.drawImageLayers();
 
         //..............moving the window.............................
         screenx = this.getLocationOnScreen().x - 8;
@@ -272,107 +260,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
 
         //...............images snapRecs.......................
-        int y2rec;
-        int x2rec;
-        int y1rec;
-        int x1rec;
-        int hr;
-        int wr;
-        int yr;
-        int xr;
-        for (ImageClass i : imageClasses) {
-            if (i.getContains1()) {
-                Rectangle r = i.getSr1();
-                x1rec = r.getx1();
-                x2rec = r.getx2();
-                y1rec = r.gety1();
-                y2rec = r.gety2();
-                if (x2rec > x1rec) {
-                    xr = x1rec;
-                    wr = x2rec - x1rec;
-                } else {
-                    xr = x2rec;
-                    wr = x1rec - x2rec;
-                }
-                if (y2rec > y1rec) {
-                    yr = y1rec;
-                    hr = y2rec - y1rec;
-                } else {
-                    yr = y2rec;
-                    hr = y1rec - y2rec;
-                }
-                g.drawRect(xr, yr, wr, hr);
-            } else if (i.getContains2() && snapMode) {
-                Rectangle r = i.getSr2();
-                x1rec = r.getx1();
-                x2rec = r.getx2();
-                y1rec = r.gety1();
-                y2rec = r.gety2();
-                if (x2rec > x1rec) {
-                    xr = x1rec;
-                    wr = x2rec - x1rec;
-                } else {
-                    xr = x2rec;
-                    wr = x1rec - x2rec;
-                }
-                if (y2rec > y1rec) {
-                    yr = y1rec;
-                    hr = y2rec - y1rec;
-                } else {
-                    yr = y2rec;
-                    hr = y1rec - y2rec;
-                }
-                g.drawRect(xr, yr, wr, hr);
-            } else if (i.getContains3() && snapMode) {
-                Rectangle r = i.getSr3();
-                x1rec = r.getx1();
-                x2rec = r.getx2();
-                y1rec = r.gety1();
-                y2rec = r.gety2();
-                if (x2rec > x1rec) {
-                    xr = x1rec;
-                    wr = x2rec - x1rec;
-                } else {
-                    xr = x2rec;
-                    wr = x1rec - x2rec;
-                }
-                if (y2rec > y1rec) {
-                    yr = y1rec;
-                    hr = y2rec - y1rec;
-                } else {
-                    yr = y2rec;
-                    hr = y1rec - y2rec;
-                }
-                g.drawRect(xr, yr, wr, hr);
-            } else if (i.getContains4() && snapMode) {
-                Rectangle r = i.getSr4();
-                x1rec = r.getx1();
-                x2rec = r.getx2();
-                y1rec = r.gety1();
-                y2rec = r.gety2();
-                if (x2rec > x1rec) {
-                    xr = x1rec;
-                    wr = x2rec - x1rec;
-                } else {
-                    xr = x2rec;
-                    wr = x1rec - x2rec;
-                }
-                if (y2rec > y1rec) {
-                    yr = y1rec;
-                    hr = y2rec - y1rec;
-                } else {
-                    yr = y2rec;
-                    hr = y1rec - y2rec;
-                }
-                g.drawRect(xr, yr, wr, hr);
-            }
-        }
+        paintingImages.drawSnapRecs();
 
         //..........lines snapRecs....................
-        for (Line l : lines) {
-            if (l.getContains1() && snapMode) g2.draw(l.getSr1());
-            else if (l.getContains2() && snapMode) g2.draw(l.getSr2());
-        }
+        paintingLines.drawSnapRecs();
 
         //...........rectangles snapRecs..............
         for (Rectangle r : rectangles) {
@@ -387,34 +278,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             if (t.getContains() && snapMode) g2.draw(t.getSr());
         }
 
-        //............drawing a line dynamically......
-        g.setColor(dCol);
-        if (x1 != 0 && y1 != 0) g.drawLine(x1, y1, x2, y2);
-        for (Line l : lines) {
-            //........line marked on.................
-            if (l.getx1() != 0 && l.getx2() != 0 && lineSelection(l)) {
-                l.setCol(Color.GRAY);
-                l.markedOn();
-            } else {
-                l.markedOff();
-                if (!l.getColoured()) {
-                    l.setCol(dCol);
-                    l.setColoured();
-                }
-                if (l.getCol() == Color.GRAY) l.setCol(l.getColH());
-            }
-
-            //..........drawing a line statically........
-            g.setColor(l.getCol());
-            if (l.getx1() != 0 && l.gety1() != 0 && l.getx2() != 0 && l.gety2() != 0 && !l.isSelected())
-                g.drawLine(l.getx1(), l.gety1(), l.getx2(), l.gety2());
-            else if (l.getx1() != 0 && l.gety1() != 0 && l.getx2() != 0 && l.gety2() != 0 && l.isSelected()) {
-                //.......line bold.......................
-                g2.setStroke(new BasicStroke(3));
-                g2.drawLine(l.getx1(), l.gety1(), l.getx2(), l.gety2());
-                g2.setStroke(new BasicStroke(1));
-            }
-        }
+        paintingLines.drawLines(g);
 
         //..............drawing not-zoomed grid..........
         g.setColor(Color.GRAY);
@@ -1488,28 +1352,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         snap.doSnapToGrid();
     }
 
-    //----------SNAP MODE------------------------------------------------------------------------------------
-    public void snap() {
-        pSnap = new Point2D.Double();
-        //.......zooming...................
-        zoom.zoomSnap();
-
-        //........circles...................
-        snap.snapCircles(p2);
-
-        //..........texts..........
-        snap.snapTexts(p2);
-
-        //.........images snapRec1-snapRec4..
-        snap.snapImages(p2);
-
-        //..........rectangles snapRec1-snapRec4..........
-        snap.snapRectangles(p2);
-
-        //...........actual mousePointer-moving.............
-        snap.doSnap();
-    }
-
     //............drawing grid as lines...................
     public void grid() {
         int gridX = -20;
@@ -1529,20 +1371,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             gridLines.removeAll(gridLines);
         }
         repaint();
-    }
-
-    //-------------REVERSE LAST OPERATION------------------------------------------------------------------------
-    public void revCmd() {
-        if (cmd.equals("lineadd")) {
-            lines.remove(lines.size()-1);
-        } else if (cmd.equals("plineadd")) {
-            Iterator<Line> it = lines.iterator();
-            int ind=lines.get(lines.size()-1).getPlindex();
-            while (it.hasNext()) {
-                Line l = it.next();
-                if (l.getPlindex()==ind) lines.remove(l);
-            }
-        }
     }
 
     //----------GETTERS AND SETTERS--------------------------------------------------------------------------
@@ -1675,6 +1503,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public int getDy() {return this.dy;}
     public int getX1() {return this.x1;}
     public int getY1() {return this.y1;}
+    public int getX2() {return this.x2;}
+    public int getY2() {return this.y2;}
     public boolean getOrtoX() {return this.ortoX;}
     public boolean getOrtoY() {return this.ortoY;}
     public void setX2(int x2) {this.x2=x2;}
@@ -1764,4 +1594,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public boolean snapMode() {return this.snapMode;}
     public boolean snapToGridMode() {return this.snapToGridMode;}
     public Zoom getZoom() {return this.zoom;}
+
+    public void setXimg(int ximg) {
+        this.ximg = ximg;
+    }
+
+    public void setYimg(int yimg) {
+        this.yimg = yimg;
+    }
+
+    public Color getdCol() {return this.dCol;}
 }

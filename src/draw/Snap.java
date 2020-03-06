@@ -21,6 +21,16 @@ public class Snap {
         this.canvas = canvas;
     }
 
+    public void snapOnIntervals() {
+        canvas.setPSnap(new Point2D.Double());
+        if (zoom!=null) zoom.zoomSnap();
+        snapCircles(canvas.getP2());
+        snapTexts(canvas.getP2());
+        snapImages(canvas.getP2());
+        snapRectangles(canvas.getP2());
+        doSnap();
+    }
+
     public void doSnap() {
         try {
             canvas.setRobot(new Robot());

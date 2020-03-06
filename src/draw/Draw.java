@@ -304,14 +304,6 @@ public class Draw extends JFrame {
           }
 
           public void keyReleased(KeyEvent e) {
-              //.......ctrl+z...............................................
-              if (e.getKeyCode() == KeyEvent.VK_Z && ctrl) {
-                  try {
-                      canvas.revCmd();
-                  } catch (Exception ex) {
-                      jTextArea3.setText("Error");
-                  }
-              } else if (e.getKeyCode() == KeyEvent.VK_CONTROL) ctrl = false;
           }
       });
 
