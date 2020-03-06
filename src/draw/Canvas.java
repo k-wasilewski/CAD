@@ -125,6 +125,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private boolean popup;
     private Zoom zoom = new Zoom(this);
+    private double xRel;
+    private double yRel;
+    private double zoomDiv;
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -141,45 +144,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         zoom.noZoom();
 
         //..........zooming the coords dynamically...................
-        if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
-            p = new Point2D.Double(Math.round((MouseInfo.getPointerInfo().getLocation().x - 8 - screenx)),
-                    Math.round((MouseInfo.getPointerInfo().getLocation().y - 54 - screeny)));
-        p3 = new Point2D.Double();
-        if (at != atinverted) {
-            try {
-                atinverted = at.createInverse();
-            } catch (NoninvertibleTransformException ignored) {
-            }
-            at = atinverted;
-        }
-        if (at != atinverted2) {
-            try {
-                atinverted2 = at.createInverse();
-            } catch (NoninvertibleTransformException ignored) {
-            }
-            at = atinverted2;
-        }
-        atinverted.transform(p, p3);
-        xdyn = (int) p3.getX() + dx;
-        ydyn = (int) p3.getY() + dy;
-
-        if ((command("l") || command("pl")) && x1 != 0 && y1 != 0) {
-            if (ortoY) x2 = x1;
-            else x2 = xdyn;
-            if (ortoX) y2 = y1;
-            else y2 = ydyn;
-            repaint();
-        } else if ((command("c")) && xo != 0 && yo != 0) {
-            r = (int) Math.sqrt(Math.pow((xdyn - xo), 2) + Math.pow((yo - ydyn), 2));
-            repaint();
-        } else if ((command("dist")) && xd != 0 && yd != 0) {
-            d = (int) Math.sqrt(Math.pow((xdyn - xd), 2) + Math.pow((yd - ydyn), 2));
-            repaint();
-        } else if ((command("rec")) && x1r != 0 && y1r != 0) {
-            x2r = xdyn;
-            y2r = ydyn;
-            repaint();
-        }
+        zoom.dynamicZoom();
 
         //.........selection rec using timer.......................
         if (selection) {
@@ -254,17 +219,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         }
 
         //...............zoom image.........................
-        at = new AffineTransform();
-        double xRel = MouseInfo.getPointerInfo().getLocation().getX() - getLocationOnScreen().getX();
-        double yRel = MouseInfo.getPointerInfo().getLocation().getY() - getLocationOnScreen().getY();
-        double zoomDiv = zoomFactor / prevZoomFactor;
-
-        xOffset = (zoomDiv) * (xOffset) + (1 - zoomDiv) * xRel;
-        yOffset = (zoomDiv) * (yOffset) + (1 - zoomDiv) * yRel;
-        at.translate(xOffset, yOffset);
-        at.scale(zoomFactor, zoomFactor);
-        prevZoomFactor = zoomFactor;
-        g2.transform(at);
+        zoom.zoomImage();
 
         //..............images with their contours on the same layers
         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
@@ -1547,12 +1502,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     //----------SNAP MODE------------------------------------------------------------------------------------
     public void snap() {
-        //.......zooming...................
-        p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 7 - screenx,
-                MouseInfo.getPointerInfo().getLocation().y - 53 - screeny);
-        p2 = new Point2D.Double();
         pSnap=new Point2D.Double();
-        at.transform(p, p2);
+        //.......zooming...................
+        zoom.zoomSnap();
 
         //........circles...................
         for (Circle c : circles) {
@@ -1978,6 +1930,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public int getXd() {return this.xd;}
     public void setD(int d) {this.d=d;}
 
+    public double getZoomFactor() {
+        return zoomFactor;
+    }
+
+    public double getPrevZoomFactor() {
+        return prevZoomFactor;
+    }
+
     public int getYd() {
         return yd;
     }
@@ -1996,5 +1956,33 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     public void setY2r(int y2r) {
         this.y2r = y2r;
+    }
+
+    public int getLocationX() {
+        return MouseInfo.getPointerInfo().getLocation().x;
+    }
+
+    public int getLocationY() {
+        return MouseInfo.getPointerInfo().getLocation().y;
+    }
+
+    public double getxOffset() {
+        return xOffset;
+    }
+
+    public double getyOffset() {
+        return yOffset;
+    }
+
+    public Graphics2D getG2() {
+        return g2;
+    }
+
+    public void setP2(Point2D p2) {
+        this.p2 = p2;
+    }
+
+    public Point2D getP2() {
+        return p2;
     }
 }
