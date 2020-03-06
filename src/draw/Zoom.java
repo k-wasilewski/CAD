@@ -1,6 +1,7 @@
 package draw;
 
-import objs.Circle;
+import objs.*;
+import objs.Rectangle;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -10,6 +11,8 @@ import java.awt.geom.Point2D;
 public class Zoom {
     private Canvas canvas;
     private boolean circlesZoomed=false;
+    int xsnap;
+    int ysnap;
 
     public Zoom(Canvas canvas) {
         this.canvas=canvas;
@@ -102,5 +105,107 @@ public class Zoom {
         canvas.setP2(new Point2D.Double());
         try {canvas.getAt().invert();} catch (Exception e) {}
         canvas.setP2(canvas.getAt().transform(canvas.getPoint(), canvas.getP2()));
+    }
+
+    public void zoomCircle(Circle c) {
+        xsnap = c.getX();
+        ysnap = c.getY();
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {
+        }
+        canvas.getAt().transform(new Point2D.Double(xsnap, ysnap), canvas.getpSnap());
+    }
+
+    public void zoomText(Text t) {
+        xsnap = t.getx();
+        ysnap = t.gety();
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {
+        }
+        canvas.getAt().transform(new Point2D.Double(xsnap, ysnap), canvas.getpSnap());
+    }
+
+    public void zoomImage1(ImageClass i) {
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(i.getXimg(), i.getYimg()), canvas.getpSnap());
+    }
+
+    public void zoomImage2(ImageClass i) {
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(i.getXimg() + i.getWidth(), i.getYimg()), canvas.getpSnap());
+    }
+
+    public void zoomImage3(ImageClass i) {
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(i.getXimg(), i.getYimg() + i.getHeight()), canvas.getpSnap());
+    }
+
+    public void zoomImage4(ImageClass i) {
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(i.getXimg() + i.getWidth(), i.getYimg() + i.getHeight()), canvas.getpSnap());
+    }
+
+    public void zoomLine1(Line l) {
+        xsnap = l.getx1();
+        ysnap = l.gety1();
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(xsnap, ysnap), canvas.getpSnap());
+    }
+
+    public void zoomLine2(Line l) {
+        xsnap = l.getx2();
+        ysnap = l.gety2();
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(xsnap, ysnap), canvas.getpSnap());
+    }
+
+    public void zoomRec1(Rectangle r) {
+        xsnap = r.getx1();
+        ysnap = r.gety1();
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(xsnap, ysnap), canvas.getpSnap());
+    }
+
+    public void zoomRec2(Rectangle r) {
+        xsnap = r.getx2();
+        ysnap = r.gety1();
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(xsnap, ysnap), canvas.getpSnap());
+    }
+
+    public void zoomRec3(Rectangle r) {
+        xsnap = r.getx1();
+        ysnap = r.gety2();
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(xsnap, ysnap), canvas.getpSnap());
+    }
+
+    public void zoomRec4(Rectangle r) {
+        xsnap = r.getx2();
+        ysnap = r.gety2();
+        try {
+            canvas.getAt().invert();
+        } catch (NoninvertibleTransformException ignored) {}
+        canvas.getAt().transform(new Point2D.Double(xsnap, ysnap), canvas.getpSnap());
     }
 }

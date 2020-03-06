@@ -128,6 +128,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private double xRel;
     private double yRel;
     private double zoomDiv;
+    private Snap snap = new Snap(this);
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -1484,278 +1485,29 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             }
             gridSRadded=true;
         }
-        try {
-            //............actual mousePointer-moving...................
-            robot = new Robot();
-            if (pSnap.getX() != 0 && pSnap.getY() != 0 && snapToGridMode && !snapExecuted) {
-                robot.mouseMove((int) pSnap.getX() + 7 + screenx,
-                        (int) pSnap.getY() + 53 + screeny);   //moves to actual mouse position itself !!
-                snapExecuted = true;
-                try {
-                    waittt();
-                } catch (InterruptedException ignored) {
-                }
-            }
-        } catch (AWTException ignored) {
-        }
+        snap.doSnapToGrid();
     }
 
     //----------SNAP MODE------------------------------------------------------------------------------------
     public void snap() {
-        pSnap=new Point2D.Double();
+        pSnap = new Point2D.Double();
         //.......zooming...................
         zoom.zoomSnap();
 
         //........circles...................
-        for (Circle c : circles) {
-            //setting snapRec before affineTransform !!!
-            //pSnap is off from pCenter==p2
-            c.setSr(new Rectangle2D.Double(c.getX() - 8, c.getY() - 8, 16, 16));
-            if (c.getSnapRec().contains((int) p2.getX(), (int) p2.getY())) {
-                System.out.println("p2:"+p2);
-                System.out.println("pCent:"+c.getX()+","+c.getY());
-                xsnap = c.getX();
-                ysnap = c.getY();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {
-                }
-                at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
-                System.out.println("pSnap:"+pSnap);
-                c.containsOn();
-            } else c.containsOff();
-        }
+        snap.snapCircles(p2);
 
         //..........texts..........
-        for (Text t : texts) {
-            t.setSr(new Rectangle2D.Double(t.getx() - 8, t.gety() - 8, 16, 16));
-            if (t.getSr().contains((int) p2.getX(), (int) p2.getY())) {
-                xsnap = t.getx();
-                ysnap = t.gety();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {
-                }
-                at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
-                t.containsOn();
-            } else t.containsOff();
-        }
+        snap.snapTexts(p2);
 
         //.........images snapRec1-snapRec4..
-        for (ImageClass i : imageClasses) {
-            i.updatesnapRecs();
-
-            int x1rec1 = i.getSr1().getx1();
-            int x2rec1 = i.getSr1().getx2();
-            int y1rec1 = i.getSr1().gety1();
-            int y2rec1 = i.getSr1().gety2();
-            int xr1;
-            int yr1;
-            int wr1;
-            int hr1;
-            if (x2rec1 > x1rec1) {
-                xr1 = x1rec1;
-                wr1 = x2rec1 - x1rec1;
-            } else {
-                xr1 = x2rec1;
-                wr1 = x1rec1 - x2rec1;
-            }
-            if (y2rec1 > y1rec1) {
-                yr1 = y1rec1;
-                hr1 = y2rec1 - y1rec1;
-            } else {
-                yr1 = y2rec1;
-                hr1 = y1rec1 - y2rec1;
-            }
-            Rectangle2D sr1 = new Rectangle2D.Double(xr1, yr1, wr1, hr1);
-            int x1rec2 = i.getSr2().getx1();
-            int x2rec2 = i.getSr2().getx2();
-            int y1rec2 = i.getSr2().gety1();
-            int y2rec2 = i.getSr2().gety2();
-            int xr2;
-            int yr2;
-            int wr2;
-            int hr2;
-            if (x2rec2 > x1rec2) {
-                xr2 = x1rec2;
-                wr2 = x2rec2 - x1rec2;
-            } else {
-                xr2 = x2rec2;
-                wr2 = x1rec2 - x2rec2;
-            }
-            if (y2rec2 > y1rec2) {
-                yr2 = y1rec2;
-                hr2 = y2rec2 - y1rec2;
-            } else {
-                yr2 = y2rec2;
-                hr2 = y1rec2 - y2rec2;
-            }
-            Rectangle2D sr2 = new Rectangle2D.Double(xr2, yr2, wr2, hr2);
-            int x1rec3 = i.getSr3().getx1();
-            int x2rec3 = i.getSr3().getx2();
-            int y1rec3 = i.getSr3().gety1();
-            int y2rec3 = i.getSr3().gety2();
-            int xr3;
-            int yr3;
-            int wr3;
-            int hr3;
-            if (x2rec3 > x1rec3) {
-                xr3 = x1rec3;
-                wr3 = x2rec3 - x1rec3;
-            } else {
-                xr3 = x2rec3;
-                wr3 = x1rec3 - x2rec3;
-            }
-            if (y2rec3 > y1rec3) {
-                yr3 = y1rec3;
-                hr3 = y2rec3 - y1rec3;
-            } else {
-                yr3 = y2rec3;
-                hr3 = y1rec3 - y2rec3;
-            }
-            Rectangle2D sr3 = new Rectangle2D.Double(xr3, yr3, wr3, hr3);
-            int x1rec4 = i.getSr4().getx1();
-            int x2rec4 = i.getSr4().getx2();
-            int y1rec4 = i.getSr4().gety1();
-            int y2rec4 = i.getSr4().gety2();
-            int xr4;
-            int yr4;
-            int wr4;
-            int hr4;
-            if (x2rec4 > x1rec4) {
-                xr4 = x1rec4;
-                wr4 = x2rec4 - x1rec4;
-            } else {
-                xr4 = x2rec4;
-                wr4 = x1rec4 - x2rec4;
-            }
-            if (y2rec4 > y1rec4) {
-                yr4 = y1rec4;
-                hr4 = y2rec4 - y1rec4;
-            } else {
-                yr4 = y2rec4;
-                hr4 = y1rec4 - y2rec4;
-            }
-
-            //.......conditions 'snapRec contains'.......
-            Rectangle2D sr4 = new Rectangle2D.Double(xr4, yr4, wr4, hr4);
-            if (sr1.contains((int) p2.getX(), (int) p2.getY())) {
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(i.getXimg(), i.getYimg()), pSnap);
-                i.contains1on();
-            } else i.contains1off();
-            if (sr2.contains((int) p2.getX(), (int) p2.getY())) {
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(i.getXimg() + i.getWidth(), i.getYimg()), pSnap);
-                i.contains2on();
-            } else i.contains2off();
-            if (sr3.contains((int) p2.getX(), (int) p2.getY())) {
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(i.getXimg(), i.getYimg() + i.getHeight()), pSnap);
-                i.contains3on();
-            } else i.contains3off();
-            if (sr4.contains((int) p2.getX(), (int) p2.getY())) {
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(i.getXimg() + i.getWidth(), i.getYimg() + i.getHeight()), pSnap);
-                i.contains4on();
-            } else i.contains4off();
-        }
-
-        //...........lines SnapRec1, 2...............
-        for (Line l : lines) {
-            l.setSr1(new Rectangle2D.Double(l.getx1() - 8, l.gety1() - 8, 16, 16));
-            if (l.getSr1().contains((int) p2.getX(), (int) p2.getY())) {
-                xsnap = l.getx1();
-                ysnap = l.gety1();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
-                l.contains1on();
-            } else l.contains1off();
-            l.setSr2(new Rectangle2D.Double(l.getx2() - 8, l.gety2() - 8, 16, 16));
-            if (l.getSr2().contains((int) p2.getX(), (int) p2.getY())) {
-                xsnap = l.getx2();
-                ysnap = l.gety2();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
-                l.contains2on();
-            } else l.contains2off();
-        }
+        snap.snapImages(p2);
 
         //..........rectangles snapRec1-snapRec4..........
-        for (Rectangle r : rectangles) {
-            r.setSr1(new Rectangle2D.Double(r.getx1() - 8, r.gety1() - 8, 16, 16));
-            if (r.getSr1().contains((int) p2.getX(), (int) p2.getY())) {
-                xsnap = r.getx1();
-                ysnap = r.gety1();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
-                r.contains1on();
-            } else r.contains1off();
-            r.setSr2(new Rectangle2D.Double(r.getx2() - 8, r.gety1() - 8, 16, 16));
-            if (r.getSr2().contains((int) p2.getX(), (int) p2.getY())) {
-                xsnap = r.getx2();
-                ysnap = r.gety1();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
-                r.contains2on();
-            } else r.contains2off();
-            r.setSr3(new Rectangle2D.Double(r.getx1() - 8, r.gety2() - 8, 16, 16));
-            if (r.getSr3().contains((int) p2.getX(), (int) p2.getY())) {
-                xsnap = r.getx1();
-                ysnap = r.gety2();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
-                r.contains3on();
-            } else r.contains3off();
-            r.setSr4(new Rectangle2D.Double(r.getx2() - 8, r.gety2() - 8, 16, 16));
-            if (r.getSr4().contains((int) p2.getX(), (int) p2.getY())) {
-                xsnap = r.getx2();
-                ysnap = r.gety2();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
-                r.contains4on();
-            } else r.contains4off();
-        }
+        snap.snapRectangles(p2);
 
         //...........actual mousePointer-moving.............
-        try {
-            robot = new Robot();
-            if (pSnap.getX() != 0 && pSnap.getY() != 0 && snapMode && !snapExecuted) {
-                robot.mouseMove((int) pSnap.getX() + 7 + screenx, (int) pSnap.getY() + 53 + screeny);
-                snapExecuted = true;
-                try {
-                    waittt();
-                } catch (InterruptedException ignored) {}
-            }
-        } catch (AWTException ignored) {}
-    }
-
-    //.............to be able to exit the snapMode..............
-    public void waittt() throws InterruptedException {
-        Thread.sleep(10);
-        xsnap=0;
-        ysnap=0;
-        snapExecuted=false;
+        snap.doSnap();
     }
 
     //............drawing grid as lines...................
@@ -1998,4 +1750,18 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void setP3(Point2D p3) {
         this.p3 = p3;
     }
+
+    public void setPSnap(Point2D pSnap) {this.pSnap=pSnap;}
+    public Point2D getpSnap() {return this.pSnap;}
+
+    public Robot getRobot() {
+        return robot;
+    }
+
+    public void setRobot(Robot robot) {
+        this.robot = robot;
+    }
+    public boolean snapMode() {return this.snapMode;}
+    public boolean snapToGridMode() {return this.snapToGridMode;}
+    public Zoom getZoom() {return this.zoom;}
 }
