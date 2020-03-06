@@ -1508,8 +1508,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
         //........circles...................
         for (Circle c : circles) {
+            //setting snapRec before affineTransform !!!
+            //pSnap is off from pCenter==p2
             c.setSr(new Rectangle2D.Double(c.getX() - 8, c.getY() - 8, 16, 16));
             if (c.getSnapRec().contains((int) p2.getX(), (int) p2.getY())) {
+                System.out.println("p2:"+p2);
+                System.out.println("pCent:"+c.getX()+","+c.getY());
                 xsnap = c.getX();
                 ysnap = c.getY();
                 try {
@@ -1517,6 +1521,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 } catch (NoninvertibleTransformException ignored) {
                 }
                 at.transform(new Point2D.Double(xsnap, ysnap), pSnap);
+                System.out.println("pSnap:"+pSnap);
                 c.containsOn();
             } else c.containsOff();
         }
@@ -1984,5 +1989,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     public Point2D getP2() {
         return p2;
+    }
+
+    public Point2D getP3() {
+        return p3;
+    }
+
+    public void setP3(Point2D p3) {
+        this.p3 = p3;
     }
 }

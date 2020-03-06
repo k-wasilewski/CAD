@@ -1,5 +1,7 @@
 package draw;
 
+import objs.Circle;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -7,6 +9,7 @@ import java.awt.geom.Point2D;
 
 public class Zoom {
     private Canvas canvas;
+    private boolean circlesZoomed=false;
 
     public Zoom(Canvas canvas) {
         this.canvas=canvas;
@@ -26,7 +29,7 @@ public class Zoom {
             canvas.setPoint(new Point2D.Double(Math.round((canvas.getLocationX() - 8 - canvas.getScreenx())),
                     Math.round((canvas.getLocationY() - 54 - canvas.getScreeny()))));
         }
-        Point2D p3 = new Point2D.Double();
+        canvas.setP3(new Point2D.Double());
         if (canvas.getAt() != canvas.getAtinverted()) {
             try {
                 canvas.setAtinverted(canvas.getAt().createInverse());
@@ -41,9 +44,9 @@ public class Zoom {
             }
             canvas.setAt(canvas.getAtinverted2());
         }
-        canvas.getAtinverted().transform(canvas.getPoint(), p3);
-        canvas.setXdyn((int) p3.getX() + canvas.getDx());
-        canvas.setYdyn((int) p3.getY() + canvas.getDy());
+        canvas.getAtinverted().transform(canvas.getPoint(), canvas.getP3());
+        canvas.setXdyn((int) canvas.getP3().getX() + canvas.getDx());
+        canvas.setYdyn((int) canvas.getP3().getY() + canvas.getDy());
 
         if ((canvas.command("l") || canvas.command("pl")) && canvas.getX1() != 0 && canvas.getY1() != 0) {
             if (canvas.getOrtoY()) canvas.setX2(canvas.getX1());
@@ -63,6 +66,19 @@ public class Zoom {
             canvas.setX2r(canvas.getXdyn());
             canvas.setY2r(canvas.getYdyn());
             canvas.repaint();
+        }
+        if (!circlesZoomed) {
+            for (Circle c : canvas.getCircles()) {
+                try {
+                    canvas.getAt().invert();
+                } catch (NoninvertibleTransformException ignored) {
+                }
+                Point2D newCenter = new Point2D.Double();
+                canvas.getAt().transform(new Point2D.Double(c.getX(), c.getY()), newCenter);
+                c.setX((int)newCenter.getX());
+                c.setY((int)newCenter.getY());
+            }
+            circlesZoomed=true;
         }
     }
 
@@ -84,6 +100,7 @@ public class Zoom {
         canvas.setPoint(new Point2D.Double(Math.round((canvas.getLocationX() - 7 - canvas.getScreenx())),
                 Math.round((canvas.getLocationY() - 53 - canvas.getScreeny()))));
         canvas.setP2(new Point2D.Double());
-        canvas.getAt().transform(canvas.getPoint(), canvas.getP2());
+        try {canvas.getAt().invert();} catch (Exception e) {}
+        canvas.setP2(canvas.getAt().transform(canvas.getPoint(), canvas.getP2()));
     }
 }
