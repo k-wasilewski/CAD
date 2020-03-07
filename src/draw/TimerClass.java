@@ -13,7 +13,7 @@ public class TimerClass {
 
     public void start() {
         if (timer == null || (timer != null && !timer.isRunning())) {
-            timer = new javax.swing.Timer(1, canvas);
+            timer = new javax.swing.Timer(100, canvas);
             timer.setRepeats(true);
             timer.start();
         }
