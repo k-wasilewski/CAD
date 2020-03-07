@@ -21,7 +21,7 @@ public class PaintingLines {
         }
     }
 
-    public void drawLines(Graphics g) {
+    public void drawLines(Graphics g) { 
         Graphics2D g2=canvas.getG2();
         Color dCol = canvas.getdCol();
         int x1=canvas.getX1();

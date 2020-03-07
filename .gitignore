@@ -1,10 +1,4 @@
-/target
 /.idea
 *.iml
-/build
-/dist
-/nbproject
 /out
-.attach_pid21414
-*.xml
 manifest.mf
