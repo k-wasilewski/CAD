@@ -4,6 +4,7 @@ import draw.Canvas;
 import objs.Circle;
 
 import java.awt.*;
+import java.util.List;
 
 public class PaintingCircles {
     private Canvas canvas;
@@ -13,11 +14,14 @@ public class PaintingCircles {
     }
 
     public void drawSnapRecs() {
-        canvas.getG2().setColor(canvas.getdCol());
-        for (Circle c : canvas.getCircles()) {
+        Graphics2D graphics2D = canvas.getG2();
+        List<Circle> circleList = canvas.getCircles();
+
+        graphics2D.setColor(canvas.getdCol());
+        for (Circle c : circleList) {
             if (c.getContains()) {
                 if (c.getContains() && canvas.snapMode()) {
-                    canvas.getG2().draw(c.getSnapRec());
+                    graphics2D.draw(c.getSnapRec());
                 }
             }
         }

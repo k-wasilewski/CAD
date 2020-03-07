@@ -31,12 +31,14 @@ public class Draw extends JFrame {
   private ArrayList<ImageClass> toDelete;
   private ArrayList<ImageClass> imageClasses;
   private static Index index;
+  private CommandLine commandLine;
 
   public void run(JFrame f) {
       SwingUtilities.invokeLater(() -> f.setVisible(true));
   }
   public Draw() {
       canvas = new Canvas();
+      commandLine=canvas.getCommandLine();
       //.......scrolling command lines...................
       javax.swing.JScrollPane jScrollPane3 = new javax.swing.JScrollPane();
       jTextArea3 = new javax.swing.JTextArea();
@@ -240,14 +242,14 @@ public class Draw extends JFrame {
           public void keyPressed(KeyEvent e) {
               if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                   //.......command line input...............
-                  if (canvas.command("pl")) {
-                      canvas.commandLineInput("null");
+                  if (commandLine.command("pl")) {
+                      commandLine.input("null");
                       canvas.setPlindex(canvas.getPlindex()+1);
                   }
                   try {
-                      canvas.commandLineInput(jTextArea3.getText());
+                      commandLine.input(jTextArea3.getText());
                   } catch (NullPointerException npe) {
-                      canvas.commandLineInput("null");
+                      commandLine.input("null");
                   }
                   if (!unknown) jTextArea3.setText("");
                   unknown = false;
@@ -256,7 +258,7 @@ public class Draw extends JFrame {
                   //...........cancel...........................
                   if (canvas.getTextInput() != null && canvas.getTextInput().isVisible())
                       canvas.getTextInput().dispose();
-                  canvas.commandLineInput("esc");
+                  commandLine.input("esc");
                   jTextArea3.setText("");
               } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
                   //...........delete drawn objects.............

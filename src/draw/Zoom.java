@@ -13,9 +13,11 @@ public class Zoom {
     private boolean circlesZoomed=false;
     int xsnap;
     int ysnap;
+    private CommandLine commandLine;
 
     public Zoom(Canvas canvas) {
         this.canvas=canvas;
+        commandLine=canvas.getCommandLine();
     }
 
     public void noZoom() {
@@ -51,21 +53,21 @@ public class Zoom {
         canvas.setXdyn((int) canvas.getP3().getX() + canvas.getDx());
         canvas.setYdyn((int) canvas.getP3().getY() + canvas.getDy());
 
-        if ((canvas.command("l") || canvas.command("pl")) && canvas.getX1() != 0 && canvas.getY1() != 0) {
+        if ((commandLine.command("l") || commandLine.command("pl")) && canvas.getX1() != 0 && canvas.getY1() != 0) {
             if (canvas.getOrtoY()) canvas.setX2(canvas.getX1());
             else canvas.setX2(canvas.getXdyn());
             if (canvas.getOrtoX()) canvas.setY2(canvas.getY1());
             else canvas.setY2(canvas.getYdyn());
             canvas.repaint();
-        } else if ((canvas.command("c")) && canvas.getXo() != 0 && canvas.getYo() != 0) {
+        } else if ((commandLine.command("c")) && canvas.getXo() != 0 && canvas.getYo() != 0) {
             canvas.setR((int) Math.sqrt(Math.pow((canvas.getXdyn() - canvas.getXo()), 2)
                     + Math.pow((canvas.getYo() - canvas.getYdyn()), 2)));
             canvas.repaint();
-        } else if ((canvas.command("dist")) && canvas.getXd() != 0 && canvas.getYd() != 0) {
+        } else if ((commandLine.command("dist")) && canvas.getXd() != 0 && canvas.getYd() != 0) {
             canvas.setD((int) Math.sqrt(Math.pow((canvas.getXdyn() - canvas.getXd()), 2)
                     + Math.pow((canvas.getYd() - canvas.getYdyn()), 2)));
             canvas.repaint();
-        } else if ((canvas.command("rec")) && canvas.getX1r() != 0 && canvas.getY1r() != 0) {
+        } else if ((commandLine.command("rec")) && canvas.getX1r() != 0 && canvas.getY1r() != 0) {
             canvas.setX2r(canvas.getXdyn());
             canvas.setY2r(canvas.getYdyn());
             canvas.repaint();

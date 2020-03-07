@@ -126,6 +126,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private int plindex = 0;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private boolean popup;
+    private CommandLine commandLine = new CommandLine(this);
     private Zoom zoom = new Zoom(this);
     private double xRel;
     private double yRel;
@@ -146,6 +147,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private PaintingTexts paintingTexts = new PaintingTexts(this);
     private PaintingGrid paintingGrid = new PaintingGrid(this);
     private PaintSelectionRec paintSelectionRec = new PaintSelectionRec(this);
+    private boolean polyline;
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -172,9 +174,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         else if (moving) move();
         else if (copying) copy();
 
+        //................snap-to-grid mode...............................
         if (snapToGridMode) snapToGrid();
         grid();
         snap.snapOnIntervals();
+
         repaint();
     }
 
@@ -239,8 +243,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             }
 
          //.....................resetting input...................
-        if ((!command("l")) && (!command("pl")) && (!command("c"))
-                && (!command("dist")) && (!command("rec")))
+        if ((!commandLine.command("l")) && (!commandLine.command("pl")) && (!commandLine.command("c"))
+                && (!commandLine.command("dist")) && (!commandLine.command("rec")))
             input = "null";
 
         //.......................drawing text.....................
@@ -251,141 +255,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             g.setColor(Color.GRAY);
             if (xs != 0 && ys != 0 && ws != 0 && hs != 0) g.drawRect(xs, ys, ws, hs);
         }
-    }
-
-    //------------------------COMMAND LINE---------------------------------------------------------------------
-    public void commandLineInput(String s) {
-        safelyRepaint();
-        input = s;
-        if (input.contains("\n")) input = input.replace("\n", "");
-        selection = false;
-        drawing = false;
-        safelyRepaint();
-        repaint();
-        if (command("")) {
-            input = inputH;
-        }
-        boolean polyline;
-        if (command("regen")) {
-            safelyRepaint();
-            repaint();
-        } else if (command("pl")) {
-            polyline =true;
-        } else if (command("cl")) {
-            lines.clear();
-            circles.clear();
-            rectangles.clear();
-            input = "null";
-            image = null;
-            imageClasses.removeAll(imageClasses);
-            ximg = 0;
-            yimg = 0;
-            prevZoomFactor = 1;
-            zoomFactor = 1;
-            xOffset = 1;
-            yOffset = 1;
-            safelyRepaint();
-            repaint();
-        } else if (command("bcol:bla")) {
-            bCol = (Color.BLACK);
-            input = "null";
-            safelyRepaint();
-            repaint();
-        } else if (command("bcol:blu")) {
-            bCol = (Color.BLUE);
-            input = "null";
-            safelyRepaint();
-            repaint();
-        } else if (command("bcol:w")) {
-            bCol = (Color.WHITE);
-            input = "null";
-            safelyRepaint();
-            repaint();
-        } else if (command("bcol:g")) {
-            bCol = (Color.GREEN);
-            input = "null";
-            safelyRepaint();
-            repaint();
-        } else if (command("bcol:y")) {
-            bCol = (Color.YELLOW);
-            input = "null";
-            safelyRepaint();
-            repaint();
-        } else if (command("bcol:r")) {
-            bCol = (Color.RED);
-            input = "null";
-            repaint();
-        } else if (command("dcol:bla")) {
-            dCol = (Color.BLACK);
-            input = "null";
-        } else if (command("dcol:blu")) {
-            dCol = (Color.BLUE);
-            input = "null";
-        } else if (command("dcol:w")) {
-            dCol = (Color.WHITE);
-            input = "null";
-        } else if (command("dcol:g")) {
-            dCol = (Color.GREEN);
-            input = "null";
-        } else if (command("dcol:y")) {
-            dCol = (Color.YELLOW);
-            input = "null";
-        } else if (command("dcol:r")) {
-            dCol = (Color.RED);
-            input = "null";
-        } else if (command("ortoX")) {
-            if (ortoX) ortoX = false;
-            else if (!ortoX) ortoX = true;
-            input = "null";
-        } else if (command("ortoY")) {
-            if (ortoY) ortoY = false;
-            else if (!ortoY) ortoY = true;
-            input = "null";
-        } else if (command("co")) {
-            readyToCopy = true;
-            input = "null";
-        } else if (command("m")) {
-            readyToMove = true;
-            input = "null";
-        } else if (command("t")) {
-            readyToInputText = true;
-            input = "null";
-            timer = new Timer(1, this);
-            timer.setRepeats(true);
-            timer.start();
-        } else if (command("esc")) {
-            if (ti != null && ti.isVisible()) ti.setVisible(false);
-            input = "null";
-            for (Line l : lines) if (l.isSelected()) l.selectedOff();
-            Iterator<Line> linesIt = lines.iterator();
-            while (linesIt.hasNext()) {
-                Line l = linesIt.next();
-                if (l.isPolyline()) linesIt.remove();
-            }
-            for (Text t : texts) if (t.isSelected()) t.selectedOff();
-            for (Rectangle r : rectangles) if (r.isSelected()) r.selectedOff();
-            for (Circle c : circles) if (c.isSelected()) c.selectedOff();
-            for (ImageClass i : imageClasses) if (i.isSelected()) i.selectedOff();
-            esc();
-            safelyRepaint();
-            repaint();
-        } else if (command("null")) {
-            input = "null";
-            readyToCopy = false;
-            readyToMove = false;
-            safelyRepaint();
-            repaint();
-        } else if (command("l") || command("c") || command("dist") || command("rec") || command("pl")) {
-            if (command("pl")) {
-                polyline =false;
-                plindex++;
-            }
-        } else {
-            Draw.unknownOn();
-            Draw.setText("unknown command");
-        }
-        inputH = input;
-        if (!drawing) safelyRepaint();
     }
 
     //---------------MOUSE SCROLL----------------------------------------------------------------------------
@@ -442,9 +311,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             }
             //...........drawing...............................
             Point2D pa;
-            if ((command("l") || command("pl") || command("c") || command("dist") || command("rec") || moving || copying) && !drawing) {
-                if (!selection || (x1 != 0 && y1 != 0 && (command("l") || command("pl"))) || (xo != 0 && yo != 0 && command("c")) ||
-                        (xd != 0 && yd != 0 && command("dist")) || (x1r != 0 && y1r != 0 && command("rec") || moving || copying))
+            if ((commandLine.command("l") || commandLine.command("pl") || commandLine.command("c") || commandLine.command("dist") || commandLine.command("rec") || moving || copying) && !drawing) {
+                if (!selection || (x1 != 0 && y1 != 0 && (commandLine.command("l") || commandLine.command("pl"))) || (xo != 0 && yo != 0 && commandLine.command("c")) ||
+                        (xd != 0 && yd != 0 && commandLine.command("dist")) || (x1r != 0 && y1r != 0 && commandLine.command("rec") || moving || copying))
                     drawing = true;
                 //.......point A...............................
                 if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0) {
@@ -456,7 +325,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     at.transform(pa, p2);
                     drawA((int) p2.getX(), (int) p2.getY());    //method point A
                 }
-            } else if (command("null") && !selection && !moving && !copying && !readyToInputText && !drawing) {
+            } else if (commandLine.command("null") && !selection && !moving && !copying && !readyToInputText && !drawing) {
                 //........selection rec........................
                 if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
                     p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx, MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
@@ -472,7 +341,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 return;
             } else if (drawing) {
                 //........point B...............................
-                if (!command("pl")) drawing = false;
+                if (!commandLine.command("pl")) drawing = false;
                 if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
                     pb = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x, MouseInfo.getPointerInfo().getLocation().y);
                 p3 = new Point2D.Double();
@@ -482,7 +351,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 at.transform(pb, p3);
                 drawB((int) p3.getX(), (int) p3.getY());    //method point B
             }
-            if (command("null") && selection) {
+            if (commandLine.command("null") && selection) {
                 //.........selecting (when marked)..............
                 selection = false;
                 for (ImageClass i : imageClasses) {
@@ -578,30 +447,19 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void mouseExited(MouseEvent e) {}
     public void mouseClicked(MouseEvent e) {}
 
-    //-----------CHECK WHETHER THE COMMAND IS s---------------------------------------------------------------
-    public boolean command(String s) {
-        boolean active = false;
-        Pattern p1 = Pattern.compile("\n" + s);
-        Pattern p2 = Pattern.compile(s);
-        Matcher m1 = p1.matcher(input);
-        Matcher m2 = p2.matcher(input);
-        if (m1.matches() || m2.matches()) active = true;
-        return active;
-    }
-
     //-----------FIRST MOUSECLICK (draw point A)------------------------------------------------------------------
     public void drawA(int x, int y) {
         if (x != 0 && y != 0) {
-            if (command("l") || command("pl")) {
+            if (commandLine.command("l") || commandLine.command("pl")) {
                 x1 = x;
                 y1 = y;
-            } else if (command("c")) {
+            } else if (commandLine.command("c")) {
                 xo = x;
                 yo = y;
-            } else if (command("dist")) {
+            } else if (commandLine.command("dist")) {
                 xd = x;
                 yd = y;
-            } else if (command("rec")) {
+            } else if (commandLine.command("rec")) {
                 x1r = x;
                 y1r = y;
             } else if (moving) {
@@ -618,11 +476,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     //---------------SECOND MOUSECLICK (draw point B)-------------------------------------------------
     public void drawB(int x, int y) {
         //............adding drawn objects to lists......
-        if (x1 != 0 && x2 != 0 && !command("pl")) {
+        if (x1 != 0 && x2 != 0 && !commandLine.command("pl")) {
             lines.add(new Line(x1, x2, y1, y2, dCol, false));
             cmd="lineadd";
         }
-        else if (x1 != 0 && x2 != 0 && command("pl")) {
+        else if (x1 != 0 && x2 != 0 && commandLine.command("pl")) {
             lines.add(new Line(x1, x2, y1, y2, dCol, true, plindex));
             cmd="plineadd";
         }
@@ -630,17 +488,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         if (xo != 0 && yo != 0) circles.add(new Circle(xo, yo, r, dCol));
 
         if (x != 0 && y != 0) {
-            if (command("l") || command("pl")) {
+            if (commandLine.command("l") || commandLine.command("pl")) {
                 if (ortoY) x2 = x1;
                 else x2 = x;
                 if (ortoX) y2 = y1;
                 else y2 = y;
-            } else if (command("c")) {
+            } else if (commandLine.command("c")) {
                 r = (int) Math.sqrt(Math.pow((x - xo), 2) + Math.pow((yo - y), 2));
-            } else if (command("dist")) {
+            } else if (commandLine.command("dist")) {
                 d = (int) Math.sqrt(Math.pow((x - xd), 2) + Math.pow((yd - y), 2));
                 Draw.setText("dist: " + d + "p");
-            } else if (command("rec")) {
+            } else if (commandLine.command("rec")) {
                 x2r = x;
                 y2r = y;
             } else if (moving || copying) {
@@ -657,12 +515,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 for (Circle c : circles) if (c.isSelected()) c.selectedOff();
             }
             repaint();
-            if (!command("pl")) {
+            if (!commandLine.command("pl")) {
                 safelyRepaint();
             }
             else drawA(xdyn, ydyn);    //polyline
             selection = false;
-            if (!command("pl")) input = "null";
+            if (!commandLine.command("pl")) input = "null";
         }
         readyToCopy = false;
         readyToMove = false;
@@ -684,16 +542,16 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         dy = y1s - y2s;
 
         //..........dynamic drawing (while drawing).............
-        if (command("l") || (command("pl"))) {
+        if (commandLine.command("l") || (commandLine.command("pl"))) {
             x1 += dx;
             y1 -= dy;
-        } else if (command("c")) {
+        } else if (commandLine.command("c")) {
             xo += dx;
             yo -= dy;
-        } else if (command("dist")) {
+        } else if (commandLine.command("dist")) {
             xd += dx;
             yd -= dy;
-        } else if (command("rec")) {
+        } else if (commandLine.command("rec")) {
             x1r += dx;
             y1r -= dy;
         } else if (moving) {
@@ -949,7 +807,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             Line2D.Double l2d = new Line2D.Double(x01, y01, x02, y02);
             return selRec.intersectsLine(l2d);
         }
-        command("esc");
+        commandLine.command("esc");
         return false;
     }
 
@@ -989,7 +847,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 if (selRec.contains(r2d.getMinX(), yrec) || selRec.contains(r2d.getMaxX(), yrec)) intersection2 = true;
             }
         }
-        if (command("esc")) return false;
+        if (commandLine.command("esc")) return false;
         return intersection1 || intersection2;
     }
 
@@ -1010,7 +868,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                     intersection1 = true;
             }
         }
-        if (command("esc")) return false;
+        if (commandLine.command("esc")) return false;
         return intersection1 || intersection2;
     }
 
@@ -1040,7 +898,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 }
             }
         }
-        command("esc");
+        commandLine.command("esc");
         return false;
     }
 
@@ -1050,7 +908,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         contourSel = new Rectangle2D.Double(imageClass.getXimg(), imageClass.getYimg(), imageClass.getWidth(), imageClass.getHeight());
         Shape newContourSel=atinverted2.createTransformedShape(contourSel);
         if (newContourSel.contains(p.getX(), p.getY())) return true;
-        command("esc");
+        commandLine.command("esc");
         return false;
     }
 
@@ -1455,4 +1313,68 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void setDy(int dy) {
         this.dy = dy;
     }
+
+    public void setInput(String input) {
+        this.input = input;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInputH(String inputH) {
+        this.inputH = inputH;
+    }
+
+    public String getInputH() {
+        return inputH;
+    }
+
+    public void selectionOff() {this.selection=false;}
+    public void drawingOff() {this.drawing=false;}
+    public void polylineOn() {this.polyline=true;}
+
+    public void setbCol(Color bCol) {
+        this.bCol = bCol;
+    }
+
+    public void setdCol(Color dCol) {
+        this.dCol = dCol;
+    }
+
+    public boolean isOrtoX() {
+        return ortoX;
+    }
+
+    public boolean isOrtoY() {
+        return ortoY;
+    }
+    public void setOrtoX(boolean ortoX) {this.ortoX=ortoX;}
+
+    public void setOrtoY(boolean ortoY) {
+        this.ortoY = ortoY;
+    }
+
+    public void setReadyToCopy(boolean readyToCopy) {
+        this.readyToCopy = readyToCopy;
+    }
+
+    public void setReadyToMove(boolean readyToMove) {
+        this.readyToMove = readyToMove;
+    }
+
+    public static void setReadyToInputText(boolean readyToInputText) {
+        Canvas.readyToInputText = readyToInputText;
+    }
+
+    public TextInput getTi() {
+        return ti;
+    }
+
+    public void polylineOff() {this.polyline = false;}
+
+    public boolean isDrawing() {
+        return drawing;
+    }
+    public CommandLine getCommandLine() {return this.commandLine;}
 }
