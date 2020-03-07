@@ -1,22 +1,22 @@
 package draw;
 
-import draw.paint.PaintingImages;
-import draw.paint.PaintingLines;
+import draw.paint.*;
 import objs.*;
 import java.awt.*;
 import objs.Rectangle;
 import ui.ImgPopup;
 import ui.Popup;
 import ui.TextInput;
-
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import javax.swing.Timer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -141,6 +141,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private int yr;
     private int xr;
     private PaintingLines paintingLines = new PaintingLines(this);
+    private PaintingCircles paintingCircles = new PaintingCircles(this);
+    private PaintingRectangles paintingRectangles = new PaintingRectangles(this);
+    private PaintingTexts paintingTexts = new PaintingTexts(this);
+    private PaintingGrid paintingGrid = new PaintingGrid(this);
+    private PaintSelectionRec paintSelectionRec = new PaintSelectionRec(this);
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -160,34 +165,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         zoom.dynamicZoom();
 
         //.........selection rec using timer.......................
-        if (selection) {
-            safelyRepaint();
-            if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
-                p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx,
-                        MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
-            Point2D p2sel = new Point2D.Double();
-            atinverted.transform(p, p2sel);
-            if (p1sel.getX() != 0 && p2sel.getY() != 0) {
-                p1sel.setLocation(p1sel.getX() + dx, p1sel.getY() - dy);    //moving while selecting
-                if (p2sel.getX() > p1sel.getX()) {
-                    xs = (int) p1sel.getX();
-                    ws = (int) p2sel.getX() - (int) p1sel.getX();
-                } else {
-                    xs = (int) p2sel.getX();
-                    ws = (int) p1sel.getX() - (int) p2sel.getX();
-                }
-                if (p2sel.getY() > p1sel.getY()) {
-                    ys = (int) p1sel.getY();
-                    hs = (int) p2sel.getY() - (int) p1sel.getY();
-                } else {
-                    ys = (int) p2sel.getY();
-                    hs = (int) p1sel.getY() - (int) p2sel.getY();
-                }
-            }
-            repaint();
-            dx = 0;
-            dy = 0;
-        }
+        paintSelectionRec.setupSelRecInterval();
 
         //................moving objects...............................
         if (movingC) moveC();
@@ -227,37 +205,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         g2.setBackground(bCol);
 
         //...............grid snapRecs..............................
-        g.setColor(Color.BLACK);
-        if (atSR == null || atSR != atinverted2) {
-            try {
-                atSR = (AffineTransform) at.createInverse().clone();
-            } catch (NoninvertibleTransformException ignored) {}
-        }
-        if (!gridLines.isEmpty()) for (Line l : gridLines) {
-            for (Rectangle2D sr : l.getSnapRecs()) {
-                if (l.getSrContains(l.getSnapRecs().indexOf(sr)) && snapToGridMode) { //single SR condition
-                    Point2D pSR = new Point2D.Double(sr.getX(), sr.getY());
-                    Point2D p2SR = new Point2D.Double();
-                    atSR.transform(pSR, p2SR);
-                    Shape sr2 = atSR.createTransformedShape(sr);
-                    try {
-                        g2.setStroke(new TransformedStroke(new BasicStroke(1), g2.getTransform()));
-                    } catch (NoninvertibleTransformException ignored) {}
-                    g2.draw(sr2);
-                    try {
-                        at.invert();
-                    } catch (NoninvertibleTransformException ignored) {}
-                }
-            }
-        }
+        paintingGrid.drawSnapRecs();
 
         //................circles snapRec.......................
-        g2.setColor(dCol);
-        for (Circle c : circles) {
-            if (c.getContains()) {
-                if (c.getContains() && snapMode) g2.draw(c.getSnapRec());
-            }
-        }
+        paintingCircles.drawSnapRecs();
 
         //...............images snapRecs.......................
         paintingImages.drawSnapRecs();
@@ -266,143 +217,19 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         paintingLines.drawSnapRecs();
 
         //...........rectangles snapRecs..............
-        for (Rectangle r : rectangles) {
-            if (r.getContains1() && snapMode) g2.draw(r.getSr1());
-            else if (r.getContains2() && snapMode) g2.draw(r.getSr2());
-            else if (r.getContains3() && snapMode) g2.draw(r.getSr3());
-            else if (r.getContains4() && snapMode) g2.draw(r.getSr4());
-        }
+        paintingRectangles.drawSnapRecs();
 
         //...........text snapRec.....................
-        for (Text t : texts) {
-            if (t.getContains() && snapMode) g2.draw(t.getSr());
-        }
+        paintingTexts.drawSnapRecs();
 
         paintingLines.drawLines(g);
 
         //..............drawing not-zoomed grid..........
-        g.setColor(Color.GRAY);
-        if (atGrid == null || atGrid != atinverted) {
-            try {
-                if (atSR != null) atGrid = atSR;
-                else atGrid = (AffineTransform) at.createInverse().clone();
-            } catch (NoninvertibleTransformException ignored) {}
-        }
-        if (!gridLines.isEmpty()) for (Line l : gridLines) {
-            Point2D pGrid1 = new Point2D.Double(l.getx1(), l.gety1());
-            Point2D p2Grid1 = new Point2D.Double();
-            Point2D pGrid2 = new Point2D.Double(l.getx2(), l.gety2());
-            Point2D p2Grid2 = new Point2D.Double();
-            atGrid.transform(pGrid1, p2Grid1);
-            atGrid.transform(pGrid2, p2Grid2);
-            try {
-                g2.setStroke(new TransformedStroke(new BasicStroke(1), g2.getTransform()));
-            } catch (NoninvertibleTransformException ignored) {}
-            java.awt.geom.Line2D line = new java.awt.geom.Line2D.Double(p2Grid1.getX(), p2Grid1.getY(), p2Grid2.getX(), p2Grid2.getY());
-            g2.draw(line);
-            try {
-                at.invert();
-            } catch (NoninvertibleTransformException ignored) {}
-        }
+        paintingGrid.drawGrid(g);
 
-        //...........drawing a rec dynamically...............
-        if (x2r > x1r) {
-            xr = x1r;
-            wr = x2r - x1r;
-        } else {
-            xr = x2r;
-            wr = x1r - x2r;
-        }
-        if (y2r > y1r) {
-            yr = y1r;
-            hr = y2r - y1r;
-        } else {
-            yr = y2r;
-            hr = y1r - y2r;
-        }
-        g.setColor(dCol);
-        if (xr != 0 && yr != 0) g.drawRect(xr, yr, wr, hr);
-        if (!rectangles.isEmpty()) for (Rectangle r : rectangles) {
-            //.........recs marked on.....................
-            if (r.getx1() != 0 && r.getx2() != 0 && recSelection(r)) {
-                r.setCol(Color.GRAY);
-                r.markedOn();
-            } else {
-                r.markedOff();
-                if (!r.getColoured()) {
-                    r.setCol(dCol);
-                    r.setColoured();
-                }
-                if (r.getCol() == Color.GRAY) r.setCol(r.getColH());
-            }
-            if (!imageClasses.isEmpty()) for (ImageClass imageClass : imageClasses) {
-                if (r.getImageClass() != null) if (imageSelection(r.getImageClass())) {
-                    r.setCol(Color.GRAY);
-                    r.markedOn();
-                } else {
-                    r.markedOff();
-                    r.setCol(dCol);
-                }
-            }
+        paintingRectangles.drawRectangles(g);
 
-            //..........drawing a rec statically..........
-            g.setColor(r.getCol());
-            x1rec = r.getx1();
-            x2rec = r.getx2();
-            y1rec = r.gety1();
-            y2rec = r.gety2();
-
-            if (x2rec > x1rec) {
-                xr = x1rec;
-                wr = x2rec - x1rec;
-            } else {
-                xr = x2rec;
-                wr = x1rec - x2rec;
-            }
-            if (y2rec > y1rec) {
-                yr = y1rec;
-                hr = y2rec - y1rec;
-            } else {
-                yr = y2rec;
-                hr = y1rec - y2rec;
-            }
-            if (r.getx1() != 0 && r.gety1() != 0 && r.getx2() != 0 && r.gety2() != 0 && !r.isSelected())
-                g.drawRect(xr, yr, wr, hr);
-            else if (r.getx1() != 0 && r.gety1() != 0 && r.getx2() != 0 && r.gety2() != 0 && r.isSelected()) {
-                //............recs bold.......................
-                g2.setStroke(new BasicStroke(3));
-                g2.drawRect(xr, yr, wr, hr);
-                g2.setStroke(new BasicStroke(1));
-            }
-        }
-
-        //....................drawing a circle dynamically....
-        g.setColor(dCol);
-        if (xo != 0 && yo != 0 && r != 0) g.drawOval(xo - r, yo - r, 2 * r, 2 * r);
-        for (Circle c : circles) {
-            //.................circles marked on................
-            if (c.getX() != 0 && c.getY() != 0 && circleSelection(c)) {
-                c.setCol(Color.GRAY);
-                c.markedOn();
-            } else {
-                c.markedOff();
-                if (!c.getColoured()) {
-                    c.setCol(dCol);
-                    c.setColoured();
-                }
-                if (c.getCol() == Color.GRAY) c.setCol(c.getColH());
-            }
-
-            //.................drawing a circle statically......
-            if (c.getX() != 0 && c.getY() != 0 && !c.isSelected())
-                g.drawOval(c.getX() - c.getR(), c.getY() - c.getR(), 2 * c.getR(), 2 * c.getR());
-            else if (c.getX() != 0 && c.getY() != 0 && c.isSelected()) {
-                //..............circle bold....................
-                g2.setStroke(new BasicStroke(3));
-                g2.drawOval(c.getX() - c.getR(), c.getY() - c.getR(), 2 * c.getR(), 2 * c.getR());
-                g2.setStroke(new BasicStroke(1));
-            }
-        }
+        paintingCircles.drawCircles(g);
 
         //......................unconditional timer.............
          if (timer == null || (timer != null && !timer.isRunning())) {
@@ -412,38 +239,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
             }
 
          //.....................resetting input...................
-        if ((!command("l")) && (!command("pl")) && (!command("c")) && (!command("dist")) && (!command("rec")))
+        if ((!command("l")) && (!command("pl")) && (!command("c"))
+                && (!command("dist")) && (!command("rec")))
             input = "null";
 
         //.......................drawing text.....................
-        if (inputText != null && p2 != null && readyToDrawText) {
-            texts.add(new Text(inputText, (int) p2.getX(), (int) p2.getY(), dCol));
-            readyToDrawText = false;
-        }
-        for (Text t : texts) {
-            g.setColor(t.getCol());
-            if (!t.isSelected()) {
-                g2.setColor(t.getCol());
-                g2.drawString(t.getText(), t.getx(), t.gety());
-            } else if (t.isSelected()) {
-                //..............text font bold.....................
-                Font font = super.getFont();
-                g2.setColor(t.getCol());
-                g2.setFont(new Font("default", Font.BOLD, font.getSize()));
-                g2.drawString(t.getText(), t.getx(), t.gety());
-                g2.setFont(font);
-                repaint();
-            }
-            //..................text marked on.....................
-            if (textSelection(t)) {
-                t.setCol(Color.GRAY);
-                t.markedOn();
-            } else {
-                t.setCol(dCol);
-                t.markedOff();
-            }
-        }
+        paintingTexts.drawTexts(g);
 
+        //.......................marking rectangle................
         if (selection) {
             g.setColor(Color.GRAY);
             if (xs != 0 && ys != 0 && ws != 0 && hs != 0) g.drawRect(xs, ys, ws, hs);
@@ -1604,4 +1407,52 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     }
 
     public Color getdCol() {return this.dCol;}
+
+    public int getX2r() {
+        return x2r;
+    }
+
+    public int getY2r() {
+        return y2r;
+    }
+
+    public int getR() {
+        return r;
+    }
+
+    public String getInputText() {return this.inputText;}
+    public boolean isReadyToDrawText() {return this.readyToDrawText;}
+    public void setReadyToDrawTextOff() {this.readyToDrawText=false;}
+    public AffineTransform getAtSR() {return this.atSR;}
+    public List<Line> getGridLines() {return this.gridLines;}
+    public AffineTransform getAtGrid() {return this.atGrid;}
+    public boolean isSelection() {return this.selection;}
+
+    public Point2D getP1sel() {
+        return p1sel;
+    }
+
+    public void setXs(int xs) {
+        this.xs = xs;
+    }
+
+    public void setYs(int ys) {
+        this.ys = ys;
+    }
+
+    public void setWs(int ws) {
+        this.ws = ws;
+    }
+
+    public void setHs(int hs) {
+        this.hs = hs;
+    }
+
+    public void setDx(int dx) {
+        this.dx = dx;
+    }
+
+    public void setDy(int dy) {
+        this.dy = dy;
+    }
 }
