@@ -5,10 +5,8 @@ import objs.Rectangle;
 import ui.ImgPopup;
 import ui.Popup;
 import ui.TextInput;
-
+import ui.TextInput;
 import java.awt.geom.AffineTransform;
-import java.util.List;
-import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;

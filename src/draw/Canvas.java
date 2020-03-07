@@ -146,6 +146,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private MouseEvents mouseEvents = new MouseEvents(this);
     private Point2D pa;
     private TimerClass timerClass = new TimerClass(this);
+    private SettingCoordinates settingCoordinates = new SettingCoordinates(this);
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -278,81 +279,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     //-----------FIRST MOUSECLICK (draw point A)------------------------------------------------------------------
     public void drawA(int x, int y) {
-        if (x != 0 && y != 0) {
-            if (commandLine.command("l") || commandLine.command("pl")) {
-                x1 = x;
-                y1 = y;
-            } else if (commandLine.command("c")) {
-                xo = x;
-                yo = y;
-            } else if (commandLine.command("dist")) {
-                xd = x;
-                yd = y;
-            } else if (commandLine.command("rec")) {
-                x1r = x;
-                y1r = y;
-            } else if (moving) {
-                x1m = x;
-                y1m = y;
-            } else if (copying) {
-                x1c = x;
-                y1c = y;
-            }
-            repaint();
-        }
+        settingCoordinates.setFirstPointCoords(x, y);
     }
 
     //---------------SECOND MOUSECLICK (draw point B)-------------------------------------------------
     public void drawB(int x, int y) {
-        //............adding drawn objects to lists......
-        if (x1 != 0 && x2 != 0 && !commandLine.command("pl")) {
-            lines.add(new Line(x1, x2, y1, y2, dCol, false));
-            cmd="lineadd";
-        }
-        else if (x1 != 0 && x2 != 0 && commandLine.command("pl")) {
-            lines.add(new Line(x1, x2, y1, y2, dCol, true, plindex));
-            cmd="plineadd";
-        }
-        if (x1r != 0 && x2r != 0) rectangles.add(new Rectangle(x1r, x2r, y1r, y2r, dCol));
-        if (xo != 0 && yo != 0) circles.add(new Circle(xo, yo, r, dCol));
-
-        if (x != 0 && y != 0) {
-            if (commandLine.command("l") || commandLine.command("pl")) {
-                if (ortoY) x2 = x1;
-                else x2 = x;
-                if (ortoX) y2 = y1;
-                else y2 = y;
-            } else if (commandLine.command("c")) {
-                r = (int) Math.sqrt(Math.pow((x - xo), 2) + Math.pow((yo - y), 2));
-            } else if (commandLine.command("dist")) {
-                d = (int) Math.sqrt(Math.pow((x - xd), 2) + Math.pow((yd - y), 2));
-                Draw.setText("dist: " + d + "p");
-            } else if (commandLine.command("rec")) {
-                x2r = x;
-                y2r = y;
-            } else if (moving || copying) {
-                moving = false;
-                copying = false;
-                for (ImageClass i : imageClasses) if (i.isSelected()) i.selectedOff();
-                for (Text t : texts) if (t.isSelected()) t.selectedOff();
-                for (Line l : lines)
-                    if (l.isSelected()) {
-                        l.selectedOff();
-                        l.copiedOff();
-                    }
-                for (Rectangle r : rectangles) if (r.isSelected()) r.selectedOff();
-                for (Circle c : circles) if (c.isSelected()) c.selectedOff();
-            }
-            repaint();
-            if (!commandLine.command("pl")) {
-                safelyRepaint();
-            }
-            else drawA(xdyn, ydyn);    //polyline
-            selection = false;
-            if (!commandLine.command("pl")) input = "null";
-        }
-        readyToCopy = false;
-        readyToMove = false;
+        settingCoordinates.setSecondPointCoords(x, y);
     }
 
     //-------------EXPLORING THE CANVAS WITH MOUSEWHEEL------------------------------------------------------
@@ -1278,5 +1210,57 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     public static void setTimer(Timer timer) {
         Canvas.timer = timer;
+    }
+
+    public void setX1(int x1) {
+        this.x1 = x1;
+    }
+
+    public void setY1(int y1) {
+        this.y1 = y1;
+    }
+
+    public void setXo(int xo) {
+        this.xo = xo;
+    }
+
+    public void setYo(int yo) {
+        this.yo = yo;
+    }
+
+    public void setXd(int xd) {
+        this.xd = xd;
+    }
+
+    public void setYd(int yd) {
+        this.yd = yd;
+    }
+
+    public void setX1r(int x1r) {
+        this.x1r = x1r;
+    }
+
+    public void setY1r(int y1r) {
+        this.y1r = y1r;
+    }
+
+    public void setX1m(int x1m) {
+        this.x1m = x1m;
+    }
+
+    public void setY1m(int y1m) {
+        this.y1m = y1m;
+    }
+
+    public void setX1c(int x1c) {
+        this.x1c = x1c;
+    }
+
+    public void setY1c(int y1c) {
+        this.y1c = y1c;
+    }
+
+    public int getD() {
+        return d;
     }
 }
