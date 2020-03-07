@@ -45,44 +45,77 @@ public class MouseEvents {
         }
         //....................scroll mouse button.......
         if ((e.getModifiers() & InputEvent.BUTTON2_MASK) != 0) {
-            if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0)
-                //............moving thru canvas................
-                canvas.setPoint(new Point2D.Double(canvas.getLocationX(), canvas.getLocationY()));
-            Point2D p1s = new Point2D.Double();
-            try {
-                at.invert();
-            } catch (Exception ignored) {
-            }
-            at.transform(canvas.getPoint(), p1s);
-            canvas.setX1s((int) p1s.getX());
-            canvas.setY1s((int) p1s.getY());
-            canvas.setMovingC(true);
-            canvas.repaint();
+            scrollMouseButton(at);
         }
         //...................right mouse button...............
         if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
-            ImgPopup menu = new ImgPopup(canvas);
-            ui.Popup menu1 = new Popup();
-            //................ImgPopup (move to front/back)....
-            for (ImageClass i : canvas.getImageClasses()) {
-                if (canvas.overImage(i)) {
-                    canvas.setNoOfOvers(canvas.getNoOfOvers()+1);
-                    i.overImageOn();
-                    menu.setImageClass(i);
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                } else i.overImageOff();
-            }
-            //...............Popup (right mouseclick menu).......
-            for (ImageClass i : canvas.getImageClasses()) {
-                if (canvas.getNoOfOvers() == 0) menu1.show(e.getComponent(), e.getX(), e.getY());
-            }
-            if (canvas.getImageClasses().isEmpty()) menu1.show(e.getComponent(), e.getX(), e.getY());
-            canvas.setNoOfOvers(0);
+            rightMouseButton(e);
         }
         canvas.repaint();
     }
 
     public void leftMouseButton() {
+        moving();
+        drawing();
+        showTextInput();
+    }
+
+    public void rightMouseButton(MouseEvent e) {
+        ImgPopup menu = new ImgPopup(canvas);
+        ui.Popup menu1 = new Popup();
+        //................ImgPopup (move to front/back)....
+        for (ImageClass i : canvas.getImageClasses()) {
+            if (canvas.overImage(i)) {
+                canvas.setNoOfOvers(canvas.getNoOfOvers()+1);
+                i.overImageOn();
+                menu.setImageClass(i);
+                menu.show(e.getComponent(), e.getX(), e.getY());
+            } else i.overImageOff();
+        }
+        //...............Popup (right mouseclick menu).......
+        for (ImageClass i : canvas.getImageClasses()) {
+            if (canvas.getNoOfOvers() == 0) menu1.show(e.getComponent(), e.getX(), e.getY());
+        }
+        if (canvas.getImageClasses().isEmpty()) menu1.show(e.getComponent(), e.getX(), e.getY());
+        canvas.setNoOfOvers(0);
+    }
+
+    public void scrollMouseButton(AffineTransform at) {
+        if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0)
+            //............moving thru canvas................
+            canvas.setPoint(new Point2D.Double(canvas.getLocationX(), canvas.getLocationY()));
+        Point2D p1s = new Point2D.Double();
+        try {
+            at.invert();
+        } catch (Exception ignored) {
+        }
+        at.transform(canvas.getPoint(), p1s);
+        canvas.setX1s((int) p1s.getX());
+        canvas.setY1s((int) p1s.getY());
+        canvas.setMovingC(true);
+        canvas.repaint();
+    }
+
+    public void showTextInput() {
+        if (Canvas.isReadyToInputText()) {
+            //...........show text input window............
+            canvas.setPa(new Point2D.Double(canvas.getLocationX() - canvas.getScreenx(),
+                    canvas.getLocationY() - canvas.getScreeny()));
+            canvas.setP2(new Point2D.Double());
+            try {
+                canvas.getAt().invert();
+            } catch (NoninvertibleTransformException ignored) {}
+            canvas.getAt().transform(canvas.getPa(), canvas.getP2());
+            if (canvas.getTi() != null) canvas.getTi().dispose();
+            canvas.setTi(new TextInput());
+            canvas.getTi().setLocation((int) canvas.getP2().getX(), (int) canvas.getP2().getY());
+            canvas.getTi().dispose();
+            canvas.getTi().setUndecorated(true);
+            canvas.getTi().setVisible(true);
+        }
+    }
+
+    public void moving() {
         //..........moving......................................
         for (Line l : canvas.getLines()) {
             if (l.isSelected() && (canvas.isReadyToMove())) canvas.setMoving(true);
@@ -114,7 +147,9 @@ public class MouseEvents {
         for (Circle c : canvas.getCircles()) {
             if (c.isSelected() && (canvas.isReadyToCopy())) canvas.setCopying(true);
         }
-        //...........drawing...............................
+    }
+
+    public void drawing() {
         if ((commandLine.command("l") || commandLine.command("pl") || commandLine.command("c") || commandLine.command("dist") || commandLine.command("rec") || canvas.isMoving() || canvas.isCopying()) && !canvas.isDrawing()) {
             if (!canvas.isSelection() || (canvas.getX1() != 0 && canvas.getY1() != 0 && (commandLine.command("l") || commandLine.command("pl"))) || (canvas.getXo() != 0 && canvas.getYo() != 0 && commandLine.command("c")) ||
                     (canvas.getXd() != 0 && canvas.getYd() != 0 && commandLine.command("dist")) || (canvas.getX1r() != 0 && canvas.getY1r() != 0 && commandLine.command("rec") || canvas.isMoving() || canvas.isCopying()))
@@ -184,22 +219,6 @@ public class MouseEvents {
             canvas.setYs(0);
             canvas.setWs(0);
             canvas.setHs(0);
-        }
-        if (Canvas.isReadyToInputText()) {
-            //...........show text input window............
-            canvas.setPa(new Point2D.Double(canvas.getLocationX() - canvas.getScreenx(),
-                    canvas.getLocationY() - canvas.getScreeny()));
-            canvas.setP2(new Point2D.Double());
-            try {
-                canvas.getAt().invert();
-            } catch (NoninvertibleTransformException ignored) {}
-            canvas.getAt().transform(canvas.getPa(), canvas.getP2());
-            if (canvas.getTi() != null) canvas.getTi().dispose();
-            canvas.setTi(new TextInput());
-            canvas.getTi().setLocation((int) canvas.getP2().getX(), (int) canvas.getP2().getY());
-            canvas.getTi().dispose();
-            canvas.getTi().setUndecorated(true);
-            canvas.getTi().setVisible(true);
         }
     }
 }
