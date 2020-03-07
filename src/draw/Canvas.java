@@ -148,6 +148,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private PaintingGrid paintingGrid = new PaintingGrid(this);
     private PaintSelectionRec paintSelectionRec = new PaintSelectionRec(this);
     private boolean polyline;
+    private MouseEvents mouseEvents = new MouseEvents(this);
+    private Point2D pa;
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -260,179 +262,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     //---------------MOUSE SCROLL----------------------------------------------------------------------------
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        //...........zoom in................................
-        if (e.getWheelRotation() < 0) {
-            zoomFactor *= 1.1;
-            repaint();
-        }
-        //............zoom out.................................
-        if (e.getWheelRotation() > 0) {
-            zoomFactor /= 1.1;
-            repaint();
-        }
+        mouseEvents.mouseWheelMoved(e);
     }
 
     //---------------MOUSE PRESSED------------------------------------------------------------------------
     @Override
     @SuppressWarnings("empty-statement")
     public void mousePressed(MouseEvent e) {
-        //............left mouse button.............................
-        if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
-            //..........moving......................................
-            for (Line l : lines) {
-                if (l.isSelected() && (readyToMove)) moving = true;
-            }
-            for (Text t : texts) {
-                if (t.isSelected() && (readyToMove)) moving = true;
-            }
-            for (ImageClass i : imageClasses) {
-                if (i.isSelected() && (readyToMove)) moving = true;
-            }
-            for (Rectangle r : rectangles) {
-                if (r.isSelected() && (readyToMove)) moving = true;
-            }
-            for (Circle c : circles) {
-                if (c.isSelected() && (readyToMove)) moving = true;
-            }
-            for (Line l : lines) {
-                if (l.isSelected() && (readyToCopy)) copying = true;
-            }
-            for (Text t : texts) {
-                if (t.isSelected() && (readyToCopy)) copying = true;
-            }
-            for (ImageClass i : imageClasses) {
-                if (i.isSelected() && (readyToCopy)) copying = true;
-            }
-            for (Rectangle r : rectangles) {
-                if (r.isSelected() && (readyToCopy)) copying = true;
-            }
-            for (Circle c : circles) {
-                if (c.isSelected() && (readyToCopy)) copying = true;
-            }
-            //...........drawing...............................
-            Point2D pa;
-            if ((commandLine.command("l") || commandLine.command("pl") || commandLine.command("c") || commandLine.command("dist") || commandLine.command("rec") || moving || copying) && !drawing) {
-                if (!selection || (x1 != 0 && y1 != 0 && (commandLine.command("l") || commandLine.command("pl"))) || (xo != 0 && yo != 0 && commandLine.command("c")) ||
-                        (xd != 0 && yd != 0 && commandLine.command("dist")) || (x1r != 0 && y1r != 0 && commandLine.command("rec") || moving || copying))
-                    drawing = true;
-                //.......point A...............................
-                if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0) {
-                    pa = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx, MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
-                    p2 = new Point2D.Double();
-                    try {
-                        at.invert();
-                    } catch (NoninvertibleTransformException ignored) {}
-                    at.transform(pa, p2);
-                    drawA((int) p2.getX(), (int) p2.getY());    //method point A
-                }
-            } else if (commandLine.command("null") && !selection && !moving && !copying && !readyToInputText && !drawing) {
-                //........selection rec........................
-                if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
-                    p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx, MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
-                p1sel = new Point2D.Double();
-                try {
-                    at.invert();
-                } catch (Exception ignored) {
-                }
-                at.transform(p, p1sel);
-                selection = true;
-                repaint();
-                safelyRepaint();
-                return;
-            } else if (drawing) {
-                //........point B...............................
-                if (!commandLine.command("pl")) drawing = false;
-                if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
-                    pb = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x, MouseInfo.getPointerInfo().getLocation().y);
-                p3 = new Point2D.Double();
-                try {
-                    at.invert();
-                } catch (Exception ignored) {}
-                at.transform(pb, p3);
-                drawB((int) p3.getX(), (int) p3.getY());    //method point B
-            }
-            if (commandLine.command("null") && selection) {
-                //.........selecting (when marked)..............
-                selection = false;
-                for (ImageClass i : imageClasses) {
-                    if (i.isMarked()) i.selectedOn();
-                    i.paint();
-                }
-                for (Text t : texts) {
-                    if (t.isMarked()) t.selectedOn();
-                }
-                for (Line l : lines) {
-                    if (l.isMarked()) l.selectedOn();
-                }
-                for (Rectangle r : rectangles) {
-                    if (r.isMarked()) r.selectedOn();
-                    if (!imageClasses.isEmpty()) for (ImageClass imageClass : imageClasses)
-                        if (r.getImageClass() == imageClass && imageSelection(imageClass)) r.selectedOn();
-                }
-                for (Circle c : circles) {
-                    if (c.isMarked()) c.selectedOn();
-                }
-                repaint();
-                xs = 0;
-                ys = 0;
-                ws = 0;
-                hs = 0;
-            }
-            if (readyToInputText) {
-                //...........show text input window............
-                pa = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - screenx,
-                        MouseInfo.getPointerInfo().getLocation().y - screeny);
-                p2 = new Point2D.Double();
-                try {
-                    at.invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                at.transform(pa, p2);
-                if (ti != null) ti.dispose();
-                ti = new TextInput();
-                ti.setLocation((int) p2.getX(), (int) p2.getY());
-                ti.dispose();
-                ti.setUndecorated(true);
-                ti.setVisible(true);
-            }
-        }
-        //....................scroll mouse button.......
-        if ((e.getModifiers() & InputEvent.BUTTON2_MASK) != 0) {
-            if (MouseInfo.getPointerInfo().getLocation().x != 0 && MouseInfo.getPointerInfo().getLocation().y != 0)
-                //............moving thru canvas................
-                p = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x,
-                        MouseInfo.getPointerInfo().getLocation().y);
-            Point2D p1s = new Point2D.Double();
-            try {
-                at.invert();
-            } catch (Exception ignored) {
-            }
-            at.transform(p, p1s);
-            x1s = (int) p1s.getX();
-            y1s = (int) p1s.getY();
-            movingC = true;
-            repaint();
-        }
-        //...................right mouse button...............
-        if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
-            ImgPopup menu = new ImgPopup(this);
-            ui.Popup menu1 = new Popup();
-            //................ImgPopup (move to front/back)....
-            for (ImageClass i : imageClasses) {
-                if (overImage(i)) {
-                    noOfOvers++;
-                    i.overImageOn();
-                    menu.setImageClass(i);
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                } else i.overImageOff();
-            }
-            //...............Popup (right mouseclick menu).......
-            for (ImageClass i : imageClasses) {
-                if (noOfOvers == 0) menu1.show(e.getComponent(), e.getX(), e.getY());
-            }
-            if (imageClasses.isEmpty()) menu1.show(e.getComponent(), e.getX(), e.getY());
-            noOfOvers = 0;
-        }
-        repaint();
+        mouseEvents.mousePressed(e);
     }
 
     @Override
@@ -1377,4 +1214,74 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         return drawing;
     }
     public CommandLine getCommandLine() {return this.commandLine;}
+
+    public boolean isReadyToMove() {
+        return readyToMove;
+    }
+
+    public boolean isReadyToCopy() {
+        return readyToCopy;
+    }
+
+    public void setMoving(boolean moving) {
+        this.moving = moving;
+    }
+
+    public void setCopying(boolean copying) {
+        this.copying = copying;
+    }
+
+    public boolean isMoving() {
+        return moving;
+    }
+
+    public boolean isCopying() {
+        return copying;
+    }
+
+    public static boolean isReadyToInputText() {
+        return readyToInputText;
+    }
+
+    public void setP1sel(Point2D p1sel) {
+        this.p1sel = p1sel;
+    }
+
+    public void setPb(Point2D pb) {
+        this.pb = pb;
+    }
+
+    public Point2D getPb() {
+        return pb;
+    }
+
+    public void setX1s(int x1s) {
+        this.x1s = x1s;
+    }
+
+    public void setY1s(int y1s) {
+        this.y1s = y1s;
+    }
+
+    public void setMovingC(boolean movingC) {
+        this.movingC = movingC;
+    }
+
+    public void setNoOfOvers(int noOfOvers) {
+        this.noOfOvers = noOfOvers;
+    }
+
+    public int getNoOfOvers() {
+        return noOfOvers;
+    }
+
+    public void drawingOn() {this.drawing=true;}
+    public void selectionOn() {this.selection=true;}
+    public Point2D getPa() {return this.pa;}
+    public void setPa(Point2D pa) {this.pa=pa;}
+
+    public void setTi(TextInput ti) {
+        this.ti = ti;
+    }
+    
 }
