@@ -4,22 +4,17 @@ import draw.paint.*;
 import objs.*;
 import java.awt.*;
 import objs.Rectangle;
-import ui.ImgPopup;
-import ui.Popup;
 import ui.TextInput;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 @SuppressWarnings({"ALL", "ConstantConditions", "DuplicateExpressions"})
 public class Canvas extends JPanel implements MouseListener, ActionListener, MouseWheelListener {
@@ -150,6 +145,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private boolean polyline;
     private MouseEvents mouseEvents = new MouseEvents(this);
     private Point2D pa;
+    private TimerClass timerClass = new TimerClass(this);
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -238,11 +234,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
         paintingCircles.drawCircles(g);
 
         //......................unconditional timer.............
-         if (timer == null || (timer != null && !timer.isRunning())) {
-            timer = new Timer(1, this);
-            timer.setRepeats(true);
-            timer.start();
-            }
+         timerClass.start();
 
          //.....................resetting input...................
         if ((!commandLine.command("l")) && (!commandLine.command("pl")) && (!commandLine.command("c"))
@@ -1283,5 +1275,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void setTi(TextInput ti) {
         this.ti = ti;
     }
-    
+
+    public static void setTimer(Timer timer) {
+        Canvas.timer = timer;
+    }
 }
