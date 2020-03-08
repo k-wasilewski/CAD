@@ -1,11 +1,10 @@
 package draw.func;
 
 import draw.Canvas;
-import draw.Draw;
+import draw.CADapp;
 import objs.*;
 import objs.Rectangle;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -148,8 +147,8 @@ public class CommandLine {
                 canvas.setPlindex(canvas.getPlindex()+1);
             }
         } else {
-            Draw.unknownOn();
-            Draw.setText("unknown command");
+            CADapp.unknownOn();
+            CADapp.setText("unknown command");
         }
         canvas.setInputH(canvas.getInput());
         if (!canvas.isDrawing()) canvas.safelyRepaint();

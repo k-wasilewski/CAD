@@ -16,8 +16,8 @@ public class ImgPopup extends JPopupMenu {
     public ImgPopup(Canvas c) {
         canvas = c;  
         
-        front = new JMenuItem("Move image to front");
-        back = new JMenuItem("Move image to back");
+        front = new JMenuItem("Moving image to front");
+        back = new JMenuItem("Moving image to back");
         add(front);
         add(back);
         front.addActionListener(this::frontActionPerformed);

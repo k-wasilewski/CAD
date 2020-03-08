@@ -13,12 +13,12 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-public class Snap {
+public class Snapping {
     private draw.Canvas canvas;
     private boolean snapExecuted=false;
-    private Zoom zoom;
+    private Zooming zoom;
 
-    public Snap(Canvas canvas) {
+    public Snapping(Canvas canvas) {
         this.canvas = canvas;
     }
 

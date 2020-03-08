@@ -21,7 +21,6 @@ public class TextInput extends javax.swing.JFrame implements KeyListener {
         }
         if(e.getKeyCode() == KeyEvent.VK_ENTER){
             Canvas.drawText(jTextField1.getText());
-            Canvas.getTimer().start();
             this.dispose();
         }
     }

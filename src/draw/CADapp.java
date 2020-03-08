@@ -18,7 +18,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 @SuppressWarnings({"SpellCheckingInspection", "deprecation", "unchecked", "AccessStaticViaInstance", "CanBeFinal", "RedundantThrows", "unused", "rawtypes"})
-public class Draw extends JFrame {
+public class CADapp extends JFrame {
   private Canvas canvas;
   private static boolean unknown;
   private static javax.swing.JTextArea jTextArea3;
@@ -37,7 +37,7 @@ public class Draw extends JFrame {
   public void run(JFrame f) {
       SwingUtilities.invokeLater(() -> f.setVisible(true));
   }
-  public Draw() {
+  public CADapp() {
       canvas = new Canvas();
       commandLine=canvas.getCommandLine();
       //.......scrolling command lines...................
@@ -119,7 +119,7 @@ public class Draw extends JFrame {
       //--------------SAVE FILE-------------------------------------------------------------------------
       menuItem3.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(java.awt.event.ActionEvent evt) {
-              int button = jFileChooser1.showSaveDialog(Draw.this);
+              int button = jFileChooser1.showSaveDialog(CADapp.this);
               if (button == jFileChooser1.APPROVE_OPTION) {
                   canvas.setFilename(jFileChooser1.getSelectedFile().getName());
                   canvas.setDir(jFileChooser1.getCurrentDirectory().toString());
@@ -153,7 +153,7 @@ public class Draw extends JFrame {
           }
 
           private void menuItem5ActionPerformed(ActionEvent evt) throws IOException {
-              int button = jFileChooser2.showOpenDialog(Draw.this);
+              int button = jFileChooser2.showOpenDialog(CADapp.this);
               if (button == jFileChooser2.APPROVE_OPTION) {
                   canvas.setFilename(jFileChooser2.getSelectedFile().getName());
                   canvas.setDir(jFileChooser2.getCurrentDirectory().toString());
@@ -181,7 +181,7 @@ public class Draw extends JFrame {
 
           private void menuItem6ActionPerformed(ActionEvent evt) throws IOException {
               jFileChooser3.setFileFilter(new CvsExt("cvs"));
-              int button = jFileChooser3.showOpenDialog(Draw.this);
+              int button = jFileChooser3.showOpenDialog(CADapp.this);
               if (button == jFileChooser3.APPROVE_OPTION) {
                   canvas.setFilename(jFileChooser3.getSelectedFile().getName());
                   canvas.setDir(jFileChooser3.getCurrentDirectory().toString());
@@ -221,7 +221,7 @@ public class Draw extends JFrame {
           }
 
           public void menuItem4ActionPerformed(ActionEvent evt) {
-              int button = jFileChooser1.showSaveDialog(Draw.this);
+              int button = jFileChooser1.showSaveDialog(CADapp.this);
               if (button == jFileChooser1.APPROVE_OPTION) {
                   canvas.setFilename(jFileChooser1.getSelectedFile().getName());
                   canvas.setDir(jFileChooser1.getCurrentDirectory().toString());
@@ -347,7 +347,7 @@ public class Draw extends JFrame {
   //------------------RUN----------------------------------------------------------------------------------
   public static void main(String[] args) {
     System.setProperty("java.awt.headless", "true");    //just in case (f/ linux os)
-    Draw sw = new Draw();
+    CADapp sw = new CADapp();
     sw.run(sw);
   }
 }

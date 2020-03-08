@@ -123,11 +123,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private boolean popup;
     private CommandLine commandLine = new CommandLine(this);
-    private Zoom zoom = new Zoom(this);
+    private Zooming zoom = new Zooming(this);
     private double xRel;
     private double yRel;
     private double zoomDiv;
-    private Snap snap = new Snap(this);
+    private Snapping snap = new Snapping(this);
     private PaintingImages paintingImages = new PaintingImages(this);
     private int y2rec;
     private int x2rec;
@@ -148,7 +148,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private Point2D pa;
     private TimerClass timerClass = new TimerClass(this);
     private SettingCoordinates settingCoordinates = new SettingCoordinates(this);
-    private Move move = new Move(this);
+    private Moving move = new Moving(this);
+    private Selecting selecting = new Selecting(this);
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -328,119 +329,32 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     //---------------CHECK WHETHER THE SELECTION REC AND DRAWN LINE INTERSECT--------------------------------------
     public boolean lineSelection(Line l) {
-        int x01 = l.getx1();
-        int x02 = l.getx2();
-        int y01 = l.gety1();
-        int y02 = l.gety2();
-
-        if (xs != 0 && ys != 0 && x01 != 0 && y01 != 0 && x02 != 0 && y02 != 0) {
-            selRec = new Rectangle2D.Double(xs, ys, ws, hs);
-            Line2D.Double l2d = new Line2D.Double(x01, y01, x02, y02);
-            return selRec.intersectsLine(l2d);
-        }
-        commandLine.command("esc");
-        return false;
+        return selecting.lineSelection(l);
     }
 
     //-------------CHECK WHETHER THE SELECTION REC AND DRAWN REC INTERSECT-------------------------------------
     public boolean recSelection(Rectangle r) {
-        intersection1 = false;
-        intersection2 = false;
-        xrec = 0;
-        yrec = 0;
-        if (xs != 0 && ys != 0) {
-            int w0r;
-            int x0r;
-            if (r.getx2() > r.getx1()) {
-                x0r = r.getx1();
-                w0r = r.getx2() - r.getx1();
-            } else {
-                x0r = r.getx2();
-                w0r = r.getx1() - r.getx2();
-            }
-            int h0r;
-            int y0r;
-            if (r.gety2() > r.gety1()) {
-                y0r = r.gety1();
-                h0r = r.gety2() - r.gety1();
-            } else {
-                y0r = r.gety2();
-                h0r = r.gety1() - r.gety2();
-            }
-            selRec = new Rectangle2D.Double(xs, ys, ws, hs);
-            Rectangle2D.Double r2d = new Rectangle2D.Double(x0r, y0r, w0r, h0r);
-
-            //..........contour's intersection condition..............
-            for (xrec = r2d.getMinX(); xrec <= r2d.getMaxX(); xrec++) {
-                if (selRec.contains(xrec, r2d.getMinY()) || selRec.contains(xrec, r2d.getMaxY())) intersection1 = true;
-            }
-            for (yrec = r2d.getMinY(); yrec <= r2d.getMaxY(); yrec++) {
-                if (selRec.contains(r2d.getMinX(), yrec) || selRec.contains(r2d.getMaxX(), yrec)) intersection2 = true;
-            }
-        }
-        if (commandLine.command("esc")) return false;
-        return intersection1 || intersection2;
+        return selecting.rectangleSelection(r);
     }
 
     //---------------CHECK WHETHER THE SELECTION REC AND DRAWN CIRCLE INTERSECT----------------------------------
     public boolean circleSelection(Circle c) {
-        intersection1 = false;
-        intersection2 = false;
-        if (xs != 0 && ys != 0 && ws != 0 && hs != 0 && c.getX() != 0 && c.getY() != 0 && c.getR() != 0) {
-            selRec = new Rectangle2D.Double(xs, ys, ws, hs);
-            Ellipse2D.Double c2d = new Ellipse2D.Double(c.getX() - c.getR(), c.getY() - c.getR(), 2 * c.getR(), 2 * c.getR());
-            int xocirc = c.getX();
-            int yocirc = c.getY();
-            int rcirc = c.getR();
-            double xcirc;
-            for (xcirc = c2d.getMinX(); xcirc <= c2d.getMaxX(); xcirc++) {
-                if ((selRec.contains(xcirc, Math.sqrt(Math.pow(rcirc, 2) - Math.pow((xcirc - xocirc), 2)) + yocirc)) ||
-                        (selRec.contains(xcirc, -Math.sqrt(Math.pow(rcirc, 2) - Math.pow((xcirc - xocirc), 2)) + yocirc)))
-                    intersection1 = true;
-            }
-        }
-        if (commandLine.command("esc")) return false;
-        return intersection1 || intersection2;
+        return selecting.circleSelection(c);
     }
 
     //-----------------CHECK WHETHER THE SELECTION REC AND DRAWN TEXT INTERSECT------------------------------------
     public boolean textSelection(Text t) {
-        if (t != null) {
-            selRec = new Rectangle2D.Double(xs, ys, ws, hs);
-            Rectangle2D txtRec = new Rectangle2D.Double(t.getx(), t.gety() - 12, g2.getFontMetrics().stringWidth(t.getText()),
-                    g2.getFontMetrics().getHeight());
-            return selRec.intersects(txtRec);
-        }
-        return false;
+        return selecting.textSelection(t);
     }
 
     //-----------------CHECK WHETHER THE SELECTION REC AND IMPORTED IMAGE INTERSECT-------------------------------
     public boolean imageSelection(ImageClass imageClass) {
-        if (xs != 0 && ys != 0 && imageClass != null) {
-            selRec = new Rectangle2D.Double(xs, ys, ws, hs);
-            contourSel = new Rectangle2D.Double(xrec, yrec, imageClass.getWidth(), imageClass.getHeight());
-
-            //.........contour's intersection condition................
-            double xcont;
-            for (xcont = contourSel.getMinX(); xcont <= contourSel.getMaxX(); xcont++) {
-                double ycont;
-                for (ycont = contourSel.getMinY(); ycont <= contourSel.getMaxY(); ycont++) {
-                    if (selRec.contains(xcont + imageClass.getXimg(), ycont + imageClass.getYimg())) return true;
-                }
-            }
-        }
-        commandLine.command("esc");
-        return false;
+        return selecting.imageSelection(imageClass);
     }
 
     //----------------CHECK WHETHER THE RIGHT MOUSECLICK IS OVER AN IMAGE---------------------------------------
     public boolean overImage(ImageClass imageClass) {
-        selRec = new Rectangle2D.Double(xs, ys, ws, hs);
-        contourSel = new Rectangle2D.Double(imageClass.getXimg(), imageClass.getYimg(), imageClass.getWidth(), imageClass.getHeight());
-        Shape newContourSel=atinverted2.createTransformedShape(contourSel);
-        if (newContourSel.contains(p.getX(), p.getY())) return true;
-        commandLine.command("esc");
-        return false;
+        return selecting.isOverImage(imageClass);
     }
 
     //----------------EXPORT AS IMAGE-----------------------------------------------------------------------------
@@ -453,7 +367,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
                 ImageIO.write(bufferedImage, "jpeg", new File(dir + "\\" + filename + ".jpeg"));
             else if (System.getProperty("os.name").toLowerCase().contains("linux"))
                 ImageIO.write(bufferedImage, "jpeg", new File(dir + "/" + filename + ".jpeg"));
-        } else Draw.setText("Error");
+        } else CADapp.setText("Error");
     }
 
     //---------------IMPORT FILE-----------------------------------------------------------------------------
@@ -785,7 +699,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     }
     public boolean snapMode() {return this.snapMode;}
     public boolean snapToGridMode() {return this.snapToGridMode;}
-    public Zoom getZoom() {return this.zoom;}
+    public Zooming getZoom() {return this.zoom;}
 
     public void setXimg(int ximg) {
         this.ximg = ximg;
@@ -1104,5 +1018,37 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     public void setY2ch(int y2ch) {
         this.y2ch = y2ch;
+    }
+
+    public int getXs() {
+        return xs;
+    }
+
+    public int getYs() {
+        return ys;
+    }
+
+    public int getWs() {
+        return ws;
+    }
+
+    public int getHs() {
+        return hs;
+    }
+
+    public void setXrec(double xrec) {
+        this.xrec = xrec;
+    }
+
+    public void setYrec(double yrec) {
+        this.yrec = yrec;
+    }
+
+    public double getXrec() {
+        return xrec;
+    }
+
+    public double getYrec() {
+        return yrec;
     }
 }

@@ -51,6 +51,7 @@ public class PaintingCircles {
             }
 
             //.................drawing a circle statically......
+            g.setColor(c.getCol());
             if (c.getX() != 0 && c.getY() != 0 && !c.isSelected())
                 g.drawOval(c.getX() - c.getR(), c.getY() - c.getR(), 2 * c.getR(), 2 * c.getR());
             else if (c.getX() != 0 && c.getY() != 0 && c.isSelected()) {

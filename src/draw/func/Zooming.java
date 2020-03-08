@@ -8,14 +8,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-public class Zoom {
+public class Zooming {
     private draw.Canvas canvas;
     private boolean circlesZoomed=false;
     int xsnap;
     int ysnap;
     private CommandLine commandLine;
 
-    public Zoom(Canvas canvas) {
+    public Zooming(Canvas canvas) {
         this.canvas=canvas;
         commandLine=canvas.getCommandLine();
     }

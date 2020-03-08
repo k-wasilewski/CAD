@@ -8,10 +8,10 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-public class Move {
+public class Moving {
     private draw.Canvas canvas;
 
-    public Move(Canvas canvas) {
+    public Moving(Canvas canvas) {
         this.canvas = canvas;
     }
 

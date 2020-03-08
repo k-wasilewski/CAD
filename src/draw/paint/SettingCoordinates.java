@@ -2,7 +2,7 @@ package draw.paint;
 
 import draw.Canvas;
 import draw.func.CommandLine;
-import draw.Draw;
+import draw.CADapp;
 import objs.*;
 
 public class SettingCoordinates {
@@ -70,7 +70,7 @@ public class SettingCoordinates {
             } else if (commandLine.command("dist")) {
                 canvas.setD((int) Math.sqrt(Math.pow((x - canvas.getXd()), 2) +
                         Math.pow((canvas.getYd() - y), 2)));
-                Draw.setText("dist: " + canvas.getD() + "p");
+                CADapp.setText("dist: " + canvas.getD() + "p");
             } else if (commandLine.command("rec")) {
                 canvas.setX2r(x);
                 canvas.setY2r(y);
