@@ -1,5 +1,6 @@
-package draw;
+package draw.func;
 
+import draw.Canvas;
 import objs.Circle;
 import objs.ImageClass;
 import objs.Line;
@@ -13,7 +14,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public class Snap {
-    private Canvas canvas;
+    private draw.Canvas canvas;
     private boolean snapExecuted=false;
     private Zoom zoom;
 

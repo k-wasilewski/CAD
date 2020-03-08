@@ -1,4 +1,6 @@
-package draw;
+package draw.func;
+
+import draw.Canvas;
 
 import java.awt.event.ActionEvent;
 

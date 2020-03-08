@@ -1,5 +1,6 @@
 package draw;
 
+import draw.func.*;
 import draw.paint.*;
 import objs.*;
 import java.awt.*;
@@ -147,6 +148,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     private Point2D pa;
     private TimerClass timerClass = new TimerClass(this);
     private SettingCoordinates settingCoordinates = new SettingCoordinates(this);
+    private Move move = new Move(this);
 
     public Canvas() {   //the actual canvas is at (8, 54)
         addMouseListener(this);
@@ -289,249 +291,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     //-------------EXPLORING THE CANVAS WITH MOUSEWHEEL------------------------------------------------------
     public void moveC() {
-        Point2D pas = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x,
-                MouseInfo.getPointerInfo().getLocation().y);
-        Point2D pbs = new Point2D.Double();
-        atinverted.transform(pas, pbs);
-        //------------------
-        int x2s = (int) pbs.getX();
-        int y2s = (int) pbs.getY();
-
-        boolean dif = (x2s != x2sh || y2s != y2sh); //if canvas moved
-
-        dx = x2s - x1s;
-        dy = y1s - y2s;
-
-        //..........dynamic drawing (while drawing).............
-        if (commandLine.command("l") || (commandLine.command("pl"))) {
-            x1 += dx;
-            y1 -= dy;
-        } else if (commandLine.command("c")) {
-            xo += dx;
-            yo -= dy;
-        } else if (commandLine.command("dist")) {
-            xd += dx;
-            yd -= dy;
-        } else if (commandLine.command("rec")) {
-            x1r += dx;
-            y1r -= dy;
-        } else if (moving) {
-            x1m += dx;
-            y1m -= dy;
-        } else if (copying) {
-            x1c += dx;
-            y1c -= dy;
-        }
-
-        //..........static moving..........................
-        if (dif) {
-            if (!imageClasses.isEmpty()) for (ImageClass imageClass : imageClasses) {
-                imageClass.setXimg(imageClass.getXimg() + dx);
-                imageClass.setYimg(imageClass.getYimg() - dy);
-            }
-            for (Text t : texts) {
-                t.setx(t.getx() + dx);
-                t.sety(t.gety() - dy);
-            }
-            for (Line l : lines) {
-                l.setx1(l.getx1() + dx);
-                l.setx2(l.getx2() + dx);
-                l.sety1(l.gety1() - dy);
-                l.sety2(l.gety2() - dy);
-            }
-            for (Circle c : circles) {
-                c.setX(c.getX() + dx);
-                c.setY(c.getY() - dy);
-            }
-            for (Rectangle r : rectangles) {
-                r.setx1(r.getx1() + dx);
-                r.setx2(r.getx2() + dx);
-                r.sety1(r.gety1() - dy);
-                r.sety2(r.gety2() - dy);
-            }
-            repaint();
-            x2sh = x2s;
-            y2sh = y2s;
-            x1s = x2s;
-            y1s = y2s;
-        }
+        move.moveMousewheel();
     }
 
     //----------MOVING SELECTED DRAWN OBJECTS (command "m")----------------------------------------------
     public void move() {
-        Point2D pam = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx,
-                MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
-        Point2D pbm = new Point2D.Double();
-        atinverted.transform(pam, pbm);
-        int x2m = (int) pbm.getX();
-        int y2m = (int) pbm.getY();
-        boolean dif = x2m != x2mh || y2m != y2mh;   //if object was moved
-
-        int dxm = x2m - x1m;
-        int dym = y1m - y2m;
-
-        if (dif) {
-            for (Line l : lines) {
-                if (l.isSelected()) {
-                    l.setx1(l.getx1() + dxm);
-                    l.setx2(l.getx2() + dxm);
-                    l.sety1(l.gety1() - dym);
-                    l.sety2(l.gety2() - dym);
-                }
-            }
-            for (Text t : texts) {
-                if (t.isSelected()) {
-                    t.setx(t.getx() + dxm);
-                    t.sety(t.gety() - dym);
-                }
-            }
-            for (Circle c : circles) {
-                if (c.isSelected()) {
-                    c.setX(c.getX() + dxm);
-                    c.setY(c.getY() - dym);
-                }
-            }
-            if (!imageClasses.isEmpty()) for (ImageClass i : imageClasses) {
-                if (i.isSelected()) {
-                    i.setXimg(i.getXimg() + dxm);
-                    i.setYimg(i.getYimg() - dym);
-                }
-            }
-            for (Rectangle r : rectangles) {
-                if (r.isSelected()) {
-                    r.setx1(r.getx1() + dxm);
-                    r.setx2(r.getx2() + dxm);
-                    r.sety1(r.gety1() - dym);
-                    r.sety2(r.gety2() - dym);
-                }
-            }
-            repaint();
-            x2mh = x2m;
-            y2mh = y2m;
-            x1m = x2m;
-            y1m = y2m;
-        }
+        move.move();
     }
 
     //-----------COPYING SELECTED DRAWN OBJECTS-----------------------------------------------------------
     public void copy() {
-        Point2D pac = new Point2D.Double(MouseInfo.getPointerInfo().getLocation().x - 8 - screenx,
-                MouseInfo.getPointerInfo().getLocation().y - 54 - screeny);
-        Point2D pbc = new Point2D.Double();
-        atinverted.transform(pac, pbc);
-        int x2c = (int) pbc.getX();
-        int y2c = (int) pbc.getY();
-        boolean dif = x2c != x2ch || y2c != y2ch;   //if copied object was moved
-
-        int dxc = x2c - x1c;
-        int dyc = y1c - y2c;
-
-        //........object-to-copy lists...................
-        ArrayList<Line> linesToCopy = new ArrayList();
-        ArrayList<Circle> circlesToCopy = new ArrayList();
-        ArrayList<ImageClass> imagesToCopy = new ArrayList();
-        ArrayList<Rectangle> rectanglesToCopy = new ArrayList();
-        ArrayList<Text> textsToCopy = new ArrayList();
-
-        if (dif) {
-            for (Line l : lines) {
-                if (l.isSelected()) {
-                    Line l2 = new Line(l.getx1(), l.getx2(), l.gety1(), l.gety2(), l.getCol(), l.isPoly());
-                    if (!l.isCopied()) {
-                        linesToCopy.add(l2);
-                        l.copiedOn();
-                    }
-                }
-            }
-            lines.addAll(linesToCopy);
-            for (Line l : lines) {
-                if (l.isSelected()) {
-                    l.setx1(l.getx1() + dxc);
-                    l.setx2(l.getx2() + dxc);
-                    l.sety1(l.gety1() - dyc);
-                    l.sety2(l.gety2() - dyc);
-                }
-            }
-            for (Text t : texts) {
-                if (t.isSelected()) {
-                    Text t2 = new Text(t.getText(), t.getx(), t.gety(), t.getCol());
-                    if (!t.isCopied()) {
-                        textsToCopy.add(t2);
-                        t.copiedOn();
-                    }
-                }
-            }
-            texts.addAll(textsToCopy);
-            for (Text t : texts) {
-                if (t.isSelected()) {
-                    t.setx(t.getx() + dxc);
-                    t.sety(t.gety() - dyc);
-                }
-            }
-            for (Circle c : circles) {
-                if (c.isSelected()) {
-                    Circle c2 = new Circle(c.getX(), c.getY(), c.getR(), c.getCol());
-                    if (!c.isCopied()) {
-                        circlesToCopy.add(c2);
-                        c.copiedOn();
-                    }
-                    c2.setX(c2.getX() + dxc);
-                    c2.setY(c2.getY() - dyc);
-                }
-            }
-            circles.addAll(circlesToCopy);
-            for (Circle c : circles) {
-                if (c.isSelected()) {
-                    c.setX(c.getX() + dxc);
-                    c.setY(c.getY() - dyc);
-                }
-            }
-            if (!imageClasses.isEmpty()) for (ImageClass i : imageClasses) {
-                if (i.isSelected()) {
-                    ImageClass i2 = new ImageClass(i.getImage(), i.getImg(), i.getXimg(), i.getYimg(), i.getContour(), i.getCol());
-                    if (!i.isCopied()) {
-                        imagesToCopy.add(i2);
-                        i.copiedOn();
-                    }
-                    i2.setXimg(i2.getXimg() + dxc);
-                    i2.setYimg(i2.getYimg() - dyc);
-                }
-            }
-            imageClasses.addAll(imagesToCopy);
-            for (ImageClass i : imageClasses) {
-                if (i.isSelected()) {
-                    i.setXimg(i.getXimg() + dxc);
-                    i.setYimg(i.getYimg() - dyc);
-                }
-            }
-            for (Rectangle r : rectangles) {
-                if (r.isSelected()) {
-                    Rectangle r2 = new Rectangle(r.getx1(), r.getx2(), r.gety1(), r.gety2(), r.getCol());
-                    if (!r.isCopied()) {
-                        rectanglesToCopy.add(r2);
-                        r.copiedOn();
-                    }
-                    r2.setx1(r2.getx1() + dxc);
-                    r2.setx2(r2.getx2() + dxc);
-                    r2.sety1(r2.gety1() - dyc);
-                    r2.sety2(r2.gety2() - dyc);
-                }
-            }
-            rectangles.addAll(rectanglesToCopy);
-            for (Rectangle r : rectangles) {
-                if (r.isSelected()) {
-                    r.setx1(r.getx1() + dxc);
-                    r.setx2(r.getx2() + dxc);
-                    r.sety1(r.gety1() - dyc);
-                    r.sety2(r.gety2() - dyc);
-                }
-            }
-            repaint();
-            x2ch = x2c;
-            y2ch = y2c;
-            x1c = x2c;
-            y1c = y2c;
-        }
+        move.copy();
     }
 
     //-----------CLEAN UP THE VARIABLES--------------------------------------------------------------------
@@ -1262,5 +1032,77 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
 
     public int getD() {
         return d;
+    }
+
+    public int getX2sh() {
+        return x2sh;
+    }
+
+    public int getY2sh() {
+        return y2sh;
+    }
+
+    public int getX1s() {
+        return x1s;
+    }
+
+    public int getY1s() {
+        return y1s;
+    }
+
+    public int getX1m() {
+        return x1m;
+    }
+
+    public int getY1m() {
+        return y1m;
+    }
+
+    public int getX1c() {
+        return x1c;
+    }
+
+    public int getY1c() {
+        return y1c;
+    }
+
+    public void setX2sh(int x2sh) {
+        this.x2sh = x2sh;
+    }
+
+    public void setY2sh(int y2sh) {
+        this.y2sh = y2sh;
+    }
+
+    public int getX2mh() {
+        return x2mh;
+    }
+
+    public int getY2mh() {
+        return y2mh;
+    }
+
+    public void setX2mh(int x2mh) {
+        this.x2mh = x2mh;
+    }
+
+    public void setY2mh(int y2mh) {
+        this.y2mh = y2mh;
+    }
+
+    public int getX2ch() {
+        return x2ch;
+    }
+
+    public int getY2ch() {
+        return y2ch;
+    }
+
+    public void setX2ch(int x2ch) {
+        this.x2ch = x2ch;
+    }
+
+    public void setY2ch(int y2ch) {
+        this.y2ch = y2ch;
     }
 }

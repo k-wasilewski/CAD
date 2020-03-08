@@ -1,15 +1,15 @@
-package draw;
+package draw.func;
 
+import draw.Canvas;
 import objs.*;
 import objs.Rectangle;
 
-import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 public class Zoom {
-    private Canvas canvas;
+    private draw.Canvas canvas;
     private boolean circlesZoomed=false;
     int xsnap;
     int ysnap;

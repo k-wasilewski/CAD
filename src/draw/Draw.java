@@ -1,5 +1,6 @@
 package draw;
 
+import draw.func.CommandLine;
 import objs.Circle;
 import objs.ImageClass;
 import objs.Text;

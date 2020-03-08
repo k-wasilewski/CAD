@@ -1,4 +1,4 @@
-package draw;
+package draw.func;
 
 import java.awt.*;
 import java.awt.geom.*;

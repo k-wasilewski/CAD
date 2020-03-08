@@ -1,7 +1,7 @@
 package draw.paint;
 
 import draw.Canvas;
-import draw.CommandLine;
+import draw.func.CommandLine;
 import draw.Draw;
 import objs.*;
 

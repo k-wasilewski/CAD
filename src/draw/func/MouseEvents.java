@@ -1,11 +1,12 @@
-package draw;
+package draw.func;
 
+import draw.Canvas;
 import objs.*;
 import objs.Rectangle;
 import ui.ImgPopup;
 import ui.Popup;
 import ui.TextInput;
-import ui.TextInput;
+
 import java.awt.geom.AffineTransform;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;

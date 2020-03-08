@@ -1,7 +1,7 @@
 package draw.paint;
 
 import draw.Canvas;
-import draw.TransformedStroke;
+import draw.func.TransformedStroke;
 import objs.Line;
 
 import java.awt.*;

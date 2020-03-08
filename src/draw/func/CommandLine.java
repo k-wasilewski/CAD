@@ -1,5 +1,7 @@
-package draw;
+package draw.func;
 
+import draw.Canvas;
+import draw.Draw;
 import objs.*;
 import objs.Rectangle;
 
@@ -10,9 +12,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommandLine {
-    private Canvas canvas;
+    private draw.Canvas canvas;
 
-    public CommandLine(Canvas canvas) {
+    public CommandLine(draw.Canvas canvas) {
         this.canvas=canvas;
     }
 
