@@ -21,8 +21,7 @@ public class PaintingImages {
                     imageClass.setWidth(imageClass.getWidth());
                     imageClass.setHeight(imageClass.getHeight());
 
-                    //.....images marked on..................
-                    if (canvas.imageSelection(imageClass)) {
+                    if (canvas.getSelecting().imageSelection(imageClass)) {
                         imageClass.markedOn();
                         imageClass.getContour().setImageClass(imageClass);
                         imageClass.getGraphics().setColor(Color.GRAY);
@@ -48,102 +47,130 @@ public class PaintingImages {
         }
     }
 
+    public void drawSnapRec1(ImageClass i) {
+        Rectangle rec = i.getSr1();
+        int x1rec = rec.getx1();
+        int x2rec = rec.getx2();
+        int y1rec = rec.gety1();
+        int y2rec = rec.gety2();
+        int xr;
+        int yr;
+        int wr;
+        int hr;
+
+        if (x2rec > x1rec) {
+            xr = x1rec;
+            wr = x2rec - x1rec;
+        } else {
+            xr = x2rec;
+            wr = x1rec - x2rec;
+        }
+        if (y2rec > y1rec) {
+            yr = y1rec;
+            hr = y2rec - y1rec;
+        } else {
+            yr = y2rec;
+            hr = y1rec - y2rec;
+        }
+        canvas.getG2().drawRect(xr, yr, wr, hr);
+    }
+
+    public void drawSnapRec2(ImageClass i) {
+        Rectangle rec = i.getSr2();
+        int x1rec = rec.getx1();
+        int x2rec = rec.getx2();
+        int y1rec = rec.gety1();
+        int y2rec = rec.gety2();
+        int xr;
+        int yr;
+        int wr;
+        int hr;
+
+        if (x2rec > x1rec) {
+            xr = x1rec;
+            wr = x2rec - x1rec;
+        } else {
+            xr = x2rec;
+            wr = x1rec - x2rec;
+        }
+        if (y2rec > y1rec) {
+            yr = y1rec;
+            hr = y2rec - y1rec;
+        } else {
+            yr = y2rec;
+            hr = y1rec - y2rec;
+        }
+        canvas.getG2().drawRect(xr, yr, wr, hr);
+    }
+
+    public void drawSnapRec3(ImageClass i) {
+        Rectangle rec = i.getSr3();
+        int x1rec = rec.getx1();
+        int x2rec = rec.getx2();
+        int y1rec = rec.gety1();
+        int y2rec = rec.gety2();
+        int xr;
+        int yr;
+        int wr;
+        int hr;
+
+        if (x2rec > x1rec) {
+            xr = x1rec;
+            wr = x2rec - x1rec;
+        } else {
+            xr = x2rec;
+            wr = x1rec - x2rec;
+        }
+        if (y2rec > y1rec) {
+            yr = y1rec;
+            hr = y2rec - y1rec;
+        } else {
+            yr = y2rec;
+            hr = y1rec - y2rec;
+        }
+        canvas.getG2().drawRect(xr, yr, wr, hr);
+    }
+
+    public void drawSnapRec4(ImageClass i) {
+        Rectangle rec = i.getSr4();
+        int x1rec = rec.getx1();
+        int x2rec = rec.getx2();
+        int y1rec = rec.gety1();
+        int y2rec = rec.gety2();
+        int xr;
+        int yr;
+        int wr;
+        int hr;
+
+        if (x2rec > x1rec) {
+            xr = x1rec;
+            wr = x2rec - x1rec;
+        } else {
+            xr = x2rec;
+            wr = x1rec - x2rec;
+        }
+        if (y2rec > y1rec) {
+            yr = y1rec;
+            hr = y2rec - y1rec;
+        } else {
+            yr = y2rec;
+            hr = y1rec - y2rec;
+        }
+        canvas.getG2().drawRect(xr, yr, wr, hr);
+    }
+
     public void drawSnapRecs() {
         for (ImageClass i : canvas.getImageClasses()) {
             Rectangle r = i.getSr1();
-            int x1rec;
-            int x2rec;
-            int y1rec;
-            int y2rec;
-            int xr;
-            int yr;
-            int wr;
-            int hr;
 
             if (i.getContains1()) {
-                Rectangle rec = i.getSr1();
-                x1rec = rec.getx1();
-                x2rec = rec.getx2();
-                y1rec = rec.gety1();
-                y2rec = rec.gety2();
-                if (x2rec > x1rec) {
-                    xr = x1rec;
-                    wr = x2rec - x1rec;
-                } else {
-                    xr = x2rec;
-                    wr = x1rec - x2rec;
-                }
-                if (y2rec > y1rec) {
-                    yr = y1rec;
-                    hr = y2rec - y1rec;
-                } else {
-                    yr = y2rec;
-                    hr = y1rec - y2rec;
-                }
-                canvas.getG2().drawRect(xr, yr, wr, hr);
+                drawSnapRec1(i);
             } else if (i.getContains2() && canvas.snapMode()) {
-                Rectangle rec = i.getSr2();
-                x1rec = rec.getx1();
-                x2rec = rec.getx2();
-                y1rec = rec.gety1();
-                y2rec = rec.gety2();
-                if (x2rec > x1rec) {
-                    xr = x1rec;
-                    wr = x2rec - x1rec;
-                } else {
-                    xr = x2rec;
-                    wr = x1rec - x2rec;
-                }
-                if (y2rec > y1rec) {
-                    yr = y1rec;
-                    hr = y2rec - y1rec;
-                } else {
-                    yr = y2rec;
-                    hr = y1rec - y2rec;
-                }
-                canvas.getG2().drawRect(xr, yr, wr, hr);
+                drawSnapRec2(i);
             } else if (i.getContains3() && canvas.snapMode()) {
-                Rectangle rec = i.getSr3();
-                x1rec = rec.getx1();
-                x2rec = rec.getx2();
-                y1rec = rec.gety1();
-                y2rec = rec.gety2();
-                if (x2rec > x1rec) {
-                    xr = x1rec;
-                    wr = x2rec - x1rec;
-                } else {
-                    xr = x2rec;
-                    wr = x1rec - x2rec;
-                }
-                if (y2rec > y1rec) {
-                    yr = y1rec;
-                    hr = y2rec - y1rec;
-                } else {
-                    yr = y2rec;
-                    hr = y1rec - y2rec;
-                }
-                canvas.getG2().drawRect(xr, yr, wr, hr);
+                drawSnapRec3(i);
             } else if (i.getContains4() && canvas.snapMode()) {
-                Rectangle rec = i.getSr4();
-                x1rec = rec.getx1();
-                x2rec = rec.getx2();
-                y1rec = rec.gety1();
-                y2rec = rec.gety2();
-                if (x2rec > x1rec) {
-                    xr = x1rec;
-                    wr = x2rec - x1rec;
-                } else {
-                    xr = x2rec;
-                    wr = x1rec - x2rec;
-                }
-                if (y2rec > y1rec) {
-                    yr = y1rec;
-                    hr = y2rec - y1rec;
-                } else {
-                    yr = y2rec;
-                    hr = y1rec - y2rec;
-                }
-                canvas.getG2().drawRect(xr, yr, wr, hr);
+                drawSnapRec4(i);
             }
         }
     }

@@ -1,12 +1,11 @@
 package ui;
 
 import draw.Canvas;
-
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-@SuppressWarnings("DuplicatedCode")
+
 public class GridsizeInput extends javax.swing.JFrame implements KeyListener {
 
     public GridsizeInput() {
@@ -22,7 +21,6 @@ public class GridsizeInput extends javax.swing.JFrame implements KeyListener {
         }
         if(e.getKeyCode() == KeyEvent.VK_ENTER){
             Canvas.setGrid(Integer.parseInt(jTextField1.getText()));
-            Canvas.getTimer().start();  //setting size grid
             Canvas.gridModeOn();
             this.dispose();
         }
@@ -61,8 +59,7 @@ public class GridsizeInput extends javax.swing.JFrame implements KeyListener {
         pack();
     }
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
-    }
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {}
 
     public static void main(String[] args) {
         try {

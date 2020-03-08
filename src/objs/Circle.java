@@ -4,13 +4,11 @@ import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
-@SuppressWarnings("unused")
 public class Circle implements Serializable {
     private int x;
     private int y;
     private int r;
     private Color c;
-    @SuppressWarnings("CanBeFinal")
     private Color ch;
     private boolean marked;
     private boolean selected=false;
@@ -19,7 +17,6 @@ public class Circle implements Serializable {
     private boolean copied;
     private boolean coloured;
 
-    //-----------CONSTRUCTOR-------------------------------------------------------------------------------
     public Circle(int x, int y, int r, Color c) {
         this.x=x;
         this.y=y;
@@ -28,7 +25,6 @@ public class Circle implements Serializable {
         this.ch=c;
     }
 
-    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
     public int getX() {
         return x;
     }
@@ -92,9 +88,7 @@ public class Circle implements Serializable {
     public void copiedOn() {
         this.copied=true;
     }
-    public void copiedOff() {
-        this.copied=false;
-    }
+    public void copiedOff() {this.copied=false;}
     public boolean isCopied() {
         return this.copied;
     }

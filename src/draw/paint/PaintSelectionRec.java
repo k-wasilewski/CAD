@@ -1,8 +1,6 @@
 package draw.paint;
 
 import draw.Canvas;
-
-import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
@@ -29,7 +27,7 @@ public class PaintSelectionRec {
             Point2D p2sel = new Point2D.Double();
             atinverted.transform(canvas.getPoint(), p2sel);
             if (p1sel.getX() != 0 && p2sel.getY() != 0) {
-                p1sel.setLocation(p1sel.getX() + dx, p1sel.getY() - dy);    //moving while selecting
+                p1sel.setLocation(p1sel.getX() + dx, p1sel.getY() - dy);
                 if (p2sel.getX() > p1sel.getX()) {
                     canvas.setXs((int) p1sel.getX());
                     canvas.setWs((int) p2sel.getX() - (int) p1sel.getX());

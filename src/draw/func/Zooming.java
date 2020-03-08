@@ -3,7 +3,6 @@ package draw.func;
 import draw.Canvas;
 import objs.*;
 import objs.Rectangle;
-
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -29,7 +28,7 @@ public class Zooming {
         }
     }
 
-    public void dynamicZoom() {
+    public void prepareAffineTransforms() {
         if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0) {
             canvas.setPoint(new Point2D.Double(Math.round((canvas.getLocationX() - 8 - canvas.getScreenx())),
                     Math.round((canvas.getLocationY() - 54 - canvas.getScreeny()))));
@@ -52,6 +51,10 @@ public class Zooming {
         canvas.getAtinverted().transform(canvas.getPoint(), canvas.getP3());
         canvas.setXdyn((int) canvas.getP3().getX() + canvas.getDx());
         canvas.setYdyn((int) canvas.getP3().getY() + canvas.getDy());
+    }
+
+    public void dynamicZoom() {
+        prepareAffineTransforms();
 
         if ((commandLine.command("l") || commandLine.command("pl")) && canvas.getX1() != 0 && canvas.getY1() != 0) {
             if (canvas.getOrtoY()) canvas.setX2(canvas.getX1());

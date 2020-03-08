@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
-@SuppressWarnings({"SpellCheckingInspection", "CanBeFinal", "unused"})
 public class Rectangle implements Serializable {
     private int x1r;
     private int x2r;
@@ -26,7 +25,6 @@ public class Rectangle implements Serializable {
     private boolean copied;
     private boolean coloured;
 
-    //----------CONSTRUCTOR-------------------------------------------------------------------------------
     public Rectangle(int x1, int x2, int y1, int y2, Color c) {
         this.x1r=x1;
         this.x2r=x2;
@@ -36,7 +34,6 @@ public class Rectangle implements Serializable {
         this.ch=c;
     }
 
-    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
     public int getx1() {
         return this.x1r;
     }

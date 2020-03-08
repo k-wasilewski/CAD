@@ -2,9 +2,7 @@ package draw.paint;
 
 import draw.Canvas;
 import objs.ImageClass;
-import objs.Line;
 import objs.Rectangle;
-
 import java.awt.*;
 import java.util.List;
 
@@ -44,7 +42,7 @@ public class PaintingRectangles {
         int hr;
         int xr;
         int yr;
-        //...........drawing a rec dynamically...............
+
         if (x2r > x1r) {
             xr = x1r;
             wr = x2r - x1r;
@@ -62,8 +60,7 @@ public class PaintingRectangles {
         g.setColor(dCol);
         if (xr != 0 && yr != 0) g.drawRect(xr, yr, wr, hr);
         if (!rectangles.isEmpty()) for (Rectangle r : rectangles) {
-            //.........recs marked on.....................
-            if (r.getx1() != 0 && r.getx2() != 0 && canvas.recSelection(r)) {
+            if (r.getx1() != 0 && r.getx2() != 0 && canvas.getSelecting().rectangleSelection(r)) {
                 r.setCol(Color.GRAY);
                 r.markedOn();
             } else {
@@ -77,7 +74,7 @@ public class PaintingRectangles {
             if (!canvas.getImageClasses().isEmpty()) {
                 for (ImageClass imageClass : canvas.getImageClasses()) {
                     if (r.getImageClass() != null) {
-                        if (canvas.imageSelection(r.getImageClass())) {
+                        if (canvas.getSelecting().imageSelection(r.getImageClass())) {
                             r.setCol(Color.GRAY);
                             r.markedOn();
                         } else {
@@ -88,7 +85,6 @@ public class PaintingRectangles {
                 }
             }
 
-            //..........drawing a rec statically..........
             g.setColor(r.getCol());
             int x1rec = r.getx1();
             int x2rec = r.getx2();
@@ -112,7 +108,6 @@ public class PaintingRectangles {
             if (r.getx1() != 0 && r.gety1() != 0 && r.getx2() != 0 && r.gety2() != 0 && !r.isSelected())
                 g.drawRect(xr, yr, wr, hr);
             else if (r.getx1() != 0 && r.gety1() != 0 && r.getx2() != 0 && r.gety2() != 0 && r.isSelected()) {
-                //............recs bold.......................
                 g2.setStroke(new BasicStroke(3));
                 g2.drawRect(xr, yr, wr, hr);
                 g2.setStroke(new BasicStroke(1));

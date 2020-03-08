@@ -2,7 +2,6 @@ package draw.paint;
 
 import draw.Canvas;
 import objs.Line;
-import java.util.*;
 import java.awt.*;
 import java.awt.Color;
 import java.util.List;
@@ -29,12 +28,11 @@ public class PaintingLines {
         int x2=canvas.getX2();
         int y2=canvas.getY2();
         List<Line> lines = canvas.getLines();
-        //............drawing a line dynamically......
+
         g.setColor(dCol);
         if (x1 != 0 && y1 != 0) g.drawLine(x1, y1, x2, y2);
         for (Line l : lines) {
-            //........line marked on.................
-            if (l.getx1() != 0 && l.getx2() != 0 && canvas.lineSelection(l)) {
+            if (l.getx1() != 0 && l.getx2() != 0 && canvas.getSelecting().lineSelection(l)) {
                 l.setCol(Color.GRAY);
                 l.markedOn();
             } else {
@@ -46,17 +44,14 @@ public class PaintingLines {
                 if (l.getCol() == Color.GRAY) l.setCol(l.getColH());
             }
 
-            //..........drawing a line statically........
             g.setColor(l.getCol());
             if (l.getx1() != 0 && l.gety1() != 0 && l.getx2() != 0 && l.gety2() != 0 && !l.isSelected())
                 g.drawLine(l.getx1(), l.gety1(), l.getx2(), l.gety2());
             else if (l.getx1() != 0 && l.gety1() != 0 && l.getx2() != 0 && l.gety2() != 0 && l.isSelected()) {
-                //.......line bold.......................
                 g2.setStroke(new BasicStroke(3));
                 g2.drawLine(l.getx1(), l.gety1(), l.getx2(), l.gety2());
                 g2.setStroke(new BasicStroke(1));
             }
         }
-
     }
 }

@@ -1,12 +1,10 @@
 package ui;
 
 import draw.Canvas;
-
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-@SuppressWarnings({"DuplicatedCode", "unused"})
 public class TextInput extends javax.swing.JFrame implements KeyListener {
 
     public TextInput() {
@@ -58,10 +56,7 @@ public class TextInput extends javax.swing.JFrame implements KeyListener {
         pack();
     }
 
-    @SuppressWarnings("EmptyMethod")
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
-
-    }
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {}
 
     public static void main(String[] args) {
         try {

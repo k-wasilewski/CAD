@@ -24,12 +24,11 @@ public class MouseEvents {
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-        //...........zoom in................................
         if (e.getWheelRotation() < 0) {
             canvas.setZoomFactor(canvas.getZoomFactor()*1.1);
             canvas.repaint();
         }
-        //............zoom out.................................
+
         if (e.getWheelRotation() > 0) {
             canvas.setZoomFactor(canvas.getZoomFactor()/1.1);
             canvas.repaint();
@@ -38,15 +37,13 @@ public class MouseEvents {
 
     public void mousePressed(MouseEvent e) {
         AffineTransform at = canvas.getAt();
-        //............left mouse button.............................
+
         if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
             leftMouseButton();
         }
-        //....................scroll mouse button.......
         if ((e.getModifiers() & InputEvent.BUTTON2_MASK) != 0) {
             scrollMouseButton(at);
         }
-        //...................right mouse button...............
         if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
             rightMouseButton(e);
         }
@@ -59,19 +56,18 @@ public class MouseEvents {
         showTextInput();
     }
 
-    public void rightMouseButton(MouseEvent e) {
-        ImgPopup menu = new ImgPopup(canvas);
-        ui.Popup menu1 = new Popup();
-        //................ImgPopup (move to front/back)....
+    public void handleImgPopup(ImgPopup menu, MouseEvent e) {
         for (ImageClass i : canvas.getImageClasses()) {
-            if (canvas.overImage(i)) {
+            if (canvas.getSelecting().isOverImage(i)) {
                 canvas.setNoOfOvers(canvas.getNoOfOvers()+1);
                 i.overImageOn();
                 menu.setImageClass(i);
                 menu.show(e.getComponent(), e.getX(), e.getY());
             } else i.overImageOff();
         }
-        //...............Popup (right mouseclick menu).......
+    }
+
+    public void handlePopup(Popup menu1, MouseEvent e) {
         for (ImageClass i : canvas.getImageClasses()) {
             if (canvas.getNoOfOvers() == 0) menu1.show(e.getComponent(), e.getX(), e.getY());
         }
@@ -79,9 +75,16 @@ public class MouseEvents {
         canvas.setNoOfOvers(0);
     }
 
+    public void rightMouseButton(MouseEvent e) {
+        ImgPopup menu = new ImgPopup(canvas);
+        ui.Popup menu1 = new Popup();
+
+        handleImgPopup(menu, e);
+        handlePopup(menu1, e);
+    }
+
     public void scrollMouseButton(AffineTransform at) {
         if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0)
-            //............moving thru canvas................
             canvas.setPoint(new Point2D.Double(canvas.getLocationX(), canvas.getLocationY()));
         Point2D p1s = new Point2D.Double();
         try {
@@ -97,7 +100,6 @@ public class MouseEvents {
 
     public void showTextInput() {
         if (Canvas.isReadyToInputText()) {
-            //...........show text input window............
             canvas.setPa(new Point2D.Double(canvas.getLocationX() - canvas.getScreenx(),
                     canvas.getLocationY() - canvas.getScreeny()));
             canvas.setP2(new Point2D.Double());
@@ -115,7 +117,6 @@ public class MouseEvents {
     }
 
     public void moving() {
-        //..........moving......................................
         for (Line l : canvas.getLines()) {
             if (l.isSelected() && (canvas.isReadyToMove())) canvas.setMoving(true);
         }
@@ -148,76 +149,95 @@ public class MouseEvents {
         }
     }
 
-    public void drawing() {
-        if ((commandLine.command("l") || commandLine.command("pl") || commandLine.command("c") || commandLine.command("dist") || commandLine.command("rec") || canvas.isMoving() || canvas.isCopying()) && !canvas.isDrawing()) {
-            if (!canvas.isSelection() || (canvas.getX1() != 0 && canvas.getY1() != 0 && (commandLine.command("l") || commandLine.command("pl"))) || (canvas.getXo() != 0 && canvas.getYo() != 0 && commandLine.command("c")) ||
-                    (canvas.getXd() != 0 && canvas.getYd() != 0 && commandLine.command("dist")) || (canvas.getX1r() != 0 && canvas.getY1r() != 0 && commandLine.command("rec") || canvas.isMoving() || canvas.isCopying()))
-                canvas.drawingOn();
-            //.......point A...............................
-            if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0) {
-                canvas.setPa(new Point2D.Double(canvas.getLocationX() - 8 - canvas.getScreenx(),
-                        canvas.getLocationY() - 54 - canvas.getScreeny()));
-                canvas.setP2(new Point2D.Double());
-                try {
-                    canvas.getAt().invert();
-                } catch (NoninvertibleTransformException ignored) {}
-                canvas.getAt().transform(canvas.getPa(), canvas.getP2());
-                canvas.drawA((int) canvas.getP2().getX(), (int) canvas.getP2().getY());    //method point A
-            }
-        } else if (commandLine.command("null") && !canvas.isSelection() && !canvas.isMoving() && !canvas.isCopying() && !Canvas.isReadyToInputText() && !canvas.isDrawing()) {
-            //........selection rec........................
-            //selection AND drawing SOMETIMES don't atransform !!!
-            if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0)
-                canvas.setPoint(new Point2D.Double(canvas.getLocationX() - 8
-                        - canvas.getScreenx(), canvas.getLocationY() - 54 - canvas.getScreeny()));
-            canvas.setP1sel(new Point2D.Double());
+    public void drawFirstPoint() {
+        if (!canvas.isSelection() || (canvas.getX1() != 0 && canvas.getY1() != 0 && (commandLine.command("l") || commandLine.command("pl"))) || (canvas.getXo() != 0 && canvas.getYo() != 0 && commandLine.command("c")) ||
+                (canvas.getXd() != 0 && canvas.getYd() != 0 && commandLine.command("dist")) || (canvas.getX1r() != 0 && canvas.getY1r() != 0 && commandLine.command("rec") || canvas.isMoving() || canvas.isCopying())) {
+            canvas.drawingOn();
+        }
+
+        if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0) {
+            canvas.setPa(new Point2D.Double(canvas.getLocationX() - 8 - canvas.getScreenx(),
+                    canvas.getLocationY() - 54 - canvas.getScreeny()));
+            canvas.setP2(new Point2D.Double());
             try {
                 canvas.getAt().invert();
-            } catch (Exception ignored) {
-            }
-            canvas.getAt().transform(canvas.getPoint(), canvas.getP1sel());
-            canvas.selectionOn();
-            canvas.repaint();
-            canvas.safelyRepaint();
+            } catch (NoninvertibleTransformException ignored) {}
+            canvas.getAt().transform(canvas.getPa(), canvas.getP2());
+            canvas.getSettingCoordinates().setFirstPointCoords((int) canvas.getP2().getX(), (int) canvas.getP2().getY());    //method point A
+        }
+    }
+
+    public void drawSelectionRec() {
+        if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0) {
+            canvas.setPoint(new Point2D.Double(canvas.getLocationX() - 8
+                    - canvas.getScreenx(), canvas.getLocationY() - 54 - canvas.getScreeny()));
+        }
+        canvas.setP1sel(new Point2D.Double());
+        try {
+            canvas.getAt().invert();
+        } catch (Exception ignored) {
+        }
+        canvas.getAt().transform(canvas.getPoint(), canvas.getP1sel());
+        canvas.selectionOn();
+        canvas.repaint();
+        canvas.safelyRepaint();
+    }
+
+    public void drawSecondPoint() {
+        if (!commandLine.command("pl")) canvas.drawingOff();
+        if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0)
+            canvas.setPb(new Point2D.Double(canvas.getLocationX(), canvas.getLocationY()));
+        canvas.setP3(new Point2D.Double());
+        try {
+            canvas.getAt().invert();
+        } catch (Exception ignored) {}
+        canvas.getAt().transform(canvas.getPb(), canvas.getP3());
+        canvas.getSettingCoordinates().setSecondPointCoords((int) canvas.getPb().getX(),
+                (int) canvas.getPb().getY());
+    }
+
+    public void objSelection() {
+        canvas.selectionOff();
+        for (ImageClass i : canvas.getImageClasses()) {
+            if (i.isMarked()) i.selectedOn();
+            i.paint();
+        }
+        for (Text t : canvas.getTexts()) {
+            if (t.isMarked()) t.selectedOn();
+        }
+        for (Line l : canvas.getLines()) {
+            if (l.isMarked()) l.selectedOn();
+        }
+        for (Rectangle r : canvas.getRectangles()) {
+            if (r.isMarked()) r.selectedOn();
+            if (!canvas.getImageClasses().isEmpty()) for (ImageClass imageClass : canvas.getImageClasses())
+                if (r.getImageClass() == imageClass && canvas.getSelecting().imageSelection(imageClass)) r.selectedOn();
+        }
+        for (Circle c : canvas.getCircles()) {
+            if (c.isMarked()) c.selectedOn();
+        }
+        canvas.repaint();
+        canvas.setXs(0);
+        canvas.setYs(0);
+        canvas.setWs(0);
+        canvas.setHs(0);
+    }
+
+    public void drawing() {
+        if ((commandLine.command("l") || commandLine.command("pl") ||
+                commandLine.command("c") || commandLine.command("dist") ||
+                commandLine.command("rec") || canvas.isMoving() || canvas.isCopying())
+                && !canvas.isDrawing()) {
+            drawFirstPoint();
+        } else if (commandLine.command("null") && !canvas.isSelection() && !canvas.isMoving()
+                && !canvas.isCopying() && !Canvas.isReadyToInputText() && !canvas.isDrawing()) {
+            drawSelectionRec();
             return;
         } else if (canvas.isDrawing()) {
-            //........point B...............................
-            if (!commandLine.command("pl")) canvas.drawingOff();
-            if (canvas.getLocationX() != 0 && canvas.getLocationY() != 0)
-                canvas.setPb(new Point2D.Double(canvas.getLocationX(), canvas.getLocationY()));
-            canvas.setP3(new Point2D.Double());
-            try {
-                canvas.getAt().invert();
-            } catch (Exception ignored) {}
-            canvas.getAt().transform(canvas.getPb(), canvas.getP3());
-            canvas.drawB((int) canvas.getPb().getX(), (int) canvas.getPb().getY());    //method point B
+            drawSecondPoint();
         }
         if (commandLine.command("null") && canvas.isSelection()) {
-            //.........selecting (when marked)..............
-            canvas.selectionOff();
-            for (ImageClass i : canvas.getImageClasses()) {
-                if (i.isMarked()) i.selectedOn();
-                i.paint();
-            }
-            for (Text t : canvas.getTexts()) {
-                if (t.isMarked()) t.selectedOn();
-            }
-            for (Line l : canvas.getLines()) {
-                if (l.isMarked()) l.selectedOn();
-            }
-            for (Rectangle r : canvas.getRectangles()) {
-                if (r.isMarked()) r.selectedOn();
-                if (!canvas.getImageClasses().isEmpty()) for (ImageClass imageClass : canvas.getImageClasses())
-                    if (r.getImageClass() == imageClass && canvas.imageSelection(imageClass)) r.selectedOn();
-            }
-            for (Circle c : canvas.getCircles()) {
-                if (c.isMarked()) c.selectedOn();
-            }
-            canvas.repaint();
-            canvas.setXs(0);
-            canvas.setYs(0);
-            canvas.setWs(0);
-            canvas.setHs(0);
+            objSelection();
         }
     }
 }

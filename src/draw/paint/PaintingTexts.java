@@ -2,7 +2,6 @@ package draw.paint;
 
 import draw.Canvas;
 import objs.Text;
-import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -31,7 +30,6 @@ public class PaintingTexts extends JPanel {
         Graphics2D g2 = canvas.getG2();
         List<Text> texts = canvas.getTexts();
 
-        //.......................drawing text.....................
         if (inputText != null && p2 != null && readyToDrawText) {
             texts.add(new Text(inputText, (int) p2.getX(), (int) p2.getY(), dCol));
             canvas.setReadyToDrawTextOff();
@@ -42,7 +40,6 @@ public class PaintingTexts extends JPanel {
                 g2.setColor(t.getCol());
                 g2.drawString(t.getText(), t.getx(), t.gety());
             } else if (t.isSelected()) {
-                //..............text font bold.....................
                 Font font = super.getFont();
                 g2.setColor(t.getCol());
                 g2.setFont(new Font("default", Font.BOLD, font.getSize()));
@@ -50,8 +47,8 @@ public class PaintingTexts extends JPanel {
                 g2.setFont(font);
                 repaint();
             }
-            //..................text marked on.....................
-            if (canvas.textSelection(t)) {
+
+            if (canvas.getSelecting().textSelection(t)) {
                 t.setCol(Color.GRAY);
                 t.markedOn();
             } else {

@@ -1,6 +1,6 @@
 package ui;
 
-@SuppressWarnings("ALL")
+
 public class About extends javax.swing.JFrame {
 
     public About() {

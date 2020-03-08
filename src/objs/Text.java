@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
-@SuppressWarnings({"SpellCheckingInspection", "CanBeFinal", "unused"})
 public class Text implements Serializable {
     private String txt;
     private int x;
@@ -17,7 +16,6 @@ public class Text implements Serializable {
     private boolean contains;
     private boolean copied;
 
-    //----------CONSTRUCTOR----------------------------------------------------------------------------------
     public Text(String t, int x, int y, Color c) {
         this.txt=t;
         this.x=x;
@@ -25,7 +23,6 @@ public class Text implements Serializable {
         this.c=c;
     }
 
-    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
     public int getx() {
         return this.x;
     }

@@ -38,9 +38,9 @@ public class SettingCoordinates {
         }
     }
 
-    public void setSecondPointCoords(int x, int y) {
+    public void addingObjects() {
         CommandLine commandLine = canvas.getCommandLine();
-        //............adding drawn objects to lists......
+
         if (canvas.getX1() != 0 && canvas.getY1() != 0 && !commandLine.command("pl")) {
             canvas.getLines().add(new Line(canvas.getX1(), canvas.getX2(), canvas.getY1(),
                     canvas.getY2(), canvas.getdCol(), false));
@@ -57,6 +57,12 @@ public class SettingCoordinates {
             canvas.getCircles().add(new Circle(canvas.getXo(), canvas.getYo(),
                     canvas.getR(), canvas.getdCol()));
         }
+    }
+
+    public void setSecondPointCoords(int x, int y) {
+        CommandLine commandLine = canvas.getCommandLine();
+
+        addingObjects();
 
         if (x != 0 && y != 0) {
             if (commandLine.command("l") || commandLine.command("pl")) {
@@ -91,7 +97,7 @@ public class SettingCoordinates {
             if (!commandLine.command("pl")) {
                 canvas.safelyRepaint();
             }
-            else setFirstPointCoords(canvas.getXdyn(), canvas.getYdyn());    //polyline
+            else setFirstPointCoords(canvas.getXdyn(), canvas.getYdyn());
             canvas.selectionOff();
             if (!commandLine.command("pl")) canvas.setInput("null");
         }

@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.io.Serializable;
 
-@SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal", "CanBeFinal", "unused", "rawtypes"})
 public class ImageClass extends JPanel implements Serializable, ImageObserver {
     private transient java.awt.Image image;
     private transient java.awt.image.BufferedImage img;
@@ -42,7 +41,6 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
     private boolean copied;
     private ImageIcon ii;
 
-    //----------CONSTRUCTOR-------------------------------------------------------------------------------------
     public ImageClass(java.awt.Image image, BufferedImage img, int ximg, int yimg, Rectangle contour, Color col) {
         this.image=image;
         this.img=img;
@@ -52,25 +50,25 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         this.col=col;
         if (ii!=null) width=ii.getIconWidth(); else width=img.getWidth();
         if (ii!=null) height=ii.getIconHeight(); else height=img.getHeight();
-        //noinspection unchecked,rawtypes
-        snapRecs=new ArrayList();
-        
-        //............snapRecs.................................
-        snapRec1 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK);
-        snapRec2 = new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK);
-        snapRec3 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK);
-        snapRec4 = new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK);
-        snapRecs.add(snapRec1);     
-        snapRecs.add(snapRec2);
-        snapRecs.add(snapRec3);
-        snapRecs.add(snapRec4);
 
-        //..........image and contour on the same layer............
+        snapRecs=new ArrayList();
+        addSnapRecs();
+
         imgcont=new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         paint();
     }
 
-    //-------------UPDATE XIMG AND YIMG IN SNAPRECS--------------------------------------------------------------
+    public void addSnapRecs() {
+        snapRec1 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK);
+        snapRec2 = new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK);
+        snapRec3 = new Rectangle(this.ximg-8, this.ximg+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK);
+        snapRec4 = new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK);
+        snapRecs.add(snapRec1);
+        snapRecs.add(snapRec2);
+        snapRecs.add(snapRec3);
+        snapRecs.add(snapRec4);
+    }
+
     public void updatesnapRecs() {
         snapRecs.set(0, new Rectangle(this.ximg-8, this.ximg+8, this.yimg-8, this.yimg+8, Color.BLACK));
         snapRecs.set(1, new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg-8, this.yimg+8, Color.BLACK));
@@ -78,21 +76,16 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         snapRecs.set(3, new Rectangle(this.ximg+width-8, this.ximg+width+8, this.yimg+height-8, this.yimg+height+8, Color.BLACK));
     }
 
-    //---------------PAINT THE IMG AND ITS CONTOUR ON BUFFEREDIMAGE-----------------------------------------------
     public void paint() {
         graphics=imgcont.createGraphics();
         if (ii!=null) ii.paintIcon(null, graphics, 0, 0);
-        //...........draw image.....................
         graphics.drawImage(img, 0, 0, null);
-        //...........draw marked-on contour........
         if (marked) {
             graphics.setColor(Color.GRAY);
             graphics.drawRect(0, 0, width-1, height-1);
-        //..........draw contour................
         } else {
             graphics.setColor(Color.BLACK);
         }
-        //.........draw bold contour.............
         if (selected) {
             graphics.setColor(Color.BLACK);
             graphics.drawRect(0, 0, width-1, height-1);
@@ -101,13 +94,22 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         }
     }
 
-    //-----------WHEN READING SERIALIZED FILE - CONVERTING IMAGEICON TO BUFFEREDIMAGE-----------------------
-    public void iiToBuffImg(ImageIcon ii) {
+    public void convertImageIconToBufferedImage(ImageIcon ii) {
         imgcont=new BufferedImage(ii.getIconWidth(), ii.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
         paint();
     }
 
-    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeObject(new ImageIcon(imgcont));
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        ii = (ImageIcon) in.readObject();
+        convertImageIconToBufferedImage(ii);
+    }
+
     public java.awt.Image getImage() {
         return this.image;
     }
@@ -233,17 +235,6 @@ public class ImageClass extends JPanel implements Serializable, ImageObserver {
         this.copied=false;
     }
     public boolean isCopied() {return this.copied;}
+}
 
-    //SERIALIZATION
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();   //all non-transient fields
-        out.writeObject(new ImageIcon(imgcont));    //custom serialization BufferedImage (imgCont) -> ImageIcon
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject(); //all non-transient fields
-        ii = (ImageIcon) in.readObject();   //...
-        iiToBuffImg(ii);    //custom deserialization ImageIcon -> BufferedImage (imgCont)
-        }
-    }
 

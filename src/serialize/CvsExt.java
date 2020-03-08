@@ -3,11 +3,7 @@ package serialize;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-//----------------*.CVS CUSTOM EXTENSION--------------------------------------------------------------------------------
-@SuppressWarnings("SwitchStatementWithTooFewBranches")
-public class CvsExt extends FileFilter
-{
-    @SuppressWarnings("CanBeFinal")
+public class CvsExt extends FileFilter {
     private String type;
 
     public CvsExt(String type)
@@ -15,8 +11,7 @@ public class CvsExt extends FileFilter
         this.type = type;
     }
 
-    public boolean accept(File file)
-    {
+    public boolean accept(File file) {
         if(file.isDirectory())
             return true;
 
@@ -24,35 +19,29 @@ public class CvsExt extends FileFilter
         if(ext == null)
             return false;
 
-        switch(type)
-        {
+        switch(type) {
             case "cvs":
                 if(ext.equals("cvs"))
                     return true;
                 else
                     break;
             default:
-                System.out.println(type + " is not supported");
         }
 
         return false;
     }
 
-    public String getDescription()
-    {
-        switch(type)
-        {
+    public String getDescription() {
+        switch(type) {
             case "battle":
                 return "Only *.cvs file supported";
         }
         return null;
     }
 
-    public String getExtension(File f)
-    {
+    public String getExtension(File f) {
         String ext = null;
         String filename = f.getName();
-
         int i = filename.lastIndexOf('.');
 
         if(i > 0 && i < filename.length() - 1)

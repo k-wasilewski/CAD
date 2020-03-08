@@ -6,7 +6,6 @@ import objs.ImageClass;
 import objs.Line;
 import objs.Rectangle;
 import objs.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
@@ -29,6 +28,7 @@ public class Snapping {
         snapTexts(canvas.getP2());
         snapImages(canvas.getP2());
         snapRectangles(canvas.getP2());
+        snapLines(canvas.getP2());
         doSnap();
     }
 
@@ -91,6 +91,21 @@ public class Snapping {
         }
     }
 
+    public void snapLines(Point2D p2) {
+        for (Line l : canvas.getLines()) {
+            l.setSr1(new Rectangle2D.Double(l.getx1() - 8, l.gety1() - 8, 16, 16));
+            if (l.getSr1().contains((int) p2.getX(), (int) p2.getY())) {
+                zoom.zoomLine1(l);
+                l.contains1on();
+            } else l.contains1off();
+            l.setSr2(new Rectangle2D.Double(l.getx2() - 8, l.gety2() - 8, 16, 16));
+            if (l.getSr2().contains((int) p2.getX(), (int) p2.getY())) {
+                zoom.zoomLine2(l);
+                l.contains2on();
+            } else l.contains2off();
+        }
+    }
+
     public void snapImages(Point2D p2) {
         for (ImageClass i : canvas.getImageClasses()) {
             Rectangle2D sr1;
@@ -106,7 +121,6 @@ public class Snapping {
             sr3=snapRecs.get(2);
             sr4=snapRecs.get(3);
 
-            //.......conditions 'snapRec contains'.......
             if (sr1.contains((int) p2.getX(), (int) p2.getY())) {
                 zoom.zoomImage1(i);
                 i.contains1on();
@@ -124,24 +138,9 @@ public class Snapping {
                 i.contains4on();
             } else i.contains4off();
         }
-
-        //...........lines SnapRec1, 2...............
-        for (Line l : canvas.getLines()) {
-            l.setSr1(new Rectangle2D.Double(l.getx1() - 8, l.gety1() - 8, 16, 16));
-            if (l.getSr1().contains((int) p2.getX(), (int) p2.getY())) {
-                zoom.zoomLine1(l);
-                l.contains1on();
-            } else l.contains1off();
-            l.setSr2(new Rectangle2D.Double(l.getx2() - 8, l.gety2() - 8, 16, 16));
-            if (l.getSr2().contains((int) p2.getX(), (int) p2.getY())) {
-                zoom.zoomLine2(l);
-                l.contains2on();
-            } else l.contains2off();
-        }
     }
 
-    public List<Rectangle2D> createImageSnapRecs(ImageClass i) {
-        List<Rectangle2D> list = new ArrayList<>();
+    public Rectangle2D.Double createImageSnapRec1(ImageClass i) {
         int x1rec1 = i.getSr1().getx1();
         int x2rec1 = i.getSr1().getx2();
         int y1rec1 = i.getSr1().gety1();
@@ -164,8 +163,10 @@ public class Snapping {
             yr1 = y2rec1;
             hr1 = y1rec1 - y2rec1;
         }
-        Rectangle2D sr1 = new Rectangle2D.Double(xr1, yr1, wr1, hr1);
+        return new Rectangle2D.Double(xr1, yr1, wr1, hr1);
+    }
 
+    public Rectangle2D.Double createImageSnapRec2(ImageClass i) {
         int x1rec2 = i.getSr2().getx1();
         int x2rec2 = i.getSr2().getx2();
         int y1rec2 = i.getSr2().gety1();
@@ -188,8 +189,10 @@ public class Snapping {
             yr2 = y2rec2;
             hr2 = y1rec2 - y2rec2;
         }
-        Rectangle2D sr2 = new Rectangle2D.Double(xr2, yr2, wr2, hr2);
+        return new Rectangle2D.Double(xr2, yr2, wr2, hr2);
+    }
 
+    public Rectangle2D.Double createImageSnapRec3(ImageClass i) {
         int x1rec3 = i.getSr3().getx1();
         int x2rec3 = i.getSr3().getx2();
         int y1rec3 = i.getSr3().gety1();
@@ -212,8 +215,10 @@ public class Snapping {
             yr3 = y2rec3;
             hr3 = y1rec3 - y2rec3;
         }
-        Rectangle2D sr3 = new Rectangle2D.Double(xr3, yr3, wr3, hr3);
+        return new Rectangle2D.Double(xr3, yr3, wr3, hr3);
+    }
 
+    public Rectangle2D.Double createImageSnapRec4(ImageClass i) {
         int x1rec4 = i.getSr4().getx1();
         int x2rec4 = i.getSr4().getx2();
         int y1rec4 = i.getSr4().gety1();
@@ -236,7 +241,16 @@ public class Snapping {
             yr4 = y2rec4;
             hr4 = y1rec4 - y2rec4;
         }
-        Rectangle2D sr4 = new Rectangle2D.Double(xr4, yr4, wr4, hr4);
+        return new Rectangle2D.Double(xr4, yr4, wr4, hr4);
+    }
+
+    public List<Rectangle2D> createImageSnapRecs(ImageClass i) {
+        List<Rectangle2D> list = new ArrayList<>();
+
+        Rectangle2D.Double sr1 = createImageSnapRec1(i);
+        Rectangle2D.Double sr2 = createImageSnapRec2(i);
+        Rectangle2D.Double sr3 = createImageSnapRec3(i);
+        Rectangle2D.Double sr4 = createImageSnapRec4(i);
 
         list.add(sr1);
         list.add(sr2);

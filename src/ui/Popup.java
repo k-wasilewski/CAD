@@ -13,10 +13,10 @@ public class Popup extends JPopupMenu {
     private GridsizeInput gi;
             
     public Popup() {
-        if (Canvas.isSnapToGridMode()) snapToGrid = new JMenuItem("Snapping-to-grid mode OFF");
-        else snapToGrid = new JMenuItem("Snapping-to-grid mode ON");
-        if (Canvas.isSnapMode()) snap = new JMenuItem("Snapping mode OFF");
-        else snap = new JMenuItem("Snapping mode ON");
+        if (Canvas.isSnapToGridMode()) snapToGrid = new JMenuItem("Snap-to-grid mode OFF");
+        else snapToGrid = new JMenuItem("Snap-to-grid mode ON");
+        if (Canvas.isSnapMode()) snap = new JMenuItem("Snap mode OFF");
+        else snap = new JMenuItem("Snap mode ON");
         if (Canvas.isGridMode()) grid = new JMenuItem("Grid OFF");
         else grid = new JMenuItem("Grid ON");
         add(snap);
@@ -36,7 +36,6 @@ public class Popup extends JPopupMenu {
     private void gridActionPerformed(java.awt.event.ActionEvent evt) {
         if (!Canvas.isGridMode()) {
             gi = new GridsizeInput();
-            //noinspection RedundantCast,RedundantCast
             gi.setLocation((int)200, (int)200);
             gi.setVisible(true);
         }

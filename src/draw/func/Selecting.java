@@ -34,35 +34,40 @@ public class Selecting {
         return false;
     }
 
+    public Rectangle2D.Double setupIntersection(Rectangle r, int w0r, int x0r, int h0r, int y0r) {
+        if (r.getx2() > r.getx1()) {
+            x0r = r.getx1();
+            w0r = r.getx2() - r.getx1();
+        } else {
+            x0r = r.getx2();
+            w0r = r.getx1() - r.getx2();
+        }
+
+        if (r.gety2() > r.gety1()) {
+            y0r = r.gety1();
+            h0r = r.gety2() - r.gety1();
+        } else {
+            y0r = r.gety2();
+            h0r = r.gety1() - r.gety2();
+        }
+        return new Rectangle2D.Double(x0r, y0r, w0r, h0r);
+    }
+
     public boolean rectangleSelection(Rectangle r) {
         boolean intersection1 = false;
         boolean intersection2 = false;
-        double xrec = 0;
-        double yrec = 0;
+        double xrec;
+        double yrec;
+        int w0r=0;
+        int x0r=0;
+        int h0r=0;
+        int y0r=0;
+
         if (canvas.getXs() != 0 && canvas.getYs() != 0) {
-            int w0r;
-            int x0r;
-            if (r.getx2() > r.getx1()) {
-                x0r = r.getx1();
-                w0r = r.getx2() - r.getx1();
-            } else {
-                x0r = r.getx2();
-                w0r = r.getx1() - r.getx2();
-            }
-            int h0r;
-            int y0r;
-            if (r.gety2() > r.gety1()) {
-                y0r = r.gety1();
-                h0r = r.gety2() - r.gety1();
-            } else {
-                y0r = r.gety2();
-                h0r = r.gety1() - r.gety2();
-            }
             Rectangle2D.Double selRec = (new Rectangle2D.Double(canvas.getXs(), canvas.getYs(),
                     canvas.getWs(), canvas.getHs()));
-            Rectangle2D.Double r2d = new Rectangle2D.Double(x0r, y0r, w0r, h0r);
+            Rectangle2D.Double r2d = setupIntersection(r, x0r, y0r, h0r, w0r);;
 
-            //..........contour's intersection condition..............
             for (xrec = r2d.getMinX(); xrec <= r2d.getMaxX(); xrec++) {
                 if (selRec.contains(xrec, r2d.getMinY()) || selRec.contains(xrec, r2d.getMaxY())) {
                     intersection1 = true;
@@ -114,14 +119,14 @@ public class Selecting {
     }
 
     public boolean imageSelection(ImageClass imageClass) {
+        double xcont;
+
         if (canvas.getXs() != 0 && canvas.getYs() != 0 && imageClass != null) {
             Rectangle2D.Double selRec = (new Rectangle2D.Double(canvas.getXs(), canvas.getYs(),
                     canvas.getWs(), canvas.getHs()));
             Rectangle2D.Double contourSel = new Rectangle2D.Double(canvas.getXrec(),
                     canvas.getYrec(), imageClass.getWidth(), imageClass.getHeight());
 
-            //.........contour's intersection condition................
-            double xcont;
             for (xcont = contourSel.getMinX(); xcont <= contourSel.getMaxX(); xcont++) {
                 double ycont;
                 for (ycont = contourSel.getMinY(); ycont <= contourSel.getMaxY(); ycont++) {

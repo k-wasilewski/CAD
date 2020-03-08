@@ -10,20 +10,17 @@ import serialize.Cvs;
 import serialize.CvsExt;
 import ui.About;
 import ui.Index;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 
-@SuppressWarnings({"SpellCheckingInspection", "deprecation", "unchecked", "AccessStaticViaInstance", "CanBeFinal", "RedundantThrows", "unused", "rawtypes"})
 public class CADapp extends JFrame {
   private Canvas canvas;
   private static boolean unknown;
   private static javax.swing.JTextArea jTextArea3;
   private boolean ctrl;
-  @SuppressWarnings("FieldCanBeLocal")
   private javax.swing.JMenuItem menuItem4;
   private ArrayList<Line> linesToDelete;
   private ArrayList<Circle> circlesToDelete;
@@ -63,7 +60,7 @@ public class CADapp extends JFrame {
       javax.swing.JFileChooser jFileChooser1 = new javax.swing.JFileChooser();
       javax.swing.JFileChooser jFileChooser2 = new javax.swing.JFileChooser();
       javax.swing.JFileChooser jFileChooser3 = new javax.swing.JFileChooser();
-
+      //.........setup UI..................................
       file.setText("File");
       menuBar.add(file);
       help.setText("Help");
@@ -159,7 +156,7 @@ public class CADapp extends JFrame {
                   canvas.setDir(jFileChooser2.getCurrentDirectory().toString());
               }
               try {
-                  canvas.importt();
+                  canvas.importFile();
               } catch (Exception exc) {
                   jTextArea3.setText(exc.getMessage());
               }
@@ -203,7 +200,7 @@ public class CADapp extends JFrame {
                   if (cvs != null && cvs.getTexts() != null) canvas.setTexts(cvs.getTexts());
                   myObjectInputStream.close();
                   try {
-                      canvas.open();
+                      canvas.openFile();
                   } catch (Exception exc) {
                       jTextArea3.setText(exc.toString());
                   }
@@ -226,7 +223,7 @@ public class CADapp extends JFrame {
                   canvas.setFilename(jFileChooser1.getSelectedFile().getName());
                   canvas.setDir(jFileChooser1.getCurrentDirectory().toString());
                   try {
-                      canvas.export();
+                      canvas.exportAsImage();
                   } catch (Exception exc) {
                       jTextArea3.setText("Error");
                   }

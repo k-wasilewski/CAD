@@ -132,7 +132,7 @@ public class CommandLine {
             for (Rectangle r : canvas.getRectangles()) if (r.isSelected()) r.selectedOff();
             for (Circle c : canvas.getCircles()) if (c.isSelected()) c.selectedOff();
             for (ImageClass i : canvas.getImageClasses()) if (i.isSelected()) i.selectedOff();
-            canvas.esc();
+            canvas.escKeyPressed();
             canvas.safelyRepaint();
             canvas.repaint();
         } else if (command("null")) {

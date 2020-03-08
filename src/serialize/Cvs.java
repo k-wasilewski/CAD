@@ -5,8 +5,6 @@ import objs.Rectangle;
 import java.util.ArrayList;
 import java.io.Serializable;
 
-//----------SERIALIZING DRAWN OBJECTS THRU CVS CLASS------------------------------------------------------
-@SuppressWarnings("CanBeFinal")
 public class Cvs implements Serializable {
     private ArrayList<Line> lines;
     private ArrayList<Circle> circles;
@@ -14,7 +12,6 @@ public class Cvs implements Serializable {
     private ArrayList<ImageClass> imageClasses;
     private ArrayList<Text> texts;
 
-    //--------CONSTRUCTOR---------------------------------------------------------------------------------
     public Cvs(ArrayList<Line> lines, ArrayList<Circle> circles, ArrayList<Rectangle> rectangles,
                ArrayList<ImageClass> imageClasses, ArrayList<Text> texts) {
         this.lines = lines;
@@ -24,7 +21,6 @@ public class Cvs implements Serializable {
         this.texts = texts;
     }
 
-    //----------GETTERS AND SETTERS--------------------------------------------------------------------------
     public ArrayList<Line> getLines() {
         return this.lines;
     }

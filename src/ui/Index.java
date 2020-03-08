@@ -1,6 +1,5 @@
 package ui;
 
-@SuppressWarnings({"DuplicatedCode", "FieldCanBeLocal", "SpellCheckingInspection"})
 public class Index extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
