@@ -33,6 +33,8 @@ public class CADapp extends JFrame {
 
   public void run(JFrame f) {
       SwingUtilities.invokeLater(() -> f.setVisible(true));
+      //.........for testing............................
+      try {Thread.sleep(100);} catch (Exception ignored) {}
   }
   public CADapp() {
       canvas = new Canvas();
@@ -347,4 +349,6 @@ public class CADapp extends JFrame {
     CADapp sw = new CADapp();
     sw.run(sw);
   }
+
+    public Canvas getCanvas() {return canvas;}
 }

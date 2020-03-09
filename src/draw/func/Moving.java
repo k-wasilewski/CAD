@@ -3,8 +3,6 @@ package draw.func;
 import draw.Canvas;
 import objs.*;
 import objs.Rectangle;
-
-import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -149,6 +147,7 @@ public class Moving {
     }
 
     public void move() {
+        System.out.println("in");
         Point2D pam = new Point2D.Double(canvas.getLocationX() - 8 -
                 canvas.getScreenx(),canvas.getLocationY() - 54 - canvas.getScreeny());
         Point2D pbm = new Point2D.Double();
