@@ -20,7 +20,12 @@ public class CanvasTest {
     }
 
     @Test
-    public void test() {
-        
+    public void exportAsImageTest() throws IOException, AWTException {
+        this.canvas.setDir("/home");
+        this.canvas.setFilename("test");
+        this.canvas.exportAsImage();
+
+        File test = new File("/home/test.jpeg");
+        assertTrue(test.exists());
     }
 }
