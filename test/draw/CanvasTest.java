@@ -15,9 +15,9 @@ public class CanvasTest {
 
     @Before
     public void runApp() {
-        this.cadapp = new CADapp();
-        this.cadapp.run(this.cadapp);
-        this.canvas = cadapp.getCanvas();
+        cadapp = new CADapp();
+        cadapp.run(cadapp);
+        canvas = cadapp.getCanvas();
     }
 
     @Test
@@ -28,11 +28,20 @@ public class CanvasTest {
 
     @Test
     public void exportAsImageTest() throws IOException, AWTException {
-        this.canvas.setDir("/home");
-        this.canvas.setFilename("test");
-        this.canvas.exportAsImage();
+        canvas.setDir("/home");
+        canvas.setFilename("test");
+        canvas.exportAsImage();
 
         File test = new File("/home/test.jpeg");
         assertTrue(test.exists());
+    }
+
+    @Test
+    public void importFileTest() throws IOException {
+        canvas.setDir("/home");
+        canvas.setFilename("test.jpeg");
+        canvas.importFile();
+
+        assertEquals(1, canvas.getImageClasses().size());
     }
 }
