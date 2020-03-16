@@ -505,4 +505,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public static boolean isGridSRadded() {return gridSRadded;}
     public SettingCoordinates getSettingCoordinates() {return settingCoordinates;}
     public Selecting getSelecting() {return selecting;}
+    public static boolean getReadyToInputText() {return readyToInputText;}
+    public static boolean getReadyToDrawText() {return readyToDrawText;}
 }

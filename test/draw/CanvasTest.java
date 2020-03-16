@@ -44,4 +44,13 @@ public class CanvasTest {
 
         assertEquals(1, canvas.getImageClasses().size());
     }
+
+    @Test
+    public void drawTextTest() {
+        Canvas.drawText("test");
+
+        assertEquals("test", canvas.getInputText());
+        assertFalse(Canvas.getReadyToInputText());
+        assertTrue(Canvas.getReadyToDrawText());
+    }
 }
