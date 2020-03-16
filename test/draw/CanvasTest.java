@@ -1,5 +1,6 @@
 package draw;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,10 +14,16 @@ public class CanvasTest {
     Canvas canvas;
 
     @Before
-    public void constructCanvas() {
+    public void runApp() {
         this.cadapp = new CADapp();
         this.cadapp.run(this.cadapp);
         this.canvas = cadapp.getCanvas();
+    }
+
+    @Test
+    public void paintComponentTest() {
+        assertEquals(canvas.getBackground(), canvas.getbCol());
+        assertEquals("null", canvas.getInput());
     }
 
     @Test

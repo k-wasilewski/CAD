@@ -403,6 +403,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener, Mou
     public void setXimg(int ximg) {this.ximg = ximg;}
     public void setYimg(int yimg) {this.yimg = yimg;}
     public Color getdCol() {return this.dCol;}
+    public Color getbCol() {return this.bCol;}
     public int getX2r() {return x2r;}
     public int getY2r() {return y2r;}
     public int getR() {return r;}
