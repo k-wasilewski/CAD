@@ -53,4 +53,10 @@ public class CanvasTest {
         assertFalse(Canvas.getReadyToInputText());
         assertTrue(Canvas.getReadyToDrawText());
     }
+
+    @Test
+    public void setGridTest() {
+        Canvas.setGrid(100);
+        assertEquals(100, Canvas.getGridSize());
+    }
 }
