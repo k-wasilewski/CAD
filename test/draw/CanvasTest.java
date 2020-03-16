@@ -1,42 +1,26 @@
 package draw;
 
-import draw.func.Zooming;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import static org.mockito.Mockito.spy;
+import static org.junit.Assert.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
-//@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Canvas.class , Zooming.class})
 public class CanvasTest {
+    CADapp cadapp;
+    Canvas canvas;
+
     @Before
-    public void init() {
-        /*
-        CADapp cadapp = new CADapp();
-        cadapp.run(cadapp);
-        Zooming zoomMock = spy(new Zooming(cadapp.getCanvas()));//Mockito.mock(Zooming.class);
-        try {
-            PowerMockito.whenNew(Zooming.class)
-                    .withNoArguments()
-                    .thenReturn(zoomMock);
-        } catch (Exception ignored) {}
-     */
+    public void constructCanvas() {
+        this.cadapp = new CADapp();
+        this.cadapp.run(this.cadapp);
+        this.canvas = cadapp.getCanvas();
     }
 
     @Test
-    public void actionPerformedTest() throws Exception {
-        /*
-        // prepare
-        CADapp cadapp = new CADapp();
-
-        // execute
-        cadapp.run(cadapp);
-
-        // checks if the constructor has been called once and with the expected argument values:
-        PowerMockito.verifyNew(Zooming.class).withNoArguments();
-         */
+    public void test() {
+        
     }
 }
